@@ -272,4 +272,23 @@
       (cancelled)="closeGroupForm()"
     />
   }
+
+  <!-- ===== DELETE CONFIRMATIONS ===== -->
+  @if (deletingSite()) {
+    <app-confirm-dialog
+      title="Delete Site"
+      [message]="'Are you sure you want to delete \'' + (deletingSite()!.title || deletingSite()!.url) + '\'?'"
+      (confirmed)="confirmDeleteSite()"
+      (cancelled)="cancelDeleteSite()"
+    />
+  }
+
+  @if (deletingGroup()) {
+    <app-confirm-dialog
+      title="Delete Group"
+      [message]="'Delete group \'' + deletingGroup()!.name + '\'?\n\nSites in this group will become ungrouped.'"
+      (confirmed)="confirmDeleteGroup()"
+      (cancelled)="cancelDeleteGroup()"
+    />
+  }
 </div>

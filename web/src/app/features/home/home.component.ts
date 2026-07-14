@@ -31,6 +31,7 @@ import { GroupContainerComponent } from '../../shared/group-container/group-cont
 import { SiteCardComponent } from '../../shared/site-card/site-card.component';
 import { SiteFormComponent } from '../../shared/site-form/site-form.component';
 import { GroupFormComponent } from '../../shared/group-form/group-form.component';
+import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 import {
   LucideFolderPlus,
@@ -61,6 +62,7 @@ import {
     LucideTrash2,
     LucideGripVertical,
     GroupFormComponent,
+    ConfirmDialogComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -157,6 +159,9 @@ export class HomeComponent {
 
   showGroupForm = signal(false);
   editingGroup = signal<Group | null>(null);
+
+  deletingSite = signal<Site | null>(null);
+  deletingGroup = signal<Group | null>(null);
 
   // ---- Derived state ----
 
@@ -335,9 +340,19 @@ export class HomeComponent {
   }
 
   onDeleteSite(site: Site): void {
-    if (confirm(`Delete "${site.title || site.url}"?`)) {
+    this.deletingSite.set(site);
+  }
+
+  confirmDeleteSite(): void {
+    const site = this.deletingSite();
+    if (site) {
       this.deleteSiteMutation.mutate(site.id);
+      this.deletingSite.set(null);
     }
+  }
+
+  cancelDeleteSite(): void {
+    this.deletingSite.set(null);
   }
 
   // ---- Group actions ----
@@ -372,11 +387,19 @@ export class HomeComponent {
   }
 
   onDeleteGroup(group: Group): void {
-    if (
-      confirm(`Delete group "${group.name}"?\nSites in this group will become ungrouped.`)
-    ) {
+    this.deletingGroup.set(group);
+  }
+
+  confirmDeleteGroup(): void {
+    const group = this.deletingGroup();
+    if (group) {
       this.deleteGroupMutation.mutate(group.id);
+      this.deletingGroup.set(null);
     }
+  }
+
+  cancelDeleteGroup(): void {
+    this.deletingGroup.set(null);
   }
 
   // ---- Favicon drag from browser ----
