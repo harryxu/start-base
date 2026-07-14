@@ -30,6 +30,7 @@ import type {
 import { GroupContainerComponent } from '../../shared/group-container/group-container.component';
 import { SiteCardComponent } from '../../shared/site-card/site-card.component';
 import { SiteFormComponent } from '../../shared/site-form/site-form.component';
+import { GroupFormComponent } from '../../shared/group-form/group-form.component';
 
 import {
   LucideFolderPlus,
@@ -59,6 +60,7 @@ import {
     LucideX,
     LucideTrash2,
     LucideGripVertical,
+    GroupFormComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -152,6 +154,9 @@ export class HomeComponent {
   showSiteForm = signal(false);
   editingSite = signal<Site | null>(null);
   prefilledUrl = signal('');
+
+  showGroupForm = signal(false);
+  editingGroup = signal<Group | null>(null);
 
   // ---- Derived state ----
 
@@ -338,19 +343,32 @@ export class HomeComponent {
   // ---- Group actions ----
 
   openAddGroupDialog(): void {
-    const name = prompt('Group name:');
-    if (name?.trim()) {
-      const groups = this.groupsQuery.data() ?? [];
-      const maxOrder = groups.length > 0 ? Math.max(...groups.map((g) => g.sort_order)) : 0;
-      this.createGroupMutation.mutate({ name: name.trim(), sort_order: maxOrder + 100 });
-    }
+    this.editingGroup.set(null);
+    this.showGroupForm.set(true);
   }
 
   onEditGroup(group: Group): void {
-    const name = prompt('Group name:', group.name);
-    if (name?.trim() && name.trim() !== group.name) {
-      this.updateGroupMutation.mutate({ id: group.id, data: { name: name.trim() } });
+    this.editingGroup.set(group);
+    this.showGroupForm.set(true);
+  }
+
+  closeGroupForm(): void {
+    this.showGroupForm.set(false);
+    this.editingGroup.set(null);
+  }
+
+  onGroupFormSubmit(data: GroupCreate): void {
+    const editing = this.editingGroup();
+    if (editing) {
+      if (data.name !== editing.name) {
+        this.updateGroupMutation.mutate({ id: editing.id, data: { name: data.name } });
+      }
+    } else {
+      const groups = this.groupsQuery.data() ?? [];
+      const maxOrder = groups.length > 0 ? Math.max(...groups.map((g) => g.sort_order)) : 0;
+      this.createGroupMutation.mutate({ name: data.name, sort_order: maxOrder + 100 });
     }
+    this.closeGroupForm();
   }
 
   onDeleteGroup(group: Group): void {

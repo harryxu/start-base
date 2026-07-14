@@ -263,4 +263,13 @@
       (cancelled)="closeSiteForm()"
     />
   }
+
+  <!-- ===== GROUP FORM MODAL ===== -->
+  @if (showGroupForm()) {
+    <app-group-form
+      [group]="editingGroup()"
+      (submitted)="onGroupFormSubmit($event)"
+      (cancelled)="closeGroupForm()"
+    />
+  }
 </div>
