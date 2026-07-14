@@ -11,12 +11,15 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "dependencies": {
+    "@angular/cdk": "^22.0.4",
     "@angular/common": "^22.0.0",
     "@angular/compiler": "^22.0.0",
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "@lucide/angular": "^1.23.0",
+    "@tanstack/angular-query-experimental": "^5.101.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

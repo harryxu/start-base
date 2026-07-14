@@ -1,0 +1,266 @@
+<div
+  class="min-h-screen bg-gray-50"
+  (dragover)="onDragOver($event)"
+  (drop)="onPageDrop($event)"
+>
+  <!-- ===== HEADER ===== -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+    <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
+      <h1 class="text-base font-semibold text-gray-900 tracking-tight shrink-0">Start Base</h1>
+
+      <div class="flex items-center gap-1.5">
+        @if (!editMode()) {
+          <!-- View mode toolbar -->
+          <button
+            id="btn-add-site"
+            (click)="openAddSiteForm()"
+            class="toolbar-btn"
+            title="Add Site"
+          >
+            <svg lucidePlus class="w-3.5 h-3.5"></svg>
+            <span>Add Site</span>
+          </button>
+
+          <button
+            id="btn-add-group"
+            (click)="openAddGroupDialog()"
+            class="toolbar-btn"
+            title="Add Group"
+          >
+            <svg lucideFolderPlus class="w-3.5 h-3.5"></svg>
+            <span>Add Group</span>
+          </button>
+
+          <div class="w-px h-4 bg-gray-200 mx-0.5"></div>
+
+          <button
+            id="btn-edit-mode"
+            (click)="enterEditMode()"
+            class="toolbar-btn"
+            title="Enter Edit Mode"
+          >
+            <svg lucidePencil class="w-3.5 h-3.5"></svg>
+            <span>Edit</span>
+          </button>
+        } @else {
+          <!-- Edit mode toolbar -->
+          <span class="text-xs font-medium text-amber-600 px-2 py-1 bg-amber-50 rounded-md border border-amber-200 mr-1">
+            Editing
+          </span>
+
+          <button
+            id="btn-save"
+            (click)="saveLayout()"
+            class="toolbar-btn-primary"
+          >
+            <svg lucideSave class="w-3.5 h-3.5"></svg>
+            <span>Save</span>
+          </button>
+
+          <button
+            id="btn-exit-edit"
+            (click)="exitEditMode()"
+            class="toolbar-btn"
+          >
+            <svg lucideX class="w-3.5 h-3.5"></svg>
+            <span>Cancel</span>
+          </button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="max-w-5xl mx-auto px-6 py-6">
+
+    <!-- Loading state -->
+    @if (sitesQuery.isLoading() || groupsQuery.isLoading()) {
+      <div class="flex items-center justify-center py-20 text-gray-400 text-sm">
+        Loading…
+      </div>
+    }
+
+    <!-- Error state -->
+    @else if (sitesQuery.isError() || groupsQuery.isError()) {
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <p class="text-red-500 text-sm font-medium">Failed to load data</p>
+        <p class="text-gray-400 text-xs mt-1">
+          Make sure the server is running at
+          <code class="text-gray-500">http://localhost:8000</code>
+        </p>
+      </div>
+    }
+
+    <!-- Empty state (view mode only) -->
+    @else if (layoutRows().length === 0 && !editMode()) {
+      <div class="flex flex-col items-center justify-center py-24 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
+          <svg lucidePlus class="w-6 h-6 text-gray-400"></svg>
+        </div>
+        <p class="text-gray-500 text-sm font-medium">No sites yet</p>
+        <p class="text-gray-400 text-xs mt-1 max-w-xs">
+          Click "Add Site" to get started, or drag a favicon from your browser address bar.
+        </p>
+      </div>
+    }
+
+    @else {
+      <!-- ============================= -->
+      <!--         VIEW MODE             -->
+      <!-- ============================= -->
+      @if (!editMode()) {
+        <div class="space-y-4">
+          @for (row of layoutRows(); track row.id) {
+            @if (row.type === 'ungrouped') {
+              <div class="flex flex-wrap gap-1">
+                @for (site of row.sites; track site.id) {
+                  <app-site-card
+                    [site]="site"
+                    [editMode]="false"
+                    (editSite)="openEditSiteForm($event)"
+                    (deleteSite)="onDeleteSite($event)"
+                  />
+                }
+              </div>
+            } @else {
+              <app-group-container
+                [group]="row.group"
+                [sites]="row.sites"
+                [editMode]="false"
+                (editGroup)="onEditGroup($event)"
+                (deleteGroup)="onDeleteGroup($event)"
+                (editSite)="openEditSiteForm($event)"
+                (deleteSite)="onDeleteSite($event)"
+              />
+            }
+          }
+        </div>
+      }
+
+      <!-- ============================= -->
+      <!--         EDIT MODE             -->
+      <!-- ============================= -->
+      @if (editMode()) {
+        <!--
+          OUTER cdkDropList: handles row (section) reordering.
+          Only group rows are draggable — ungrouped rows have cdkDragDisabled.
+          cdkDragHandle on the group header restricts what triggers the group drag.
+        -->
+        <div
+          cdkDropList
+          cdkDropListOrientation="vertical"
+          [cdkDropListData]="localRows()"
+          (cdkDropListDropped)="onRowDrop($event)"
+          class="space-y-4 min-h-24"
+        >
+          @for (row of localRows(); track row.id) {
+            <div
+              cdkDrag
+              [cdkDragData]="row"
+              [cdkDragDisabled]="row.type === 'ungrouped'"
+            >
+              <!-- Drag placeholder shown while the row is being dragged -->
+              <div
+                *cdkDragPlaceholder
+                class="h-16 rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/40"
+              ></div>
+
+              <!-- ---- GROUP ROW ---- -->
+              @if (row.type === 'group') {
+                <div class="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                  <!-- Header: drag handle + name + edit controls -->
+                  <div class="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 bg-gray-50/60">
+                    <div
+                      cdkDragHandle
+                      class="cursor-grab text-gray-300 hover:text-gray-500 transition-colors p-0.5"
+                      title="Drag to reorder group"
+                    >
+                      <svg lucideGripVertical class="w-4 h-4"></svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-700 flex-1">{{ row.group.name }}</span>
+                    <button
+                      (click)="onEditGroup(row.group)"
+                      class="edit-ctrl-btn"
+                      title="Rename group"
+                    >
+                      <svg lucidePencil class="w-3.5 h-3.5"></svg>
+                    </button>
+                    <button
+                      (click)="onDeleteGroup(row.group)"
+                      class="edit-ctrl-btn edit-ctrl-btn-danger"
+                      title="Delete group"
+                    >
+                      <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
+                    </button>
+                  </div>
+                  <!--
+                    INNER cdkDropList: handles site reordering within this group.
+                    Connected to all other site lists via allSiteDropListIds().
+                  -->
+                  <div
+                    cdkDropList
+                    [id]="row.id"
+                    [cdkDropListData]="row.sites"
+                    [cdkDropListConnectedTo]="allSiteDropListIds()"
+                    (cdkDropListDropped)="onSiteDrop($event)"
+                    class="flex flex-wrap gap-1 p-3 min-h-20"
+                  >
+                    @for (site of row.sites; track site.id) {
+                      <div cdkDrag [cdkDragData]="site">
+                        <div *cdkDragPlaceholder class="w-[72px] h-[72px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
+                        <app-site-card
+                          [site]="site"
+                          [editMode]="true"
+                          (editSite)="openEditSiteForm($event)"
+                          (deleteSite)="onDeleteSite($event)"
+                        />
+                      </div>
+                    }
+                    @if (row.sites.length === 0) {
+                      <p class="text-xs text-gray-300 self-center px-2">Drop sites here</p>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- ---- UNGROUPED ROW ---- -->
+              @if (row.type === 'ungrouped') {
+                <div
+                  cdkDropList
+                  [id]="row.id"
+                  [cdkDropListData]="row.sites"
+                  [cdkDropListConnectedTo]="allSiteDropListIds()"
+                  (cdkDropListDropped)="onSiteDrop($event)"
+                  class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-dashed border-gray-200"
+                >
+                  @for (site of row.sites; track site.id) {
+                    <div cdkDrag [cdkDragData]="site">
+                      <div *cdkDragPlaceholder class="w-[72px] h-[72px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
+                      <app-site-card
+                        [site]="site"
+                        [editMode]="true"
+                        (editSite)="openEditSiteForm($event)"
+                        (deleteSite)="onDeleteSite($event)"
+                      />
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    }
+  </main>
+
+  <!-- ===== SITE FORM MODAL ===== -->
+  @if (showSiteForm()) {
+    <app-site-form
+      [site]="editingSite()"
+      [prefilledUrl]="prefilledUrl()"
+      [groups]="groupsQuery.data() ?? []"
+      (submitted)="onSiteFormSubmit($event)"
+      (cancelled)="closeSiteForm()"
+    />
+  }
+</div>
