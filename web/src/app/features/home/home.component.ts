@@ -11,7 +11,7 @@ import {
 import {
   injectMutation,
   injectQuery,
-  injectQueryClient,
+  QueryClient,
 } from '@tanstack/angular-query-experimental';
 import { firstValueFrom } from 'rxjs';
 
@@ -69,7 +69,7 @@ import {
 })
 export class HomeComponent {
   private api = inject(ApiService);
-  private queryClient = injectQueryClient();
+  private queryClient = inject(QueryClient);
 
   // ---- Server state ----
 

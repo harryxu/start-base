@@ -16,7 +16,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
         (click)="toggleCollapse()"
       >
         <!-- Placeholder for drag handle to maintain alignment -->
-        <div class="w-5 h-5 flex-shrink-0"></div>
+        <div class="w-5 h-5 shrink-0"></div>
         <span class="text-sm font-medium text-gray-700 flex-1">{{ group().name }}</span>
 
         <!-- Edit mode controls -->
@@ -78,7 +78,9 @@ import { SiteCardComponent } from '../site-card/site-card.component';
         background: transparent;
         cursor: pointer;
         color: #9ca3af;
-        transition: color 0.15s, background 0.15s;
+        transition:
+          color 0.15s,
+          background 0.15s;
       }
 
       .group-btn:hover {
