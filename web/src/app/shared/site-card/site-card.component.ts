@@ -2,6 +2,7 @@ import { Component, computed, input, output, signal } from '@angular/core';
 import { LucidePencil, LucideTrash2 } from '@lucide/angular';
 
 import type { Site } from '../../core/models/types';
+import { API_BASE } from '../../core/api/api.service';
 
 @Component({
   selector: 'app-site-card',
@@ -162,7 +163,12 @@ export class SiteCardComponent {
     if (this.iconFailed()) {
       return this.googleFavicon();
     }
-    return this.site().icon_url || this.googleFavicon();
+    const url = this.site().icon_url;
+    if (!url) return this.googleFavicon();
+    if (url.startsWith('/')) {
+      return `${API_BASE}${url}`;
+    }
+    return url;
   });
 
   displayTitle = computed(() => {

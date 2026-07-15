@@ -7,6 +7,8 @@ from sqlmodel import SQLModel
 
 from app.database import engine
 from app.routers import groups, sites
+import os
+from fastapi.staticfiles import StaticFiles
 
 
 @asynccontextmanager
@@ -37,6 +39,9 @@ app.add_middleware(
 
 app.include_router(groups.router)
 app.include_router(sites.router)
+
+os.makedirs("data/icons", exist_ok=True)
+app.mount("/static/icons", StaticFiles(directory="data/icons"), name="icons")
 
 
 @app.get("/api/health", tags=["health"])

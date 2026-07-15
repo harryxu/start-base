@@ -15,6 +15,7 @@ async def _update_site_metadata(site_id: int, url: str, db_url: str) -> None:
     """Background task: fetch missing metadata and persist it."""
     from sqlmodel import Session as _Session
     from sqlmodel import create_engine
+    from app.services.metadata import download_icon
 
     metadata = await fetch_site_metadata(url)
 
@@ -25,7 +26,8 @@ async def _update_site_metadata(site_id: int, url: str, db_url: str) -> None:
             if metadata.get("title") and not site.title:
                 site.title = metadata["title"]
             if metadata.get("icon_url") and not site.icon_url:
-                site.icon_url = metadata["icon_url"]
+                local_icon_url = await download_icon(metadata["icon_url"], site.id)
+                site.icon_url = local_icon_url or metadata["icon_url"]
             session.add(site)
             session.commit()
 

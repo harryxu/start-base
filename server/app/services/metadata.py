@@ -73,3 +73,36 @@ async def fetch_site_metadata(url: str) -> dict:
             pass
 
     return result
+
+import os
+import mimetypes
+from urllib.parse import urlparse
+
+async def download_icon(icon_url: str, site_id: int) -> str | None:
+    """Download the icon and save it locally, returning the local URL."""
+    try:
+        async with httpx.AsyncClient(
+            timeout=10.0,
+            follow_redirects=True,
+            headers={"User-Agent": "Mozilla/5.0 (compatible; StartBase/1.0)"},
+        ) as client:
+            response = await client.get(icon_url)
+            response.raise_for_status()
+
+            content_type = response.headers.get("Content-Type", "")
+            ext = mimetypes.guess_extension(content_type.split(";")[0])
+            if not ext:
+                parsed = urlparse(icon_url)
+                _, ext = os.path.splitext(parsed.path)
+            if not ext:
+                ext = ".png"
+
+            os.makedirs("data/icons", exist_ok=True)
+            filename = f"{site_id}{ext}"
+            filepath = os.path.join("data/icons", filename)
+            with open(filepath, "wb") as f:
+                f.write(response.content)
+
+            return f"/static/icons/{filename}"
+    except Exception:
+        return None
