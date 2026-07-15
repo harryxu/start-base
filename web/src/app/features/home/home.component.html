@@ -124,6 +124,7 @@
               </div>
             } @else {
               <app-group-container
+                class="block"
                 [group]="row.group"
                 [sites]="row.sites"
                 [editMode]="false"
@@ -208,7 +209,7 @@
                   >
                     @for (site of row.sites; track site.id) {
                       <div cdkDrag [cdkDragData]="site">
-                        <div *cdkDragPlaceholder class="w-[72px] h-[72px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
+                        <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
                         <app-site-card
                           [site]="site"
                           [editMode]="true"
@@ -237,7 +238,7 @@
                 >
                   @for (site of row.sites; track site.id) {
                     <div cdkDrag [cdkDragData]="site">
-                      <div *cdkDragPlaceholder class="w-[72px] h-[72px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
+                      <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
                       <app-site-card
                         [site]="site"
                         [editMode]="true"

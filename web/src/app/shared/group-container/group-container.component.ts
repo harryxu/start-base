@@ -38,11 +38,13 @@ import { SiteCardComponent } from '../site-card/site-card.component';
         }
 
         <!-- Collapse toggle -->
-        @if (collapsed()) {
-          <svg lucideChevronDown class="w-4 h-4 text-gray-400"></svg>
-        } @else {
-          <svg lucideChevronUp class="w-4 h-4 text-gray-400"></svg>
-        }
+        <div class="w-[26px] h-[26px] flex items-center justify-center">
+          @if (collapsed()) {
+            <svg lucideChevronDown class="w-4 h-4 text-gray-400"></svg>
+          } @else {
+            <svg lucideChevronUp class="w-4 h-4 text-gray-400"></svg>
+          }
+        </div>
       </div>
 
       <!-- Sites grid (hidden when collapsed) -->
