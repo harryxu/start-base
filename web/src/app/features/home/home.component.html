@@ -112,7 +112,7 @@
         <div class="space-y-4">
           @for (row of layoutRows(); track row.id) {
             @if (row.type === 'ungrouped') {
-              <div class="flex flex-wrap gap-1">
+              <div class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-transparent">
                 @for (site of row.sites; track site.id) {
                   <app-site-card
                     [site]="site"
@@ -199,6 +199,7 @@
                   -->
                   <div
                     cdkDropList
+                    cdkDropListOrientation="mixed"
                     [id]="row.id"
                     [cdkDropListData]="row.sites"
                     [cdkDropListConnectedTo]="allSiteDropListIds()"
@@ -227,6 +228,7 @@
               @if (row.type === 'ungrouped') {
                 <div
                   cdkDropList
+                  cdkDropListOrientation="mixed"
                   [id]="row.id"
                   [cdkDropListData]="row.sites"
                   [cdkDropListConnectedTo]="allSiteDropListIds()"

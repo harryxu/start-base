@@ -9,12 +9,14 @@ import { SiteCardComponent } from '../site-card/site-card.component';
   standalone: true,
   imports: [SiteCardComponent, LucideChevronDown, LucideChevronUp, LucidePencil, LucideTrash2],
   template: `
-    <div class="border border-gray-200 rounded-xl bg-white overflow-hidden">
+    <div class="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
       <!-- Group header (click to collapse/expand) -->
       <div
-        class="flex items-center gap-2 px-4 py-2.5 cursor-pointer select-none transition-colors hover:bg-gray-50/60"
+        class="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 bg-gray-50/60 cursor-pointer select-none transition-colors hover:bg-gray-100/60"
         (click)="toggleCollapse()"
       >
+        <!-- Placeholder for drag handle to maintain alignment -->
+        <div class="w-5 h-5 flex-shrink-0"></div>
         <span class="text-sm font-medium text-gray-700 flex-1">{{ group().name }}</span>
 
         <!-- Edit mode controls -->
@@ -45,7 +47,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
 
       <!-- Sites grid (hidden when collapsed) -->
       @if (!collapsed()) {
-        <div class="flex flex-wrap gap-1 p-3 min-h-16 border-t border-gray-100">
+        <div class="flex flex-wrap gap-1 p-3 min-h-20">
           @for (site of sites(); track site.id) {
             <app-site-card
               [site]="site"
