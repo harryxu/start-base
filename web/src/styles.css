@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
 
 /* Inter font (loaded via index.html) */
 @layer base {
