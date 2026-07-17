@@ -13,7 +13,7 @@ import type {
   SiteUpdate,
 } from '../models/types';
 
-export const API_BASE = 'http://localhost:8000';
+export const API_BASE = 'http://localhost:5600';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

@@ -151,8 +151,11 @@ export class HomeComponent {
   // ---- UI state ----
 
   editMode = signal(false);
-  /** Mutable copy of the layout used while in edit mode. */
-  localRows = signal<LayoutRow[]>([]);
+  /** Mutable copy of the ungrouped sites used while in edit mode. */
+  localUngroupedSites = signal<Site[]>([]);
+  /** Mutable copy of the group rows used while in edit mode. */
+  localGroupRows = signal<LayoutRow[]>([]);
+
   showSiteForm = signal(false);
   editingSite = signal<Site | null>(null);
   prefilledUrl = signal('');
@@ -173,7 +176,10 @@ export class HomeComponent {
   });
 
   /** IDs of all inner site drop lists — used for cdkDropListConnectedTo. */
-  allSiteDropListIds = computed(() => this.localRows().map((r) => r.id));
+  allSiteDropListIds = computed(() => [
+    'ungrouped-0',
+    ...this.localGroupRows().map((r) => r.id)
+  ]);
 
   // ---- Layout computation ----
 
@@ -184,41 +190,22 @@ export class HomeComponent {
 
     const sortedGroups = [...groups].sort((a, b) => a.sort_order - b.sort_order);
 
-    type AnyItem =
-      | { kind: 'site'; site: Site; order: number }
-      | { kind: 'group'; group: Group; order: number };
-
-    const allItems: AnyItem[] = [
-      ...ungrouped.map((s) => ({ kind: 'site' as const, site: s, order: s.sort_order })),
-      ...sortedGroups.map((g) => ({ kind: 'group' as const, group: g, order: g.sort_order })),
-    ].sort((a, b) => a.order - b.order);
-
     const rows: LayoutRow[] = [];
-    let batch: Site[] = [];
-    let batchIndex = 0;
 
-    for (const item of allItems) {
-      if (item.kind === 'site') {
-        batch.push(item.site);
-      } else {
-        if (batch.length > 0) {
-          rows.push({ type: 'ungrouped', sites: [...batch], id: `ungrouped-${batchIndex++}` });
-          batch = [];
-        }
-        const groupSites = sites
-          .filter((s) => s.group_id === item.group.id)
-          .sort((a, b) => a.sort_order - b.sort_order);
-        rows.push({
-          type: 'group',
-          group: item.group,
-          sites: groupSites,
-          id: `group-${item.group.id}`,
-        });
-      }
+    if (ungrouped.length > 0) {
+      rows.push({ type: 'ungrouped', sites: ungrouped, id: 'ungrouped-0' });
     }
 
-    if (batch.length > 0) {
-      rows.push({ type: 'ungrouped', sites: [...batch], id: `ungrouped-${batchIndex}` });
+    for (const group of sortedGroups) {
+      const groupSites = sites
+        .filter((s) => s.group_id === group.id)
+        .sort((a, b) => a.sort_order - b.sort_order);
+      rows.push({
+        type: 'group',
+        group: group,
+        sites: groupSites,
+        id: `group-${group.id}`,
+      });
     }
 
     return rows;
@@ -227,78 +214,115 @@ export class HomeComponent {
   // ---- Edit mode ----
 
   enterEditMode(): void {
-    this.localRows.set(this.layoutRows().map((r) => ({ ...r, sites: [...r.sites] })));
+    const rows = this.layoutRows();
+    const ungroupedRow = rows.find((r) => r.type === 'ungrouped');
+    this.localUngroupedSites.set(ungroupedRow ? [...ungroupedRow.sites] : []);
+    
+    const groupRows = rows
+      .filter((r) => r.type === 'group')
+      .map((r) => ({ ...r, sites: [...r.sites] }));
+    this.localGroupRows.set(groupRows);
+    
     this.editMode.set(true);
   }
 
   exitEditMode(): void {
     this.editMode.set(false);
-    this.localRows.set([]);
+    this.localUngroupedSites.set([]);
+    this.localGroupRows.set([]);
   }
 
   saveLayout(): void {
-    const rows = this.localRows();
+    const ungroupedSites = this.localUngroupedSites();
+    const groupRows = this.localGroupRows();
+    
     const siteItems: SiteReorderItem[] = [];
     const groupItems: ReorderItem[] = [];
 
-    // Assign sort_order values: ungrouped sites and groups share a global counter
-    // so the layout can be correctly reconstructed from sort_order alone.
-    let globalOrder = 0;
+    // Assign sort_order values
+    let groupOrder = 0;
 
-    rows.forEach((row) => {
+    groupRows.forEach((row) => {
       if (row.type === 'group') {
-        groupItems.push({ id: row.group.id, sort_order: globalOrder * 100 });
-        globalOrder++;
+        groupItems.push({ id: row.group.id, sort_order: groupOrder * 100 });
+        groupOrder++;
         // Sites within a group use local sort_order
         row.sites.forEach((site, idx) => {
           siteItems.push({ id: site.id, sort_order: idx * 10, group_id: row.group.id });
         });
-      } else {
-        // Each ungrouped site gets its own global slot
-        row.sites.forEach((site) => {
-          siteItems.push({ id: site.id, sort_order: globalOrder * 100, group_id: null });
-          globalOrder++;
-        });
       }
+    });
+
+    // Ungrouped sites use local sort_order
+    ungroupedSites.forEach((site, idx) => {
+      siteItems.push({ id: site.id, sort_order: idx * 10, group_id: null });
     });
 
     this.reorderMutation.mutate({ sites: siteItems, groups: groupItems });
     this.editMode.set(false);
-    this.localRows.set([]);
+    this.localUngroupedSites.set([]);
+    this.localGroupRows.set([]);
   }
 
   // ---- Drag and drop ----
 
   /** Called when a group row is dropped in a new position (outer list). */
   onRowDrop(event: CdkDragDrop<LayoutRow[]>): void {
-    const rows = [...this.localRows()];
+    const rows = [...this.localGroupRows()];
     moveItemInArray(rows, event.previousIndex, event.currentIndex);
-    this.localRows.set(rows);
+    this.localGroupRows.set(rows);
   }
 
   /** Called when a site is dropped (inner site lists). Handles within-row and cross-row moves. */
   onSiteDrop(event: CdkDragDrop<Site[]>): void {
-    const rows = this.localRows().map((r) => ({ ...r, sites: [...r.sites] }));
+    const isSourceUngrouped = event.previousContainer.id === 'ungrouped-0';
+    const isTargetUngrouped = event.container.id === 'ungrouped-0';
+
+    const sourceArray = isSourceUngrouped
+      ? this.localUngroupedSites()
+      : this.localGroupRows().find((r) => r.id === event.previousContainer.id)?.sites;
+
+    const targetArray = isTargetUngrouped
+      ? this.localUngroupedSites()
+      : this.localGroupRows().find((r) => r.id === event.container.id)?.sites;
+
+    if (!sourceArray || !targetArray) return;
 
     if (event.previousContainer === event.container) {
-      const row = rows.find((r) => r.id === event.container.id);
-      if (row) {
-        moveItemInArray(row.sites, event.previousIndex, event.currentIndex);
+      const newArray = [...sourceArray];
+      moveItemInArray(newArray, event.previousIndex, event.currentIndex);
+      if (isSourceUngrouped) {
+        this.localUngroupedSites.set(newArray);
+      } else {
+        this.updateGroupSites(event.previousContainer.id, newArray);
       }
     } else {
-      const sourceRow = rows.find((r) => r.id === event.previousContainer.id);
-      const targetRow = rows.find((r) => r.id === event.container.id);
-      if (sourceRow && targetRow) {
-        transferArrayItem(
-          sourceRow.sites,
-          targetRow.sites,
-          event.previousIndex,
-          event.currentIndex,
-        );
+      const newSourceArray = [...sourceArray];
+      const newTargetArray = [...targetArray];
+      transferArrayItem(newSourceArray, newTargetArray, event.previousIndex, event.currentIndex);
+
+      if (isSourceUngrouped) {
+        this.localUngroupedSites.set(newSourceArray);
+      } else {
+        this.updateGroupSites(event.previousContainer.id, newSourceArray);
+      }
+
+      if (isTargetUngrouped) {
+        this.localUngroupedSites.set(newTargetArray);
+      } else {
+        this.updateGroupSites(event.container.id, newTargetArray);
       }
     }
+  }
 
-    this.localRows.set(rows);
+  private updateGroupSites(groupId: string, sites: Site[]) {
+    const rows = this.localGroupRows().map((r) => {
+      if (r.id === groupId) {
+        return { ...r, sites };
+      }
+      return r;
+    });
+    this.localGroupRows.set(rows);
   }
 
   // ---- Site actions ----

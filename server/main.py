@@ -1,4 +1,5 @@
 """Start Base — FastAPI application entry point."""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -53,4 +54,4 @@ def health_check() -> dict:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=5600, reload=True)
