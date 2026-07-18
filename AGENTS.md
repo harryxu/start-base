@@ -17,7 +17,9 @@ start-base/
 │   │   │   └── groups.py  ← Group CRUD + reorder endpoints
 │   │   └── services/
 │   │       └── metadata.py ← Fetch page title & favicon from URL
-│   └── alembic/       ← DB migrations (Alembic)
+│   ├── alembic/       ← DB migrations (Alembic)
+│   ├── tests/         ← API tests (pytest)
+│   └── start_base.db  ← Local SQLite database
 └── web/               ← Angular v22 frontend (pnpm)
     └── src/app/
         ├── core/
@@ -63,6 +65,9 @@ uv run uvicorn main:app --reload
 # Database migrations
 uv run alembic revision --autogenerate -m "describe change"
 uv run alembic upgrade head
+
+# Run tests (using in-memory SQLite)
+uv run pytest
 
 # API docs: http://localhost:8000/docs
 ```
@@ -148,6 +153,7 @@ The `HomeComponent` computes `LayoutRow[]` from raw sites+groups:
 - **Icons**: Import from `@lucide/angular`, use as SVG directive: `<svg lucidePencil class="w-4 h-4">`
 - **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
 - **No auth**: Single-user local tool, no authentication needed
+- **Testing**: Ensure that test coverage is updated synchronously whenever Python backend features are added, modified, or adjusted. All tests must be kept green and run against the in-memory SQLite setup in `tests/conftest.py`.
 
 ## Environment
 
