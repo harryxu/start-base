@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Start Base</title>
+  <desc id="desc">A route rising from a home base into a launch arrow.</desc>
+  <rect width="64" height="64" rx="16" fill="#0F766E"/>
+  <circle cx="13" cy="50" r="6.5" fill="#F9FAFB"/>
+  <path d="M18 50h9c10.8 0 17-6.8 17-18.5V15" fill="none" stroke="#F9FAFB" stroke-linecap="round" stroke-width="6.5"/>
+  <path d="m35 24 9-9 9 9" fill="none" stroke="#F9FAFB" stroke-linecap="round" stroke-linejoin="round" stroke-width="6.5"/>
+</svg>
