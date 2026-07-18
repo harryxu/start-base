@@ -40,8 +40,8 @@ export class ExternalDropZoneComponent {
 
   isLocalDrag = false;
   dragCounter = 0;
-  showDropZone = signal(true);
-  isOverDropZone = signal(true);
+  showDropZone = signal(false);
+  isOverDropZone = signal(false);
 
   onLocalDragStart(event: DragEvent): void {
     this.isLocalDrag = true;

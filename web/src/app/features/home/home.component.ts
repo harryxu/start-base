@@ -89,23 +89,32 @@ export class HomeComponent {
 
   createSiteMutation = injectMutation(() => ({
     mutationFn: (data: SiteCreate) => firstValueFrom(this.api.createSite(data)),
-    onSuccess: () => {
+    onSuccess: (newSite) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
+      if (this.editMode()) {
+        this.addLocalSite(newSite);
+      }
     },
   }));
 
   updateSiteMutation = injectMutation(() => ({
     mutationFn: ({ id, data }: { id: number; data: SiteUpdate }) =>
       firstValueFrom(this.api.updateSite(id, data)),
-    onSuccess: () => {
+    onSuccess: (updatedSite) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
+      if (this.editMode()) {
+        this.updateLocalSite(updatedSite);
+      }
     },
   }));
 
   deleteSiteMutation = injectMutation(() => ({
     mutationFn: (id: number) => firstValueFrom(this.api.deleteSite(id)),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
+      if (this.editMode()) {
+        this.deleteLocalSite(id);
+      }
     },
   }));
 
@@ -119,16 +128,22 @@ export class HomeComponent {
   updateGroupMutation = injectMutation(() => ({
     mutationFn: ({ id, data }: { id: number; data: GroupUpdate }) =>
       firstValueFrom(this.api.updateGroup(id, data)),
-    onSuccess: () => {
+    onSuccess: (updatedGroup) => {
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
+      if (this.editMode()) {
+        this.updateLocalGroup(updatedGroup);
+      }
     },
   }));
 
   deleteGroupMutation = injectMutation(() => ({
     mutationFn: (id: number) => firstValueFrom(this.api.deleteGroup(id)),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
+      if (this.editMode()) {
+        this.deleteLocalGroup(id);
+      }
     },
   }));
 
@@ -426,5 +441,68 @@ export class HomeComponent {
 
   cancelDeleteGroup(): void {
     this.deletingGroup.set(null);
+  }
+
+  // ---- Helper methods to sync local state in edit mode ----
+
+  private updateLocalSite(updatedSite: Site): void {
+    this.localUngroupedSites.update((sites) =>
+      sites.map((s) => (s.id === updatedSite.id ? updatedSite : s))
+    );
+    this.localGroupRows.update((rows) =>
+      rows.map((row) => ({
+        ...row,
+        sites: row.sites.map((s) => (s.id === updatedSite.id ? updatedSite : s)),
+      }))
+    );
+  }
+
+  private deleteLocalSite(siteId: number): void {
+    this.localUngroupedSites.update((sites) => sites.filter((s) => s.id !== siteId));
+    this.localGroupRows.update((rows) =>
+      rows.map((row) => ({
+        ...row,
+        sites: row.sites.filter((s) => s.id !== siteId),
+      }))
+    );
+  }
+
+  private addLocalSite(newSite: Site): void {
+    if (newSite.group_id === null) {
+      this.localUngroupedSites.update((sites) => [...sites, newSite]);
+    } else {
+      this.localGroupRows.update((rows) =>
+        rows.map((row) => {
+          if (row.type === 'group' && row.group.id === newSite.group_id) {
+            return { ...row, sites: [...row.sites, newSite] };
+          }
+          return row;
+        })
+      );
+    }
+  }
+
+  private updateLocalGroup(updatedGroup: Group): void {
+    this.localGroupRows.update((rows) =>
+      rows.map((row) => {
+        if (row.type === 'group' && row.group.id === updatedGroup.id) {
+          return { ...row, group: updatedGroup };
+        }
+        return row;
+      })
+    );
+  }
+
+  private deleteLocalGroup(groupId: number): void {
+    const groupRow = this.localGroupRows().find(
+      (row) => row.type === 'group' && row.group.id === groupId
+    );
+    if (groupRow) {
+      const movedSites = groupRow.sites.map((s) => ({ ...s, group_id: null }));
+      this.localUngroupedSites.update((sites) => [...sites, ...movedSites]);
+    }
+    this.localGroupRows.update((rows) =>
+      rows.filter((row) => !(row.type === 'group' && row.group.id === groupId))
+    );
   }
 }
