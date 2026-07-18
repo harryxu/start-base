@@ -1,12 +1,4 @@
-<div
-  class="min-h-screen bg-gray-50"
-  (dragstart)="onLocalDragStart($event)"
-  (dragend)="onLocalDragEnd($event)"
-  (dragenter)="onDragEnter($event)"
-  (dragleave)="onDragLeave($event)"
-  (dragover)="onDragOver($event)"
-  (drop)="onPageDrop($event)"
->
+<div class="min-h-screen bg-gray-50">
   <!-- ===== HEADER ===== -->
   <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
     <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
@@ -79,19 +71,7 @@
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="max-w-5xl mx-auto px-6 py-6 relative">
-
-    <!-- PWA External Drag Drop Zone -->
-    @if (showDropZone()) {
-      <div
-        class="absolute top-6 left-6 right-6 h-36 z-50 border-2 border-dashed border-teal-400 bg-teal-50/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-teal-800 shadow-lg transition-all duration-200"
-        (dragover)="onDragOver($event)"
-        (drop)="onDropZoneDrop($event)"
-      >
-        <svg lucidePlus class="w-8 h-8 mb-2 animate-bounce text-teal-600 pointer-events-none"></svg>
-        <span class="text-sm font-semibold pointer-events-none">Drop link here to add website</span>
-        <span class="text-xs text-teal-600/80 mt-1 pointer-events-none">Release inside this box to add</span>
-      </div>
-    }
+    <app-external-drop-zone (droppedUrl)="openAddSiteForm($event)" />
 
     <!-- Loading state -->
     @if (sitesQuery.isLoading() || groupsQuery.isLoading()) {
