@@ -1,9 +1,10 @@
-import { ApplicationConfig, provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZonelessChangeDetection, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
 import { routes } from './app.routes';
+import { provideServiceWorker } from '@angular/service-worker';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,11 +15,15 @@ export const appConfig: ApplicationConfig = {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30_000,       // 30 s before data is considered stale
+            staleTime: 30_000, // 30 s before data is considered stale
             refetchOnWindowFocus: false,
           },
         },
       }),
     ),
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      registrationStrategy: 'registerWhenStable:30000',
+    }),
   ],
 };

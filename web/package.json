@@ -18,6 +18,7 @@
     "@angular/forms": "^22.0.0",
     "@angular/platform-browser": "^22.0.0",
     "@angular/router": "^22.0.0",
+    "@angular/service-worker": "^22.0.0",
     "@lucide/angular": "^1.23.0",
     "@tanstack/angular-query-experimental": "^5.101.2",
     "daisyui": "^5.6.18",
