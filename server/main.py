@@ -44,6 +44,10 @@ app.include_router(sites.router)
 os.makedirs("data/icons", exist_ok=True)
 app.mount("/static/icons", StaticFiles(directory="data/icons"), name="icons")
 
+# Mount Angular built frontend files if they exist (production)
+if os.path.exists("web-dist"):
+    app.mount("/", StaticFiles(directory="web-dist", html=True), name="static")
+
 
 @app.get("/api/health", tags=["health"])
 def health_check() -> dict:

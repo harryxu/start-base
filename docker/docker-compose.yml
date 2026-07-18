@@ -1,22 +1,13 @@
 services:
-  server:
+  app:
     build:
       context: ..
-      dockerfile: docker/Dockerfile.server
-    image: start-base-server:latest
+      dockerfile: docker/Dockerfile
+    image: start-base:latest
+    ports:
+      - "8080:5600"
     environment:
       - DATABASE_URL=sqlite:////app/data/start_base.db
     volumes:
       - ./data:/app/data
-    restart: unless-stopped
-
-  web:
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile.web
-    image: start-base-web:latest
-    ports:
-      - "8080:80"
-    depends_on:
-      - server
     restart: unless-stopped
