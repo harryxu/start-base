@@ -166,6 +166,11 @@ export class HomeComponent {
   deletingSite = signal<Site | null>(null);
   deletingGroup = signal<Group | null>(null);
 
+  // ---- Drag & drop state for external sites ----
+  isLocalDrag = false;
+  dragCounter = 0;
+  showDropZone = signal(false);
+
   // ---- Derived state ----
 
   /** Computed layout from server data — used in view mode. */
@@ -426,9 +431,43 @@ export class HomeComponent {
     this.deletingGroup.set(null);
   }
 
-  // ---- Favicon drag from browser ----
+  // ---- Favicon drag from browser (external site drop) ----
+
+  onLocalDragStart(event: DragEvent): void {
+    this.isLocalDrag = true;
+  }
+
+  onLocalDragEnd(event: DragEvent): void {
+    this.isLocalDrag = false;
+  }
+
+  onDragEnter(event: DragEvent): void {
+    event.preventDefault();
+    if (this.isLocalDrag) return;
+
+    const types = event.dataTransfer?.types;
+    const hasUrlOrFiles = types && (types.includes('text/uri-list') || types.includes('Files') || types.includes('text/plain'));
+    if (!hasUrlOrFiles) return;
+
+    this.dragCounter++;
+    if (this.dragCounter === 1) {
+      this.showDropZone.set(true);
+    }
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    if (this.isLocalDrag) return;
+
+    this.dragCounter--;
+    if (this.dragCounter <= 0) {
+      this.dragCounter = 0;
+      this.showDropZone.set(false);
+    }
+  }
 
   onDragOver(event: DragEvent): void {
+    if (this.isLocalDrag) return;
     event.preventDefault();
     if (event.dataTransfer) {
       event.dataTransfer.dropEffect = 'copy';
@@ -437,6 +476,16 @@ export class HomeComponent {
 
   onPageDrop(event: DragEvent): void {
     event.preventDefault();
+    this.dragCounter = 0;
+    this.showDropZone.set(false);
+  }
+
+  onDropZoneDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragCounter = 0;
+    this.showDropZone.set(false);
+
     const url =
       event.dataTransfer?.getData('text/uri-list') ||
       event.dataTransfer?.getData('text/plain') ||
