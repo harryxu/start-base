@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, isDevMode } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -13,7 +13,7 @@ import type {
   SiteUpdate,
 } from '../models/types';
 
-export const API_BASE = 'http://localhost:5600';
+export const API_BASE = isDevMode() ? 'http://localhost:5600' : '';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

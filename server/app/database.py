@@ -1,7 +1,7 @@
-"""Database engine and session factory for Start Base."""
+import os
 from sqlmodel import Session, create_engine
 
-DATABASE_URL = "sqlite:///./start_base.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./start_base.db")
 
 engine = create_engine(
     DATABASE_URL,
