@@ -8,13 +8,35 @@ import { LucidePlus } from '@lucide/angular';
   template: `
     @if (showDropZone()) {
       <div
-        class="absolute top-6 left-6 right-6 h-36 z-50 border-2 border-dashed border-teal-400 bg-teal-50/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-teal-800 shadow-lg transition-all duration-200"
+        class="absolute top-6 left-6 right-6 h-36 z-50 card border-2 border-dashed flex flex-col items-center justify-center transition-all duration-200"
+        [class.border-primary]="isOverDropZone()"
+        [class.bg-primary/70]="isOverDropZone()"
+        [class.text-primary]="isOverDropZone()"
+        [class.scale-[1.02]]="isOverDropZone()"
+        [class.shadow-xl]="isOverDropZone()"
+        [class.border-base-content/30]="!isOverDropZone()"
+        [class.bg-base-200/95]="!isOverDropZone()"
+        [class.text-base-content/80]="!isOverDropZone()"
+        [class.backdrop-blur-sm]="!isOverDropZone()"
+        [class.shadow-lg]="!isOverDropZone()"
         (dragover)="onDragOver($event)"
+        (dragenter)="onDropZoneDragEnter($event)"
+        (dragleave)="onDropZoneDragLeave($event)"
         (drop)="onDropZoneDrop($event)"
       >
-        <svg lucidePlus class="w-8 h-8 mb-2 animate-bounce text-teal-600 pointer-events-none"></svg>
+        <svg
+          lucidePlus
+          class="w-8 h-8 mb-2 animate-bounce pointer-events-none"
+          [class.text-primary]="isOverDropZone()"
+          [class.text-base-content/60]="!isOverDropZone()"
+        ></svg>
         <span class="text-sm font-semibold pointer-events-none">Drop link here to add website</span>
-        <span class="text-xs text-teal-600/80 mt-1 pointer-events-none">Release inside this box to add</span>
+        <span
+          class="text-xs mt-1 pointer-events-none"
+          [class.text-primary/80]="isOverDropZone()"
+          [class.text-base-content/50]="!isOverDropZone()"
+          >Release inside this box to add</span
+        >
       </div>
     }
   `,
@@ -24,8 +46,8 @@ import { LucidePlus } from '@lucide/angular';
     '(window:dragenter)': 'onDragEnter($event)',
     '(window:dragleave)': 'onDragLeave($event)',
     '(window:dragover)': 'onDragOverPage($event)',
-    '(window:drop)': 'onPageDrop($event)'
-  }
+    '(window:drop)': 'onPageDrop($event)',
+  },
 })
 export class ExternalDropZoneComponent {
   // Output event when a URL is dropped
@@ -34,6 +56,7 @@ export class ExternalDropZoneComponent {
   isLocalDrag = false;
   dragCounter = 0;
   showDropZone = signal(false);
+  isOverDropZone = signal(false);
 
   onLocalDragStart(event: DragEvent): void {
     this.isLocalDrag = true;
@@ -48,7 +71,9 @@ export class ExternalDropZoneComponent {
     if (this.isLocalDrag) return;
 
     const types = event.dataTransfer?.types;
-    const hasUrlOrFiles = types && (types.includes('text/uri-list') || types.includes('Files') || types.includes('text/plain'));
+    const hasUrlOrFiles =
+      types &&
+      (types.includes('text/uri-list') || types.includes('Files') || types.includes('text/plain'));
     if (!hasUrlOrFiles) return;
 
     this.dragCounter++;
@@ -65,6 +90,7 @@ export class ExternalDropZoneComponent {
     if (this.dragCounter <= 0) {
       this.dragCounter = 0;
       this.showDropZone.set(false);
+      this.isOverDropZone.set(false);
     }
   }
 
@@ -81,10 +107,21 @@ export class ExternalDropZoneComponent {
     }
   }
 
+  onDropZoneDragEnter(event: DragEvent): void {
+    event.preventDefault();
+    this.isOverDropZone.set(true);
+  }
+
+  onDropZoneDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    this.isOverDropZone.set(false);
+  }
+
   onPageDrop(event: DragEvent): void {
     event.preventDefault();
     this.dragCounter = 0;
     this.showDropZone.set(false);
+    this.isOverDropZone.set(false);
   }
 
   onDropZoneDrop(event: DragEvent): void {
@@ -92,6 +129,7 @@ export class ExternalDropZoneComponent {
     event.stopPropagation();
     this.dragCounter = 0;
     this.showDropZone.set(false);
+    this.isOverDropZone.set(false);
 
     const url =
       event.dataTransfer?.getData('text/uri-list') ||

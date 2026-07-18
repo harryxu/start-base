@@ -146,7 +146,7 @@ The `HomeComponent` computes `LayoutRow[]` from raw sites+groups:
 - **Signals**: Prefer `signal()`, `computed()`, `input()`, `output()` over `@Input`/`@Output`
 - **HTTP**: Use `firstValueFrom(observable)` to convert RxJS → Promise for TanStack Query
 - **Icons**: Import from `@lucide/angular`, use as SVG directive: `<svg lucidePencil class="w-4 h-4">`
-- **CSS**: Tailwind utility classes in templates; component `styles` for complex selectors
+- **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
 - **No auth**: Single-user local tool, no authentication needed
 
 ## Environment
