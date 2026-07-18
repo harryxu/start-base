@@ -1,73 +1,13 @@
 <div class="min-h-screen bg-gray-50">
   <!-- ===== HEADER ===== -->
-  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
-    <div class="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
-      <h1 class="flex items-center gap-2 text-base font-semibold text-gray-900 tracking-tight shrink-0">
-        <img src="start-base-logo.svg" alt="" class="w-6 h-6" />
-        <span>Start Base</span>
-      </h1>
-
-      <div class="flex items-center gap-1.5">
-        @if (!editMode()) {
-          <!-- View mode toolbar -->
-          <button
-            id="btn-add-site"
-            (click)="openAddSiteForm()"
-            class="toolbar-btn"
-            title="Add Site"
-          >
-            <svg lucidePlus class="w-3.5 h-3.5"></svg>
-            <span>Add Site</span>
-          </button>
-
-          <button
-            id="btn-add-group"
-            (click)="openAddGroupDialog()"
-            class="toolbar-btn"
-            title="Add Group"
-          >
-            <svg lucideFolderPlus class="w-3.5 h-3.5"></svg>
-            <span>Add Group</span>
-          </button>
-
-          <div class="w-px h-4 bg-gray-200 mx-0.5"></div>
-
-          <button
-            id="btn-edit-mode"
-            (click)="enterEditMode()"
-            class="toolbar-btn"
-            title="Enter Edit Mode"
-          >
-            <svg lucidePencil class="w-3.5 h-3.5"></svg>
-            <span>Edit</span>
-          </button>
-        } @else {
-          <!-- Edit mode toolbar -->
-          <span class="text-xs font-medium text-amber-600 px-2 py-1 bg-amber-50 rounded-md border border-amber-200 mr-1">
-            Editing
-          </span>
-
-          <button
-            id="btn-save"
-            (click)="saveLayout()"
-            class="toolbar-btn-primary"
-          >
-            <svg lucideSave class="w-3.5 h-3.5"></svg>
-            <span>Save</span>
-          </button>
-
-          <button
-            id="btn-exit-edit"
-            (click)="exitEditMode()"
-            class="toolbar-btn"
-          >
-            <svg lucideX class="w-3.5 h-3.5"></svg>
-            <span>Cancel</span>
-          </button>
-        }
-      </div>
-    </div>
-  </header>
+  <app-header
+    [editMode]="editMode()"
+    (addSite)="openAddSiteForm()"
+    (addGroup)="openAddGroupDialog()"
+    (enterEdit)="enterEditMode()"
+    (save)="saveLayout()"
+    (cancel)="exitEditMode()"
+  />
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="max-w-5xl mx-auto px-6 py-6 relative">

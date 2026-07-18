@@ -33,15 +33,13 @@ import { SiteFormComponent } from '../../shared/site-form/site-form.component';
 import { GroupFormComponent } from '../../shared/group-form/group-form.component';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/external-drop-zone.component';
+import { HeaderComponent } from '../../shared/header/header.component';
 
 import {
-  LucideFolderPlus,
   LucideGripVertical,
   LucidePencil,
   LucidePlus,
-  LucideSave,
   LucideTrash2,
-  LucideX,
 } from '@lucide/angular';
 
 @Component({
@@ -56,15 +54,13 @@ import {
     GroupContainerComponent,
     SiteFormComponent,
     LucidePlus,
-    LucideFolderPlus,
     LucidePencil,
-    LucideSave,
-    LucideX,
     LucideTrash2,
     LucideGripVertical,
     GroupFormComponent,
     ConfirmDialogComponent,
     ExternalDropZoneComponent,
+    HeaderComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
