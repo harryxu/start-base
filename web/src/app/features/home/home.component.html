@@ -1,12 +1,8 @@
 <div class="min-h-screen bg-gray-50">
   <!-- ===== HEADER ===== -->
   <app-header
-    [editMode]="editMode()"
     (addSite)="openAddSiteForm()"
     (addGroup)="openAddGroupDialog()"
-    (enterEdit)="enterEditMode()"
-    (save)="saveLayout()"
-    (cancel)="exitEditMode()"
   />
 
   <!-- ===== MAIN CONTENT ===== -->
@@ -31,8 +27,8 @@
       </div>
     }
 
-    <!-- Empty state (view mode only) -->
-    @else if (layoutRows().length === 0 && !editMode()) {
+    <!-- Empty state -->
+    @else if (layoutRows().length === 0) {
       <div class="flex flex-col items-center justify-center py-24 text-center">
         <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
           <svg lucidePlus class="w-6 h-6 text-gray-400"></svg>
@@ -45,152 +41,87 @@
     }
 
     @else {
-      <!-- ============================= -->
-      <!--         VIEW MODE             -->
-      <!-- ============================= -->
-      @if (!editMode()) {
-        <div class="space-y-4">
-          @for (row of layoutRows(); track row.id) {
-            @if (row.type === 'ungrouped') {
-              <div class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-transparent">
-                @for (site of row.sites; track site.id) {
-                  <app-site-card
-                    [site]="site"
-                    [editMode]="false"
-                    (editSite)="openEditSiteForm($event)"
-                    (deleteSite)="onDeleteSite($event)"
-                  />
-                }
-              </div>
-            } @else {
-              <app-group-container
-                class="block"
-                [group]="row.group"
-                [sites]="row.sites"
-                [editMode]="false"
-                (editGroup)="onEditGroup($event)"
-                (deleteGroup)="onDeleteGroup($event)"
+      <!-- Unified Operations View -->
+      <div class="space-y-4">
+        <!-- ---- UNGROUPED ROW ---- -->
+        <div
+          cdkDropList
+          cdkDropListOrientation="mixed"
+          id="ungrouped-0"
+          [cdkDropListData]="localUngroupedSites()"
+          [cdkDropListConnectedTo]="allSiteDropListIds()"
+          (cdkDropListDropped)="onSiteDrop($event)"
+          class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-transparent"
+        >
+          @for (site of localUngroupedSites(); track site.id) {
+            <div
+              cdkDrag
+              [cdkDragData]="site"
+              [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
+              (cdkDragStarted)="closeAllMenus()"
+            >
+              <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
+              <app-site-card
+                [site]="site"
                 (editSite)="openEditSiteForm($event)"
                 (deleteSite)="onDeleteSite($event)"
               />
-            }
+            </div>
           }
         </div>
-      }
 
-      <!-- ============================= -->
-      <!--         EDIT MODE             -->
-      <!-- ============================= -->
-      @if (editMode()) {
-        <div class="space-y-4">
-          <!-- ---- UNGROUPED ROW ---- -->
-          <div
-            cdkDropList
-            cdkDropListOrientation="mixed"
-            id="ungrouped-0"
-            [cdkDropListData]="localUngroupedSites()"
-            [cdkDropListConnectedTo]="allSiteDropListIds()"
-            (cdkDropListDropped)="onSiteDrop($event)"
-            class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-dashed border-gray-200"
-          >
-            @for (site of localUngroupedSites(); track site.id) {
-              <div cdkDrag [cdkDragData]="site">
-                <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
-                <app-site-card
-                  [site]="site"
-                  [editMode]="true"
+        <!--
+          OUTER cdkDropList: handles row (section) reordering.
+          Only group rows are inside this list.
+        -->
+        <div
+          cdkDropList
+          cdkDropListOrientation="vertical"
+          [cdkDropListData]="localGroupRows()"
+          (cdkDropListDropped)="onRowDrop($event)"
+          class="space-y-4 min-h-24"
+        >
+          @for (row of localGroupRows(); track row.id) {
+            <div
+              cdkDrag
+              [cdkDragData]="row"
+              (cdkDragStarted)="closeAllMenus()"
+              class="relative group"
+            >
+              <!-- Drag placeholder shown while the row is being dragged -->
+              <div
+                *cdkDragPlaceholder
+                class="h-16 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5"
+              ></div>
+
+              <!-- Drag handle positioned absolutely over the top-left of the group container -->
+              <div
+                cdkDragHandle
+                class="drag-handle absolute top-3.5 left-3 z-10 cursor-grab text-base-content/30 hover:text-base-content/60 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                title="Drag to reorder group"
+              >
+                <svg lucideGripVertical class="w-4 h-4"></svg>
+              </div>
+
+              <!-- ---- GROUP ROW ---- -->
+              @if (row.type === 'group') {
+                <app-group-container
+                  class="block"
+                  [group]="row.group"
+                  [sites]="row.sites"
+                  [allSiteDropListIds]="allSiteDropListIds()"
+                  (siteDropped)="onSiteDrop($event)"
+                  (siteDragStarted)="closeAllMenus()"
+                  (editGroup)="onEditGroup($event)"
+                  (deleteGroup)="onDeleteGroup($event)"
                   (editSite)="openEditSiteForm($event)"
                   (deleteSite)="onDeleteSite($event)"
                 />
-              </div>
-            }
-            @if (localUngroupedSites().length === 0) {
-              <p class="text-xs text-gray-400 self-center px-2 w-full text-center">Drop sites here to un-group them</p>
-            }
-          </div>
-
-          <!--
-            OUTER cdkDropList: handles row (section) reordering.
-            Only group rows are inside this list.
-          -->
-          <div
-            cdkDropList
-            cdkDropListOrientation="vertical"
-            [cdkDropListData]="localGroupRows()"
-            (cdkDropListDropped)="onRowDrop($event)"
-            class="space-y-4 min-h-24"
-          >
-            @for (row of localGroupRows(); track row.id) {
-              <div cdkDrag [cdkDragData]="row">
-                <!-- Drag placeholder shown while the row is being dragged -->
-                <div
-                  *cdkDragPlaceholder
-                  class="h-16 rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/40"
-                ></div>
-
-                <!-- ---- GROUP ROW ---- -->
-                @if (row.type === 'group') {
-                  <div class="border border-gray-200 rounded-xl bg-white shadow-sm overflow-hidden">
-                    <!-- Header: drag handle + name + edit controls -->
-                    <div class="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 bg-gray-50/60">
-                      <div
-                        cdkDragHandle
-                        class="cursor-grab text-gray-300 hover:text-gray-500 transition-colors p-0.5"
-                        title="Drag to reorder group"
-                      >
-                        <svg lucideGripVertical class="w-4 h-4"></svg>
-                      </div>
-                      <span class="text-sm font-medium text-gray-700 flex-1">{{ row.group.name }}</span>
-                      <button
-                        (click)="onEditGroup(row.group)"
-                        class="edit-ctrl-btn"
-                        title="Rename group"
-                      >
-                        <svg lucidePencil class="w-3.5 h-3.5"></svg>
-                      </button>
-                      <button
-                        (click)="onDeleteGroup(row.group)"
-                        class="edit-ctrl-btn edit-ctrl-btn-danger"
-                        title="Delete group"
-                      >
-                        <svg lucideTrash2 class="w-3.5 h-3.5"></svg>
-                      </button>
-                    </div>
-                    <!--
-                      INNER cdkDropList: handles site reordering within this group.
-                      Connected to all other site lists via allSiteDropListIds().
-                    -->
-                    <div
-                      cdkDropList
-                      cdkDropListOrientation="mixed"
-                      [id]="row.id"
-                      [cdkDropListData]="row.sites"
-                      [cdkDropListConnectedTo]="allSiteDropListIds()"
-                      (cdkDropListDropped)="onSiteDrop($event)"
-                      class="flex flex-wrap gap-1 p-3 min-h-20"
-                    >
-                      @for (site of row.sites; track site.id) {
-                        <div cdkDrag [cdkDragData]="site">
-                          <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-gray-200 bg-gray-50"></div>
-                          <app-site-card
-                            [site]="site"
-                            [editMode]="true"
-                            (editSite)="openEditSiteForm($event)"
-                            (deleteSite)="onDeleteSite($event)"
-                          />
-                        </div>
-                      }
-                      @if (row.sites.length === 0) {
-                        <p class="text-xs text-gray-300 self-center px-2">Drop sites here</p>
-                      }
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
+              }
+            </div>
+          }
         </div>
-      }
+      </div>
     }
   </main>
 

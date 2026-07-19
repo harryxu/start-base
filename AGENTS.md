@@ -34,21 +34,21 @@ start-base/
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Backend language | Python 3.13 |
-| Package manager (backend) | [uv](https://docs.astral.sh/uv/) |
-| Web framework | [FastAPI](https://fastapi.tiangolo.com/) |
-| ORM | [SQLModel](https://sqlmodel.tiangolo.com/) |
-| DB | SQLite (`server/start_base.db`) |
-| Migrations | [Alembic](https://alembic.sqlalchemy.org/) |
-| Frontend framework | [Angular v22](https://angular.dev/) standalone components |
-| Package manager (frontend) | pnpm |
-| CSS | Tailwind CSS v4 (light theme) |
-| State management | Angular Signals |
-| Server state | [TanStack Query (`@tanstack/angular-query`)](https://tanstack.com/query/latest) |
-| Icons | [`@lucide/angular`](https://lucide.dev/guide/angular/) |
-| Drag and drop | [Angular CDK Drag Drop](https://angular.dev/guide/drag-drop) |
+| Layer                      | Technology                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------- |
+| Backend language           | Python 3.13                                                                     |
+| Package manager (backend)  | [uv](https://docs.astral.sh/uv/)                                                |
+| Web framework              | [FastAPI](https://fastapi.tiangolo.com/)                                        |
+| ORM                        | [SQLModel](https://sqlmodel.tiangolo.com/)                                      |
+| DB                         | SQLite (`server/start_base.db`)                                                 |
+| Migrations                 | [Alembic](https://alembic.sqlalchemy.org/)                                      |
+| Frontend framework         | [Angular v22](https://angular.dev/) standalone components                       |
+| Package manager (frontend) | pnpm                                                                            |
+| CSS                        | Tailwind CSS v4 (light theme)                                                   |
+| State management           | Angular Signals                                                                 |
+| Server state               | [TanStack Query (`@tanstack/angular-query`)](https://tanstack.com/query/latest) |
+| Icons                      | [`@lucide/angular`](https://lucide.dev/guide/angular/)                          |
+| Drag and drop              | [Angular CDK Drag Drop](https://angular.dev/guide/drag-drop)                    |
 
 ## Development Commands
 
@@ -92,22 +92,22 @@ pnpm build
 `http://localhost:8000`
 
 ### Sites
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/sites/` | List all sites (ordered by `sort_order`) |
-| `POST` | `/api/sites/` | Create site; missing title/icon fetched in background |
-| `PATCH` | `/api/sites/{id}` | Update site fields |
-| `DELETE` | `/api/sites/{id}` | Delete site |
-| `POST` | `/api/sites/reorder` | Bulk update `sort_order` + `group_id` |
+| Method   | Path                 | Description                                           |
+| -------- | -------------------- | ----------------------------------------------------- |
+| `GET`    | `/api/sites/`        | List all sites (ordered by `sort_order`)              |
+| `POST`   | `/api/sites/`        | Create site; missing title/icon fetched in background |
+| `PATCH`  | `/api/sites/{id}`    | Update site fields                                    |
+| `DELETE` | `/api/sites/{id}`    | Delete site                                           |
+| `POST`   | `/api/sites/reorder` | Bulk update `sort_order` + `group_id`                 |
 
 ### Groups
-| Method | Path | Description |
-|--------|------|-------------|
-| `GET` | `/api/groups/` | List all groups (ordered by `sort_order`) |
-| `POST` | `/api/groups/` | Create group |
-| `PATCH` | `/api/groups/{id}` | Update group name/sort_order |
-| `DELETE` | `/api/groups/{id}` | Delete group (sites become ungrouped) |
-| `POST` | `/api/groups/reorder` | Bulk update `sort_order` |
+| Method   | Path                  | Description                               |
+| -------- | --------------------- | ----------------------------------------- |
+| `GET`    | `/api/groups/`        | List all groups (ordered by `sort_order`) |
+| `POST`   | `/api/groups/`        | Create group                              |
+| `PATCH`  | `/api/groups/{id}`    | Update group name/sort_order              |
+| `DELETE` | `/api/groups/{id}`    | Delete group (sites become ungrouped)     |
+| `POST`   | `/api/groups/reorder` | Bulk update `sort_order`                  |
 
 ### Data Models
 
@@ -123,26 +123,11 @@ pnpm build
 
 ## Frontend Architecture
 
-### Page Modes
-- **View mode** (default): Read-only. Click site to open URL. Groups collapsible.
-- **Edit mode**: Drag-and-drop reordering. Hover controls (edit/delete). Save commits all changes.
-
-### Layout Computation
-The `HomeComponent` computes `LayoutRow[]` from raw sites+groups:
-- Sort groups and ungrouped sites by `sort_order` together
-- Merge consecutive ungrouped sites into a single "ungrouped row"
-- Groups render as bordered containers with their grouped sites inside
-
-### Drag and Drop (Angular CDK)
-- Outer `cdkDropList` for row (section) reordering — group rows are `cdkDrag` with grip handle
-- Inner `cdkDropList` per section for site reordering (connected between sections)
-- Sites can be transferred between groups and ungrouped areas
-- On Save: compute new `sort_order` values and POST to reorder endpoints
-
-### State Management
-- `editMode` signal: controls view/edit mode
-- `localRows` signal: mutable layout copy used during edit mode
-- TanStack Query: server state (sites, groups) with cache invalidation on mutation
+### Single Interactive Mode & Layout
+- **Single Interactive Mode**: Unified mode for both touch and mouse. Click opens URL; long-press (500ms) or right-click opens CDK Context Menu (`Edit`, `Delete`); press-and-drag reorders elements.
+- **Layout Computation**: `HomeComponent` computes `LayoutRow[]` from raw sites+groups.
+- **Drag and Drop (Angular CDK)**: Outer `cdkDropList` for group row reordering; inner `cdkDropList` for site reordering (connected between sections). Dragging auto-saves sorting position to backend upon drop.
+- **State Management**: Angular Signals (`signal`, `computed`, `effect`) for local layout synchronization; TanStack Query for server state.
 
 ## Code Conventions
 
@@ -153,7 +138,7 @@ The `HomeComponent` computes `LayoutRow[]` from raw sites+groups:
 - **Icons**: Import from `@lucide/angular`, use as SVG directive: `<svg lucidePencil class="w-4 h-4">`
 - **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
 - **No auth**: Single-user local tool, no authentication needed
-- **Testing**: Ensure that test coverage is updated synchronously whenever Python backend features are added, modified, or adjusted. All tests must be kept green and run against the in-memory SQLite setup in `tests/conftest.py`.
+- **Testing**: Ensure that test coverage is updated synchronously whenever features are added, modified, or adjusted across both Python backend (`server/tests/`) and Angular frontend (`web/` via `ng test --no-watch`). All tests must be kept green.
 
 ## Environment
 
