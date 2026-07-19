@@ -1,5 +1,7 @@
-import { Component, computed, input, output, signal } from '@angular/core';
+import { Component, computed, input, output, signal, ViewChild } from '@angular/core';
 import { LucidePencil, LucideTrash2 } from '@lucide/angular';
+import { CdkMenu, CdkMenuItem, CdkContextMenuTrigger } from '@angular/cdk/menu';
+import { LongPressDirective } from '../long-press.directive';
 
 import type { Site } from '../../core/models/types';
 import { API_BASE } from '../../core/api/api.service';
@@ -7,59 +9,64 @@ import { API_BASE } from '../../core/api/api.service';
 @Component({
   selector: 'app-site-card',
   standalone: true,
-  imports: [LucidePencil, LucideTrash2],
+  imports: [
+    CdkMenu,
+    CdkMenuItem,
+    CdkContextMenuTrigger,
+    LongPressDirective,
+    LucidePencil,
+    LucideTrash2,
+  ],
   template: `
-    <div class="site-card">
-      @if (!editMode()) {
-        <!-- View mode: clickable link -->
-        <a
-          [href]="site().url"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="site-link"
-          [title]="site().url"
+    <div
+      class="site-card"
+      [cdkContextMenuTriggerFor]="menu"
+      #trigger="cdkContextMenuTriggerFor"
+      appLongPress
+      (longPress)="trigger.open({ x: $event.clientX, y: $event.clientY })"
+    >
+      <a
+        [href]="site().url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="site-link"
+        [title]="site().url"
+      >
+        <img
+          [src]="iconUrl()"
+          [alt]="displayTitle()"
+          class="site-icon"
+          width="32"
+          height="32"
+          (error)="onIconError()"
+        />
+        <span class="site-title">{{ displayTitle() }}</span>
+      </a>
+
+      <!-- CDK Context Menu Template -->
+      <ng-template #menu>
+        <div
+          cdkMenu
+          class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-[120px] z-50 flex flex-col gap-1"
         >
-          <img
-            [src]="iconUrl()"
-            [alt]="displayTitle()"
-            class="site-icon"
-            width="32"
-            height="32"
-            (error)="onIconError()"
-          />
-          <span class="site-title">{{ displayTitle() }}</span>
-        </a>
-      } @else {
-        <!-- Edit mode: static card with hover controls -->
-        <div class="site-link-static" [title]="site().url">
-          <img
-            [src]="iconUrl()"
-            [alt]="displayTitle()"
-            class="site-icon"
-            width="32"
-            height="32"
-            (error)="onIconError()"
-          />
-          <span class="site-title">{{ displayTitle() }}</span>
-          <!-- Hover controls -->
-          <div class="edit-controls">
-            <button
-              (click)="editSite.emit(site())"
-              class="ctrl-btn"
-              title="Edit site"
-            >
-              <svg lucidePencil class="w-3 h-3"></svg>
-            </button>
-            <button
-              (click)="deleteSite.emit(site())"
-              class="ctrl-btn ctrl-btn-danger"
-              title="Delete site"
-            >
-              <svg lucideTrash2 class="w-3 h-3"></svg>
-            </button>
-          </div>
+          <button
+            cdkMenuItem
+            (click)="editSite.emit(site())"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 rounded-lg w-full text-base-content font-medium transition-colors"
+          >
+            <svg lucidePencil class="w-4 h-4"></svg>
+            <span>Edit</span>
+          </button>
+          <button
+            cdkMenuItem
+            (click)="deleteSite.emit(site())"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error rounded-lg w-full font-medium transition-colors"
+          >
+            <svg lucideTrash2 class="w-4 h-4"></svg>
+            <span>Delete</span>
+          </button>
         </div>
-      }
+      </ng-template>
     </div>
   `,
   styles: [
@@ -70,8 +77,7 @@ import { API_BASE } from '../../core/api/api.service';
         flex-shrink: 0;
       }
 
-      .site-link,
-      .site-link-static {
+      .site-link {
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -83,6 +89,9 @@ import { API_BASE } from '../../core/api/api.service';
         text-align: center;
         position: relative;
         cursor: pointer;
+        -webkit-touch-callout: none; /* iOS Safari link popup */
+        -webkit-user-drag: none; /* Prevent iOS/Safari drag ghosting */
+        user-select: none; /* Prevent text selection */
       }
 
       .site-link:hover {
@@ -106,56 +115,20 @@ import { API_BASE } from '../../core/api/api.service';
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-
-      /* Edit mode hover controls */
-      .edit-controls {
-        position: absolute;
-        top: 2px;
-        right: 2px;
-        display: flex;
-        gap: 2px;
-        opacity: 0;
-        transition: opacity 0.15s ease;
-        pointer-events: none;
-      }
-
-      .site-link-static:hover .edit-controls {
-        opacity: 1;
-        pointer-events: auto;
-      }
-
-      .ctrl-btn {
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
-        border: 1px solid #e5e7eb;
-        border-radius: 4px;
-        cursor: pointer;
-        color: #9ca3af;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-        transition: color 0.1s, border-color 0.1s;
-      }
-
-      .ctrl-btn:hover {
-        color: #374151;
-      }
-
-      .ctrl-btn-danger:hover {
-        color: #ef4444;
-        border-color: #fca5a5;
-      }
     `,
   ],
 })
 export class SiteCardComponent {
   site = input.required<Site>();
-  editMode = input<boolean>(false);
 
   editSite = output<Site>();
   deleteSite = output<Site>();
+
+  @ViewChild(CdkContextMenuTrigger) triggerMenu?: CdkContextMenuTrigger;
+
+  closeMenu(): void {
+    this.triggerMenu?.close();
+  }
 
   private iconFailed = signal(false);
 

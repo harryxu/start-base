@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal, ViewChildren, QueryList } from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -37,9 +37,7 @@ import { HeaderComponent } from '../../shared/header/header.component';
 
 import {
   LucideGripVertical,
-  LucidePencil,
   LucidePlus,
-  LucideTrash2,
 } from '@lucide/angular';
 
 @Component({
@@ -54,8 +52,6 @@ import {
     GroupContainerComponent,
     SiteFormComponent,
     LucidePlus,
-    LucidePencil,
-    LucideTrash2,
     LucideGripVertical,
     GroupFormComponent,
     ConfirmDialogComponent,
@@ -68,6 +64,14 @@ import {
 export class HomeComponent {
   private api = inject(ApiService);
   private queryClient = inject(QueryClient);
+
+  @ViewChildren(GroupContainerComponent) groupContainers?: QueryList<GroupContainerComponent>;
+  @ViewChildren(SiteCardComponent) siteCards?: QueryList<SiteCardComponent>;
+
+  closeAllMenus(): void {
+    this.groupContainers?.forEach((c) => c.closeMenu());
+    this.siteCards?.forEach((c) => c.closeMenu());
+  }
 
   // ---- Server state ----
 
@@ -87,9 +91,7 @@ export class HomeComponent {
     mutationFn: (data: SiteCreate) => firstValueFrom(this.api.createSite(data)),
     onSuccess: (newSite) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
-      if (this.editMode()) {
-        this.addLocalSite(newSite);
-      }
+      this.addLocalSite(newSite);
     },
   }));
 
@@ -98,9 +100,7 @@ export class HomeComponent {
       firstValueFrom(this.api.updateSite(id, data)),
     onSuccess: (updatedSite) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
-      if (this.editMode()) {
-        this.updateLocalSite(updatedSite);
-      }
+      this.updateLocalSite(updatedSite);
     },
   }));
 
@@ -108,9 +108,7 @@ export class HomeComponent {
     mutationFn: (id: number) => firstValueFrom(this.api.deleteSite(id)),
     onSuccess: (_, id) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
-      if (this.editMode()) {
-        this.deleteLocalSite(id);
-      }
+      this.deleteLocalSite(id);
     },
   }));
 
@@ -126,9 +124,7 @@ export class HomeComponent {
       firstValueFrom(this.api.updateGroup(id, data)),
     onSuccess: (updatedGroup) => {
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
-      if (this.editMode()) {
-        this.updateLocalGroup(updatedGroup);
-      }
+      this.updateLocalGroup(updatedGroup);
     },
   }));
 
@@ -137,9 +133,7 @@ export class HomeComponent {
     onSuccess: (_, id) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
-      if (this.editMode()) {
-        this.deleteLocalGroup(id);
-      }
+      this.deleteLocalGroup(id);
     },
   }));
 
@@ -163,10 +157,9 @@ export class HomeComponent {
 
   // ---- UI state ----
 
-  editMode = signal(false);
-  /** Mutable copy of the ungrouped sites used while in edit mode. */
+  /** Mutable copy of the ungrouped sites. */
   localUngroupedSites = signal<Site[]>([]);
-  /** Mutable copy of the group rows used while in edit mode. */
+  /** Mutable copy of the group rows. */
   localGroupRows = signal<LayoutRow[]>([]);
 
   showSiteForm = signal(false);
@@ -179,9 +172,22 @@ export class HomeComponent {
   deletingSite = signal<Site | null>(null);
   deletingGroup = signal<Group | null>(null);
 
+  constructor() {
+    effect(() => {
+      const rows = this.layoutRows();
+      const ungroupedRow = rows.find((r) => r.type === 'ungrouped');
+      this.localUngroupedSites.set(ungroupedRow ? [...ungroupedRow.sites] : []);
+      
+      const groupRows = rows
+        .filter((r) => r.type === 'group')
+        .map((r) => ({ ...r, sites: [...r.sites] }));
+      this.localGroupRows.set(groupRows);
+    });
+  }
+
   // ---- Derived state ----
 
-  /** Computed layout from server data — used in view mode. */
+  /** Computed layout from server data. */
   layoutRows = computed<LayoutRow[]>(() => {
     const sites = this.sitesQuery.data() ?? [];
     const groups = this.groupsQuery.data() ?? [];
@@ -224,27 +230,6 @@ export class HomeComponent {
     return rows;
   }
 
-  // ---- Edit mode ----
-
-  enterEditMode(): void {
-    const rows = this.layoutRows();
-    const ungroupedRow = rows.find((r) => r.type === 'ungrouped');
-    this.localUngroupedSites.set(ungroupedRow ? [...ungroupedRow.sites] : []);
-    
-    const groupRows = rows
-      .filter((r) => r.type === 'group')
-      .map((r) => ({ ...r, sites: [...r.sites] }));
-    this.localGroupRows.set(groupRows);
-    
-    this.editMode.set(true);
-  }
-
-  exitEditMode(): void {
-    this.editMode.set(false);
-    this.localUngroupedSites.set([]);
-    this.localGroupRows.set([]);
-  }
-
   saveLayout(): void {
     const ungroupedSites = this.localUngroupedSites();
     const groupRows = this.localGroupRows();
@@ -272,9 +257,6 @@ export class HomeComponent {
     });
 
     this.reorderMutation.mutate({ sites: siteItems, groups: groupItems });
-    this.editMode.set(false);
-    this.localUngroupedSites.set([]);
-    this.localGroupRows.set([]);
   }
 
   // ---- Drag and drop ----
@@ -284,6 +266,7 @@ export class HomeComponent {
     const rows = [...this.localGroupRows()];
     moveItemInArray(rows, event.previousIndex, event.currentIndex);
     this.localGroupRows.set(rows);
+    this.saveLayout();
   }
 
   /** Called when a site is dropped (inner site lists). Handles within-row and cross-row moves. */
@@ -326,6 +309,7 @@ export class HomeComponent {
         this.updateGroupSites(event.container.id, newTargetArray);
       }
     }
+    this.saveLayout();
   }
 
   private updateGroupSites(groupId: string, sites: Site[]) {
