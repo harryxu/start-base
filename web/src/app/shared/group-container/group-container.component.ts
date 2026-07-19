@@ -1,10 +1,11 @@
-import { Component, input, output, signal, ViewChild } from '@angular/core';
+import { Component, input, output, signal, ViewChild, inject } from '@angular/core';
 import { LucideMoreHorizontal, LucidePencil, LucideTrash2 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
 
 import type { Group, Site } from '../../core/models/types';
 import { SiteCardComponent } from '../site-card/site-card.component';
+import { GlobalMenuService } from '../../core/services/global-menu.service';
 
 @Component({
   selector: 'app-group-container',
@@ -39,6 +40,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
         <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
         <button
           [cdkMenuTriggerFor]="groupMenu"
+          (cdkMenuOpened)="onGroupMenuOpened()"
           (click)="$event.stopPropagation()"
           class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
           title="Group actions"
@@ -92,7 +94,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
           <button
             cdkMenuItem
             (click)="editGroup.emit(group())"
-            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 rounded-lg w-full text-base-content font-medium transition-colors"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
           >
             <svg lucidePencil class="w-4 h-4"></svg>
             <span>Rename</span>
@@ -100,7 +102,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
           <button
             cdkMenuItem
             (click)="deleteGroup.emit(group())"
-            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error rounded-lg w-full font-medium transition-colors"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error outline-none focus:outline-none rounded-lg w-full font-medium transition-colors"
           >
             <svg lucideTrash2 class="w-4 h-4"></svg>
             <span>Delete</span>
@@ -123,6 +125,12 @@ export class GroupContainerComponent {
   siteDragStarted = output<void>();
 
   @ViewChild(CdkMenuTrigger) triggerMenu?: CdkMenuTrigger;
+
+  private globalMenuService = inject(GlobalMenuService);
+
+  onGroupMenuOpened(): void {
+    this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
+  }
 
   closeMenu(): void {
     this.triggerMenu?.close();

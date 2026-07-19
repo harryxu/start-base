@@ -64,8 +64,8 @@ describe('GroupContainerComponent', () => {
 
     const menuEl = document.querySelector('.menu');
     expect(menuEl).toBeTruthy();
-    expect(menuEl?.textContent).toContain('Rename Group');
-    expect(menuEl?.textContent).toContain('Delete Group');
+    expect(menuEl?.textContent).toContain('Rename');
+    expect(menuEl?.textContent).toContain('Delete');
   });
 
   it('should close menu when closeMenu() is called', () => {

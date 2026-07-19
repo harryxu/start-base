@@ -1,4 +1,5 @@
-import { Directive, output, HostListener } from '@angular/core';
+import { Directive, output, HostListener, inject } from '@angular/core';
+import { GlobalMenuService } from '../core/services/global-menu.service';
 
 @Directive({
   selector: '[appLongPress]',
@@ -8,6 +9,7 @@ export class LongPressDirective {
   // Emits the pointer event on successful long press
   longPress = output<PointerEvent>();
 
+  private globalMenuService = inject(GlobalMenuService);
   private timeoutId: any;
   private startX = 0;
   private startY = 0;
@@ -18,12 +20,16 @@ export class LongPressDirective {
     // Only trigger for primary pointer button (left-click/touch)
     if (event.button !== 0 && event.pointerType === 'mouse') return;
 
+    // Immediately close any open menus on the page when a new gesture starts
+    this.globalMenuService.closeAll();
+
     this.startX = event.clientX;
     this.startY = event.clientY;
 
     this.clearTimeout();
 
     this.timeoutId = setTimeout(() => {
+      this.globalMenuService.closeAll();
       this.longPress.emit(event);
       this.timeoutId = null;
 

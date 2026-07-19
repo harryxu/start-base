@@ -1,10 +1,11 @@
-import { Component, computed, input, output, signal, ViewChild } from '@angular/core';
+import { Component, computed, input, output, signal, ViewChild, inject, HostListener } from '@angular/core';
 import { LucidePencil, LucideTrash2 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkContextMenuTrigger } from '@angular/cdk/menu';
 import { LongPressDirective } from '../long-press.directive';
 
 import type { Site } from '../../core/models/types';
 import { API_BASE } from '../../core/api/api.service';
+import { GlobalMenuService } from '../../core/services/global-menu.service';
 
 @Component({
   selector: 'app-site-card',
@@ -22,8 +23,9 @@ import { API_BASE } from '../../core/api/api.service';
       class="site-card"
       [cdkContextMenuTriggerFor]="menu"
       #trigger="cdkContextMenuTriggerFor"
+      (cdkContextMenuOpened)="onContextMenuOpened()"
       appLongPress
-      (longPress)="trigger.open({ x: $event.clientX, y: $event.clientY })"
+      (longPress)="openContextMenu($event)"
     >
       <a
         [href]="site().url"
@@ -52,7 +54,7 @@ import { API_BASE } from '../../core/api/api.service';
           <button
             cdkMenuItem
             (click)="editSite.emit(site())"
-            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 rounded-lg w-full text-base-content font-medium transition-colors"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
           >
             <svg lucidePencil class="w-4 h-4"></svg>
             <span>Edit</span>
@@ -60,7 +62,7 @@ import { API_BASE } from '../../core/api/api.service';
           <button
             cdkMenuItem
             (click)="deleteSite.emit(site())"
-            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error rounded-lg w-full font-medium transition-colors"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error outline-none focus:outline-none rounded-lg w-full font-medium transition-colors"
           >
             <svg lucideTrash2 class="w-4 h-4"></svg>
             <span>Delete</span>
@@ -125,6 +127,17 @@ export class SiteCardComponent {
   deleteSite = output<Site>();
 
   @ViewChild(CdkContextMenuTrigger) triggerMenu?: CdkContextMenuTrigger;
+
+  private globalMenuService = inject(GlobalMenuService);
+
+  openContextMenu(event: PointerEvent): void {
+    this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
+    this.triggerMenu?.open({ x: event.clientX, y: event.clientY });
+  }
+
+  onContextMenuOpened(): void {
+    this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
+  }
 
   closeMenu(): void {
     this.triggerMenu?.close();
