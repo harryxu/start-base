@@ -53,7 +53,8 @@ describe('GroupContainerComponent', () => {
     fixture.detectChanges();
 
     expect(component.collapsed()).toBe(true);
-    expect(fixture.nativeElement.querySelector('app-site-card')).toBeFalsy();
+    const collapseEl = fixture.nativeElement.querySelector('.collapse');
+    expect(collapseEl.classList.contains('collapse-close')).toBe(true);
   });
 
   it('should open group context menu when clicking options button (•••)', () => {

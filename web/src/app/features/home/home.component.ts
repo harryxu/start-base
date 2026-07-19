@@ -137,21 +137,19 @@ export class HomeComponent {
     },
   }));
 
-  reorderMutation = injectMutation(() => ({
-    mutationFn: async (payload: {
-      sites: SiteReorderItem[];
-      groups: ReorderItem[];
-    }) => {
-      if (payload.sites.length > 0) {
-        await firstValueFrom(this.api.reorderSites(payload.sites));
-      }
-      if (payload.groups.length > 0) {
-        await firstValueFrom(this.api.reorderGroups(payload.groups));
-      }
+  reorderGroupsMutation = injectMutation(() => ({
+    mutationFn: (groups: ReorderItem[]) =>
+      firstValueFrom(this.api.reorderGroups(groups)),
+    onSuccess: () => {
+      this.queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
+  }));
+
+  reorderSitesMutation = injectMutation(() => ({
+    mutationFn: (sites: SiteReorderItem[]) =>
+      firstValueFrom(this.api.reorderSites(sites)),
     onSuccess: () => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
-      this.queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
   }));
 
@@ -230,35 +228,6 @@ export class HomeComponent {
     return rows;
   }
 
-  saveLayout(): void {
-    const ungroupedSites = this.localUngroupedSites();
-    const groupRows = this.localGroupRows();
-    
-    const siteItems: SiteReorderItem[] = [];
-    const groupItems: ReorderItem[] = [];
-
-    // Assign sort_order values
-    let groupOrder = 0;
-
-    groupRows.forEach((row) => {
-      if (row.type === 'group') {
-        groupItems.push({ id: row.group.id, sort_order: groupOrder * 100 });
-        groupOrder++;
-        // Sites within a group use local sort_order
-        row.sites.forEach((site, idx) => {
-          siteItems.push({ id: site.id, sort_order: idx * 10, group_id: row.group.id });
-        });
-      }
-    });
-
-    // Ungrouped sites use local sort_order
-    ungroupedSites.forEach((site, idx) => {
-      siteItems.push({ id: site.id, sort_order: idx * 10, group_id: null });
-    });
-
-    this.reorderMutation.mutate({ sites: siteItems, groups: groupItems });
-  }
-
   // ---- Drag and drop ----
 
   /** Called when a group row is dropped in a new position (outer list). */
@@ -266,7 +235,15 @@ export class HomeComponent {
     const rows = [...this.localGroupRows()];
     moveItemInArray(rows, event.previousIndex, event.currentIndex);
     this.localGroupRows.set(rows);
-    this.saveLayout();
+
+    const groupItems: ReorderItem[] = rows
+      .filter((row): row is Extract<LayoutRow, { type: 'group' }> => row.type === 'group')
+      .map((row, idx) => ({
+        id: row.group.id,
+        sort_order: idx * 100,
+      }));
+
+    this.reorderGroupsMutation.mutate(groupItems);
   }
 
   /** Called when a site is dropped (inner site lists). Handles within-row and cross-row moves. */
@@ -309,7 +286,22 @@ export class HomeComponent {
         this.updateGroupSites(event.container.id, newTargetArray);
       }
     }
-    this.saveLayout();
+
+    const siteItems: SiteReorderItem[] = [];
+
+    this.localGroupRows().forEach((row) => {
+      if (row.type === 'group') {
+        row.sites.forEach((site, idx) => {
+          siteItems.push({ id: site.id, sort_order: idx * 10, group_id: row.group.id });
+        });
+      }
+    });
+
+    this.localUngroupedSites().forEach((site, idx) => {
+      siteItems.push({ id: site.id, sort_order: idx * 10, group_id: null });
+    });
+
+    this.reorderSitesMutation.mutate(siteItems);
   }
 
   private updateGroupSites(groupId: string, sites: Site[]) {

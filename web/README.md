@@ -10,12 +10,11 @@ Start Base uses a unified, direct-manipulation interface designed for both mobil
 
 - **Open Link**: Click or tap a site icon to open its URL immediately.
 - **Context Menu (Edit / Delete)**:
-  - **Touch / Mouse Hold**: Long-press (500ms) on any site icon or group header to open its context menu.
-  - **Desktop Right-Click**: Right-click on a site icon or group header to immediately open the context menu.
-  - **Quick Action Button**: Tap the `•••` icon on any group header for instant access to group settings.
+  - **Sites**: Long-press (500ms) or right-click on any site icon to open its context menu.
+  - **Groups**: Click or tap the `•••` icon on any group header for instant access to group settings.
 - **Reordering (Drag & Drop)**:
   - **Sites**: Press and drag any site card to reorder it within a group or transfer it between groups.
-  - **Groups**: Drag the grip handle (`⋮⋮`) on the left of a group header to reorder entire groups.
+  - **Groups**: Instantly drag the grip handle (`⋮⋮`) on the left of a group header to reorder entire groups (no long-press delay required).
   - Sorting changes are saved automatically upon drop. Active context menus close automatically when dragging begins.
 
 ## Development server

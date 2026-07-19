@@ -1,14 +1,7 @@
 import { Component, input, output, signal, ViewChild } from '@angular/core';
-import {
-  LucideChevronDown,
-  LucideChevronUp,
-  LucideMoreHorizontal,
-  LucidePencil,
-  LucideTrash2,
-} from '@lucide/angular';
-import { CdkMenu, CdkMenuItem, CdkContextMenuTrigger } from '@angular/cdk/menu';
+import { LucideMoreHorizontal, LucidePencil, LucideTrash2 } from '@lucide/angular';
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
-import { LongPressDirective } from '../long-press.directive';
 
 import type { Group, Site } from '../../core/models/types';
 import { SiteCardComponent } from '../site-card/site-card.component';
@@ -20,50 +13,33 @@ import { SiteCardComponent } from '../site-card/site-card.component';
     SiteCardComponent,
     CdkMenu,
     CdkMenuItem,
-    CdkContextMenuTrigger,
+    CdkMenuTrigger,
     CdkDropList,
     CdkDrag,
     CdkDragPlaceholder,
-    LongPressDirective,
-    LucideChevronDown,
-    LucideChevronUp,
     LucideMoreHorizontal,
     LucidePencil,
     LucideTrash2,
   ],
   template: `
-    <div class="border border-base-300 rounded-xl bg-base-100 shadow-sm overflow-hidden">
+    <div
+      class="collapse collapse-arrow border border-base-300 rounded-xl bg-base-100 shadow-sm transition-all duration-200 overflow-hidden"
+      [class.collapse-open]="!collapsed()"
+      [class.collapse-close]="collapsed()"
+    >
       <!-- Group header -->
       <div
-        class="flex items-center gap-2 pl-9 pr-3 py-2 border-b border-base-200 bg-base-200/40 select-none"
-        [cdkContextMenuTriggerFor]="groupMenu"
-        #trigger="cdkContextMenuTriggerFor"
-        appLongPress
-        (longPress)="trigger.open({ x: $event.clientX, y: $event.clientY })"
+        class="collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 bg-base-200/40 select-none cursor-pointer"
+        (click)="toggleCollapse()"
       >
-        <!-- Collapse toggle arrow -->
-        <button
-          (click)="$event.stopPropagation(); toggleCollapse()"
-          class="btn btn-sm btn-ghost btn-square w-7 h-7"
-          title="Toggle collapse"
-        >
-          @if (collapsed()) {
-            <svg lucideChevronDown class="w-4 h-4 text-base-content/60"></svg>
-          } @else {
-            <svg lucideChevronUp class="w-4 h-4 text-base-content/60"></svg>
-          }
-        </button>
-
-        <span
-          (click)="toggleCollapse()"
-          class="text-sm font-semibold text-base-content flex-1 cursor-pointer"
-        >
+        <span class="text-sm font-semibold text-base-content flex-1">
           {{ group().name }}
         </span>
 
-        <!-- Quick actions button (•••) -->
+        <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
         <button
-          (click)="$event.stopPropagation(); trigger.open({ x: $event.clientX, y: $event.clientY })"
+          [cdkMenuTriggerFor]="groupMenu"
+          (click)="$event.stopPropagation()"
           class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
           title="Group actions"
         >
@@ -71,8 +47,8 @@ import { SiteCardComponent } from '../site-card/site-card.component';
         </button>
       </div>
 
-      <!-- Sites grid (hidden when collapsed) -->
-      @if (!collapsed()) {
+      <!-- Sites grid inside collapse-content -->
+      <div class="collapse-content p-0 bg-base-100 rounded-b-xl">
         <div
           cdkDropList
           cdkDropListOrientation="mixed"
@@ -80,7 +56,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
           [cdkDropListData]="sites()"
           [cdkDropListConnectedTo]="allSiteDropListIds()"
           (cdkDropListDropped)="siteDropped.emit($event)"
-          class="flex flex-wrap gap-1 p-3 min-h-20 bg-base-100"
+          class="flex flex-wrap gap-1 p-3 min-h-20 bg-base-100 rounded-b-xl"
         >
           @for (site of sites(); track site.id) {
             <div
@@ -89,7 +65,10 @@ import { SiteCardComponent } from '../site-card/site-card.component';
               [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
               (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
             >
-              <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
+              <div
+                *cdkDragPlaceholder
+                class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"
+              ></div>
               <app-site-card
                 #siteCard
                 [site]="site"
@@ -102,7 +81,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
             <p class="text-xs text-base-content/40 self-center px-2">No sites in this group yet.</p>
           }
         </div>
-      }
+      </div>
 
       <!-- CDK Group Menu Template -->
       <ng-template #groupMenu>
@@ -116,7 +95,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
             class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 rounded-lg w-full text-base-content font-medium transition-colors"
           >
             <svg lucidePencil class="w-4 h-4"></svg>
-            <span>Rename Group</span>
+            <span>Rename</span>
           </button>
           <button
             cdkMenuItem
@@ -124,7 +103,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
             class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error rounded-lg w-full font-medium transition-colors"
           >
             <svg lucideTrash2 class="w-4 h-4"></svg>
-            <span>Delete Group</span>
+            <span>Delete</span>
           </button>
         </div>
       </ng-template>
@@ -143,7 +122,7 @@ export class GroupContainerComponent {
   siteDropped = output<CdkDragDrop<Site[]>>();
   siteDragStarted = output<void>();
 
-  @ViewChild(CdkContextMenuTrigger) triggerMenu?: CdkContextMenuTrigger;
+  @ViewChild(CdkMenuTrigger) triggerMenu?: CdkMenuTrigger;
 
   closeMenu(): void {
     this.triggerMenu?.close();
