@@ -83,9 +83,15 @@ import { SiteCardComponent } from '../site-card/site-card.component';
           class="flex flex-wrap gap-1 p-3 min-h-20 bg-base-100"
         >
           @for (site of sites(); track site.id) {
-            <div cdkDrag [cdkDragData]="site">
+            <div
+              cdkDrag
+              [cdkDragData]="site"
+              [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
+              (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
+            >
               <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
               <app-site-card
+                #siteCard
                 [site]="site"
                 (editSite)="editSite.emit($event)"
                 (deleteSite)="deleteSite.emit($event)"
@@ -135,6 +141,7 @@ export class GroupContainerComponent {
   editSite = output<Site>();
   deleteSite = output<Site>();
   siteDropped = output<CdkDragDrop<Site[]>>();
+  siteDragStarted = output<void>();
 
   @ViewChild(CdkContextMenuTrigger) triggerMenu?: CdkContextMenuTrigger;
 

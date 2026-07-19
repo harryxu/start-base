@@ -112,6 +112,7 @@
                   [sites]="row.sites"
                   [allSiteDropListIds]="allSiteDropListIds()"
                   (siteDropped)="onSiteDrop($event)"
+                  (siteDragStarted)="closeAllMenus()"
                   (editGroup)="onEditGroup($event)"
                   (deleteGroup)="onDeleteGroup($event)"
                   (editSite)="openEditSiteForm($event)"
