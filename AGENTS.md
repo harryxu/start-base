@@ -138,7 +138,7 @@ pnpm build
 - **Icons**: Import from `@lucide/angular`, use as SVG directive: `<svg lucidePencil class="w-4 h-4">`
 - **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
 - **No auth**: Single-user local tool, no authentication needed
-- **Testing**: Ensure that test coverage is updated synchronously whenever features are added, modified, or adjusted across both Python backend (`server/tests/`) and Angular frontend (`web/` via `pnpm test` / `ng test`). All tests must be kept green.
+- **Testing**: Ensure that test coverage is updated synchronously whenever features are added, modified, or adjusted across both Python backend (`server/tests/`) and Angular frontend (`web/` via `ng test --no-watch`). All tests must be kept green.
 
 ## Environment
 

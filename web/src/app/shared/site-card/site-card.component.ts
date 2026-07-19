@@ -1,10 +1,10 @@
-import { Component, computed, input, output, signal, ViewChild, inject, HostListener } from '@angular/core';
+import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
+import { Component, computed, inject, input, output, signal, ViewChild } from '@angular/core';
 import { LucidePencil, LucideTrash2 } from '@lucide/angular';
-import { CdkMenu, CdkMenuItem, CdkContextMenuTrigger } from '@angular/cdk/menu';
 import { LongPressDirective } from '../long-press.directive';
 
-import type { Site } from '../../core/models/types';
 import { API_BASE } from '../../core/api/api.service';
+import type { Site } from '../../core/models/types';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
 
 @Component({
@@ -21,9 +21,11 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
   template: `
     <div
       class="site-card"
+      [class.is-floating]="isMenuOpen()"
       [cdkContextMenuTriggerFor]="menu"
       #trigger="cdkContextMenuTriggerFor"
       (cdkContextMenuOpened)="onContextMenuOpened()"
+      (cdkContextMenuClosed)="onContextMenuClosed()"
       appLongPress
       (longPress)="openContextMenu($event)"
     >
@@ -77,45 +79,56 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
         position: relative;
         width: 72px;
         flex-shrink: 0;
-      }
 
-      .site-link {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 5px;
-        padding: 8px 4px 6px;
-        border-radius: 10px;
-        text-decoration: none;
-        width: 100%;
-        text-align: center;
-        position: relative;
-        cursor: pointer;
-        -webkit-touch-callout: none; /* iOS Safari link popup */
-        -webkit-user-drag: none; /* Prevent iOS/Safari drag ghosting */
-        user-select: none; /* Prevent text selection */
-      }
+        &.is-floating {
+          border-radius: 8px;
+          box-shadow:
+            0 10px 20px rgba(0, 0, 0, 0.15),
+            0 3px 6px rgba(0, 0, 0, 0.1);
 
-      .site-link:hover {
-        background: #f3f4f6;
-      }
+          .site-link:hover {
+            background: none;
+          }
+        }
 
-      .site-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 7px;
-        object-fit: contain;
-        flex-shrink: 0;
-      }
+        .site-link {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 5px;
+          padding: 8px 4px 6px;
+          border-radius: 10px;
+          text-decoration: none;
+          width: 100%;
+          text-align: center;
+          position: relative;
+          cursor: pointer;
+          -webkit-touch-callout: none; /* iOS Safari link popup */
+          -webkit-user-drag: none; /* Prevent iOS/Safari drag ghosting */
+          user-select: none; /* Prevent text selection */
 
-      .site-title {
-        font-size: 11px;
-        line-height: 1.3;
-        color: #6b7280;
-        max-width: 66px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+          &:hover {
+            background: #f3f4f6;
+          }
+
+          .site-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 7px;
+            object-fit: contain;
+            flex-shrink: 0;
+          }
+
+          .site-title {
+            font-size: 11px;
+            line-height: 1.3;
+            color: #6b7280;
+            max-width: 66px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
       }
     `,
   ],
@@ -128,6 +141,8 @@ export class SiteCardComponent {
 
   @ViewChild(CdkContextMenuTrigger) triggerMenu?: CdkContextMenuTrigger;
 
+  isMenuOpen = signal(false);
+
   private globalMenuService = inject(GlobalMenuService);
 
   openContextMenu(event: PointerEvent): void {
@@ -137,6 +152,11 @@ export class SiteCardComponent {
 
   onContextMenuOpened(): void {
     this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
+    this.isMenuOpen.set(true);
+  }
+
+  onContextMenuClosed(): void {
+    this.isMenuOpen.set(false);
   }
 
   closeMenu(): void {
