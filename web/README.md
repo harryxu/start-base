@@ -2,6 +2,22 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.6.
 
+## Features & Interaction Logic
+
+Start Base uses a unified, direct-manipulation interface designed for both mobile touchscreens and desktop mouse operations without requiring a separate edit mode.
+
+### Sites & Groups Controls
+
+- **Open Link**: Click or tap a site icon to open its URL immediately.
+- **Context Menu (Edit / Delete)**:
+  - **Touch / Mouse Hold**: Long-press (500ms) on any site icon or group header to open its context menu.
+  - **Desktop Right-Click**: Right-click on a site icon or group header to immediately open the context menu.
+  - **Quick Action Button**: Tap the `•••` icon on any group header for instant access to group settings.
+- **Reordering (Drag & Drop)**:
+  - **Sites**: Press and drag any site card to reorder it within a group or transfer it between groups.
+  - **Groups**: Drag the grip handle (`⋮⋮`) on the left of a group header to reorder entire groups.
+  - Sorting changes are saved automatically upon drop. Active context menus close automatically when dragging begins.
+
 ## Development server
 
 To start a local development server, run:
