@@ -1,24 +1,12 @@
 import { Component, input, output } from '@angular/core';
-import {
-  LucideFolderPlus,
-  LucidePencil,
-  LucidePlus,
-  LucideSave,
-  LucideX,
-} from '@lucide/angular';
+import { LucideFolderPlus, LucidePencil, LucidePlus, LucideSave, LucideX } from '@lucide/angular';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [
-    LucidePlus,
-    LucideFolderPlus,
-    LucidePencil,
-    LucideSave,
-    LucideX,
-  ],
+  imports: [LucidePlus, LucideFolderPlus, LucidePencil, LucideSave, LucideX],
   template: `
-    <header class="navbar bg-base-100 border-b border-base-300 sticky top-0 z-30 shadow-sm">
+    <header class="navbar bg-base-100 sticky top-0 z-30 shadow-sm">
       <div class="max-w-5xl mx-auto w-full px-6 flex justify-between items-center">
         <!-- Logo Section -->
         <div class="flex items-center gap-2">
@@ -27,7 +15,7 @@ import {
         </div>
 
         <!-- Actions Toolbar -->
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-2">
           @if (!editMode()) {
             <!-- View mode toolbar -->
             <button
@@ -58,9 +46,7 @@ import {
             </button>
           } @else {
             <!-- Edit mode toolbar -->
-            <div class="badge badge-warning py-3 font-semibold mr-1">
-              Editing
-            </div>
+            <div class="badge badge-warning py-3 font-semibold mr-1">Editing</div>
 
             <button
               id="btn-save"
@@ -83,7 +69,7 @@ import {
         </div>
       </div>
     </header>
-  `
+  `,
 })
 export class HeaderComponent {
   editMode = input<boolean>(false);
