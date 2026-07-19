@@ -108,7 +108,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
           user-select: none; /* Prevent text selection */
 
           &:hover {
-            background: #f3f4f6;
+            background: var(--color-base-200);
           }
 
           .site-icon {
