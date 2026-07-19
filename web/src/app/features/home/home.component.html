@@ -21,8 +21,7 @@
       <div class="flex flex-col items-center justify-center py-20 text-center">
         <p class="text-red-500 text-sm font-medium">Failed to load data</p>
         <p class="text-gray-400 text-xs mt-1">
-          Make sure the server is running at
-          <code class="text-gray-500">http://localhost:8000</code>
+          Make sure the server is running.
         </p>
       </div>
     }
@@ -34,7 +33,7 @@
           <svg lucidePlus class="w-6 h-6 text-gray-400"></svg>
         </div>
         <p class="text-gray-500 text-sm font-medium">No sites yet</p>
-        <p class="text-gray-400 text-xs mt-1 max-w-xs">
+        <p class="text-base-300 text-xs mt-1 max-w-xs">
           Click "Add Site" to get started, or drag a favicon from your browser address bar.
         </p>
       </div>
@@ -60,7 +59,7 @@
               [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
               (cdkDragStarted)="closeAllMenus()"
             >
-              <div *cdkDragPlaceholder class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
+              <div *cdkDragPlaceholder class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
               <app-site-card
                 [site]="site"
                 (editSite)="openEditSiteForm($event)"

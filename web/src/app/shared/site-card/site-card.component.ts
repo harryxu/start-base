@@ -34,7 +34,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
         target="_blank"
         rel="noopener noreferrer"
         class="site-link"
-        [title]="site().url"
+        [title]="site().title"
       >
         <img
           [src]="iconUrl()"
@@ -51,7 +51,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
       <ng-template #menu>
         <div
           cdkMenu
-          class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-[120px] z-50 flex flex-col gap-1"
+          class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-30 z-50 flex flex-col gap-1"
         >
           <button
             cdkMenuItem
@@ -95,7 +95,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 5px;
+          gap: 10px;
           padding: 8px 4px 6px;
           border-radius: 10px;
           text-decoration: none;
@@ -120,10 +120,10 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
           }
 
           .site-title {
-            font-size: 11px;
+            font-size: 14px;
             line-height: 1.3;
-            color: #6b7280;
-            max-width: 66px;
+            color: var(--color-base-content);
+            max-width: 70px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
