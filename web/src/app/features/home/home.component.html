@@ -1,9 +1,6 @@
 <div class="min-h-screen bg-gray-50">
   <!-- ===== HEADER ===== -->
-  <app-header
-    (addSite)="openAddSiteForm()"
-    (addGroup)="openAddGroupDialog()"
-  />
+  <app-header (addSite)="openAddSiteForm()" (addGroup)="openAddGroupDialog()" />
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="max-w-5xl mx-auto px-6 py-6 relative">
@@ -11,155 +8,105 @@
 
     <!-- Loading state -->
     @if (sitesQuery.isLoading() || groupsQuery.isLoading()) {
-      <div class="flex items-center justify-center py-20 text-gray-400 text-sm">
-        Loading…
-      </div>
+    <div class="flex items-center justify-center py-20 text-gray-400 text-sm">
+      Loading…
+    </div>
     }
 
     <!-- Error state -->
     @else if (sitesQuery.isError() || groupsQuery.isError()) {
-      <div class="flex flex-col items-center justify-center py-20 text-center">
-        <p class="text-red-500 text-sm font-medium">Failed to load data</p>
-        <p class="text-gray-400 text-xs mt-1">
-          Make sure the server is running.
-        </p>
-      </div>
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <p class="text-red-500 text-sm font-medium">Failed to load data</p>
+      <p class="text-gray-400 text-xs mt-1">
+        Make sure the server is running.
+      </p>
+    </div>
     }
 
     <!-- Empty state -->
     @else if (layoutRows().length === 0) {
-      <div class="flex flex-col items-center justify-center py-24 text-center">
-        <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-4">
-          <svg lucidePlus class="w-6 h-6 text-gray-400"></svg>
-        </div>
-        <p class="text-gray-500 text-sm font-medium">No sites yet</p>
-        <p class="text-base-300 text-xs mt-1 max-w-xs">
-          Click "Add Site" to get started, or drag a favicon from your browser address bar.
-        </p>
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mb-4 cursor-pointer"
+        (click)="openAddSiteForm()">
+        <svg lucidePlus class="w-6 h-6 text-gray-400"></svg>
       </div>
+      <p class="text-gray-500 text-sm font-medium">No sites yet</p>
+      <p class="text-base-300 text-xs mt-1 max-w-xs">
+        Click "Add Site" to get started, or drag a favicon from your browser address bar.
+      </p>
+    </div>
     }
 
     @else {
-      <!-- Unified Operations View -->
-      <div class="space-y-4">
-        <!-- ---- UNGROUPED ROW ---- -->
-        <div
-          cdkDropList
-          cdkDropListOrientation="mixed"
-          id="ungrouped-0"
-          [cdkDropListData]="localUngroupedSites()"
-          [cdkDropListConnectedTo]="allSiteDropListIds()"
-          (cdkDropListDropped)="onSiteDrop($event)"
-          class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-transparent"
-        >
-          @for (site of localUngroupedSites(); track site.id) {
-            <div
-              cdkDrag
-              [cdkDragData]="site"
-              [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
-              (cdkDragStarted)="closeAllMenus()"
-            >
-              <div *cdkDragPlaceholder class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
-              <app-site-card
-                [site]="site"
-                (editSite)="openEditSiteForm($event)"
-                (deleteSite)="onDeleteSite($event)"
-              />
-            </div>
-          }
+    <!-- Unified Operations View -->
+    <div class="space-y-4">
+      <!-- ---- UNGROUPED ROW ---- -->
+      <div cdkDropList cdkDropListOrientation="mixed" id="ungrouped-0" [cdkDropListData]="localUngroupedSites()"
+        [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="onSiteDrop($event)"
+        class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-transparent">
+        @for (site of localUngroupedSites(); track site.id) {
+        <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
+          (cdkDragStarted)="closeAllMenus()">
+          <div *cdkDragPlaceholder
+            class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
+          <app-site-card [site]="site" (editSite)="openEditSiteForm($event)" (deleteSite)="onDeleteSite($event)" />
         </div>
+        }
+      </div>
 
-        <!--
+      <!--
           OUTER cdkDropList: handles row (section) reordering.
           Only group rows are inside this list.
         -->
-        <div
-          cdkDropList
-          cdkDropListOrientation="vertical"
-          [cdkDropListData]="localGroupRows()"
-          (cdkDropListDropped)="onRowDrop($event)"
-          class="space-y-4 min-h-24"
-        >
-          @for (row of localGroupRows(); track row.id) {
-            <div
-              cdkDrag
-              [cdkDragData]="row"
-              (cdkDragStarted)="closeAllMenus()"
-              class="relative group"
-            >
-              <!-- Drag placeholder shown while the row is being dragged -->
-              <div
-                *cdkDragPlaceholder
-                class="h-16 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5"
-              ></div>
+      <div cdkDropList cdkDropListOrientation="vertical" [cdkDropListData]="localGroupRows()"
+        (cdkDropListDropped)="onRowDrop($event)" class="space-y-4 min-h-24">
+        @for (row of localGroupRows(); track row.id) {
+        <div cdkDrag [cdkDragData]="row" (cdkDragStarted)="closeAllMenus()" class="relative group">
+          <!-- Drag placeholder shown while the row is being dragged -->
+          <div *cdkDragPlaceholder class="h-16 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5"></div>
 
-              <!-- Drag handle positioned absolutely over the top-left of the group container -->
-              <div
-                cdkDragHandle
-                class="drag-handle absolute top-3.5 left-3 z-10 cursor-grab text-base-content/30 hover:text-base-content/60 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                title="Drag to reorder group"
-              >
-                <svg lucideGripVertical class="w-4 h-4"></svg>
-              </div>
+          <!-- Drag handle positioned absolutely over the top-left of the group container -->
+          <div cdkDragHandle
+            class="drag-handle absolute top-3.5 left-3 z-10 cursor-grab text-base-content/30 hover:text-base-content/60 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+            title="Drag to reorder group">
+            <svg lucideGripVertical class="w-4 h-4"></svg>
+          </div>
 
-              <!-- ---- GROUP ROW ---- -->
-              @if (row.type === 'group') {
-                <app-group-container
-                  class="block"
-                  [group]="row.group"
-                  [sites]="row.sites"
-                  [allSiteDropListIds]="allSiteDropListIds()"
-                  (siteDropped)="onSiteDrop($event)"
-                  (siteDragStarted)="closeAllMenus()"
-                  (editGroup)="onEditGroup($event)"
-                  (deleteGroup)="onDeleteGroup($event)"
-                  (editSite)="openEditSiteForm($event)"
-                  (deleteSite)="onDeleteSite($event)"
-                />
-              }
-            </div>
+          <!-- ---- GROUP ROW ---- -->
+          @if (row.type === 'group') {
+          <app-group-container class="block" [group]="row.group" [sites]="row.sites"
+            [allSiteDropListIds]="allSiteDropListIds()" (siteDropped)="onSiteDrop($event)"
+            (siteDragStarted)="closeAllMenus()" (editGroup)="onEditGroup($event)" (deleteGroup)="onDeleteGroup($event)"
+            (editSite)="openEditSiteForm($event)" (deleteSite)="onDeleteSite($event)" />
           }
         </div>
+        }
       </div>
+    </div>
     }
   </main>
 
   <!-- ===== SITE FORM MODAL ===== -->
   @if (showSiteForm()) {
-    <app-site-form
-      [site]="editingSite()"
-      [prefilledUrl]="prefilledUrl()"
-      [groups]="groupsQuery.data() ?? []"
-      (submitted)="onSiteFormSubmit($event)"
-      (cancelled)="closeSiteForm()"
-    />
+  <app-site-form [site]="editingSite()" [prefilledUrl]="prefilledUrl()" [groups]="groupsQuery.data() ?? []"
+    (submitted)="onSiteFormSubmit($event)" (cancelled)="closeSiteForm()" />
   }
 
   <!-- ===== GROUP FORM MODAL ===== -->
   @if (showGroupForm()) {
-    <app-group-form
-      [group]="editingGroup()"
-      (submitted)="onGroupFormSubmit($event)"
-      (cancelled)="closeGroupForm()"
-    />
+  <app-group-form [group]="editingGroup()" (submitted)="onGroupFormSubmit($event)" (cancelled)="closeGroupForm()" />
   }
 
   <!-- ===== DELETE CONFIRMATIONS ===== -->
   @if (deletingSite()) {
-    <app-confirm-dialog
-      title="Delete Site"
-      [message]="'Are you sure you want to delete \'' + (deletingSite()!.title || deletingSite()!.url) + '\'?'"
-      (confirmed)="confirmDeleteSite()"
-      (cancelled)="cancelDeleteSite()"
-    />
+  <app-confirm-dialog title="Delete Site"
+    [message]="'Are you sure you want to delete \'' + (deletingSite()!.title || deletingSite()!.url) + '\'?'"
+    (confirmed)="confirmDeleteSite()" (cancelled)="cancelDeleteSite()" />
   }
 
   @if (deletingGroup()) {
-    <app-confirm-dialog
-      title="Delete Group"
-      [message]="'Delete group \'' + deletingGroup()!.name + '\'?\n\nSites in this group will become ungrouped.'"
-      (confirmed)="confirmDeleteGroup()"
-      (cancelled)="cancelDeleteGroup()"
-    />
+  <app-confirm-dialog title="Delete Group"
+    [message]="'Delete group \'' + deletingGroup()!.name + '\'?\n\nSites in this group will become ungrouped.'"
+    (confirmed)="confirmDeleteGroup()" (cancelled)="cancelDeleteGroup()" />
   }
 </div>
