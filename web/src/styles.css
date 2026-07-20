@@ -23,9 +23,9 @@
       system-ui,
       -apple-system,
       sans-serif;
-    font-size: 14px;
+    font-size: 16px;
     color: var(--color-base-content);
-    background: #f9fafb;
+    background: var(--color-neutral-content);
     margin: 0;
   }
 
