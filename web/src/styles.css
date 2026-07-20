@@ -1,12 +1,13 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "daisyui" {
   themes: emerald --default;
 }
 
-
 /* Inter font (loaded via index.html) */
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
 
@@ -16,7 +17,12 @@
   }
 
   body {
-    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-family:
+      'Inter',
+      ui-sans-serif,
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-size: 14px;
     color: var(--color-base-content);
     background: #f9fafb;
@@ -36,7 +42,9 @@
   .cdk-drag-preview {
     box-sizing: border-box;
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14), 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.14),
+      0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
   .cdk-drag-placeholder {
@@ -49,5 +57,15 @@
 
   .cdk-drop-list-dragging .cdk-drag:not(.cdk-drag-placeholder) {
     transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@layer utilities {
+  .input:focus,
+  .input:focus-within,
+  select:focus,
+  .select:focus-within,
+  .select:open {
+    --input-color: color-mix(in oklab, var(--color-info) 25%, #d8d8d8);
   }
 }

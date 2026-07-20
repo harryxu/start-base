@@ -1,4 +1,12 @@
-import { Component, computed, effect, inject, signal, ViewChildren, QueryList } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  ViewChildren,
+  QueryList,
+} from '@angular/core';
 import {
   CdkDrag,
   CdkDragDrop,
@@ -8,11 +16,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import {
-  injectMutation,
-  injectQuery,
-  QueryClient,
-} from '@tanstack/angular-query-experimental';
+import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from '../../core/api/api.service';
@@ -35,10 +39,7 @@ import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dial
 import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/external-drop-zone.component';
 import { HeaderComponent } from '../../shared/header/header.component';
 
-import {
-  LucideGripVertical,
-  LucidePlus,
-} from '@lucide/angular';
+import { LucideGripVertical, LucidePlus } from '@lucide/angular';
 
 @Component({
   selector: 'app-home',
@@ -138,16 +139,14 @@ export class HomeComponent {
   }));
 
   reorderGroupsMutation = injectMutation(() => ({
-    mutationFn: (groups: ReorderItem[]) =>
-      firstValueFrom(this.api.reorderGroups(groups)),
+    mutationFn: (groups: ReorderItem[]) => firstValueFrom(this.api.reorderGroups(groups)),
     onSuccess: () => {
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
   }));
 
   reorderSitesMutation = injectMutation(() => ({
-    mutationFn: (sites: SiteReorderItem[]) =>
-      firstValueFrom(this.api.reorderSites(sites)),
+    mutationFn: (sites: SiteReorderItem[]) => firstValueFrom(this.api.reorderSites(sites)),
     onSuccess: () => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
     },
@@ -175,7 +174,7 @@ export class HomeComponent {
       const rows = this.layoutRows();
       const ungroupedRow = rows.find((r) => r.type === 'ungrouped');
       this.localUngroupedSites.set(ungroupedRow ? [...ungroupedRow.sites] : []);
-      
+
       const groupRows = rows
         .filter((r) => r.type === 'group')
         .map((r) => ({ ...r, sites: [...r.sites] }));
@@ -193,10 +192,7 @@ export class HomeComponent {
   });
 
   /** IDs of all inner site drop lists — used for cdkDropListConnectedTo. */
-  allSiteDropListIds = computed(() => [
-    'ungrouped-0',
-    ...this.localGroupRows().map((r) => r.id)
-  ]);
+  allSiteDropListIds = computed(() => ['ungrouped-0', ...this.localGroupRows().map((r) => r.id)]);
 
   // ---- Layout computation ----
 
@@ -419,13 +415,13 @@ export class HomeComponent {
 
   private updateLocalSite(updatedSite: Site): void {
     this.localUngroupedSites.update((sites) =>
-      sites.map((s) => (s.id === updatedSite.id ? updatedSite : s))
+      sites.map((s) => (s.id === updatedSite.id ? updatedSite : s)),
     );
     this.localGroupRows.update((rows) =>
       rows.map((row) => ({
         ...row,
         sites: row.sites.map((s) => (s.id === updatedSite.id ? updatedSite : s)),
-      }))
+      })),
     );
   }
 
@@ -435,7 +431,7 @@ export class HomeComponent {
       rows.map((row) => ({
         ...row,
         sites: row.sites.filter((s) => s.id !== siteId),
-      }))
+      })),
     );
   }
 
@@ -449,7 +445,7 @@ export class HomeComponent {
             return { ...row, sites: [...row.sites, newSite] };
           }
           return row;
-        })
+        }),
       );
     }
   }
@@ -461,20 +457,20 @@ export class HomeComponent {
           return { ...row, group: updatedGroup };
         }
         return row;
-      })
+      }),
     );
   }
 
   private deleteLocalGroup(groupId: number): void {
     const groupRow = this.localGroupRows().find(
-      (row) => row.type === 'group' && row.group.id === groupId
+      (row) => row.type === 'group' && row.group.id === groupId,
     );
     if (groupRow) {
       const movedSites = groupRow.sites.map((s) => ({ ...s, group_id: null }));
       this.localUngroupedSites.update((sites) => [...sites, ...movedSites]);
     }
     this.localGroupRows.update((rows) =>
-      rows.filter((row) => !(row.type === 'group' && row.group.id === groupId))
+      rows.filter((row) => !(row.type === 'group' && row.group.id === groupId)),
     );
   }
 }
