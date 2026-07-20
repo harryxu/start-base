@@ -61,11 +61,16 @@
 }
 
 @layer utilities {
+  .input {
+    --input-color: color-mix(in oklab, var(--color-base-content) 35%, #0000);
+  }
+
   .input:focus,
   .input:focus-within,
   select:focus,
   .select:focus-within,
   .select:open {
-    --input-color: color-mix(in oklab, var(--color-info) 25%, #d8d8d8);
+    --input-color: color-mix(in oklab, var(--color-info) 25%, var(--color-base-200));
+    outline-offset: 0;
   }
 }

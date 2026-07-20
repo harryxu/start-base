@@ -45,7 +45,7 @@ import type { Group, GroupCreate } from '../../core/models/types';
               name="name"
               required
               placeholder="My Group"
-              class="input input-bordered input-sm w-full"
+              class="input input-bordered input-lg w-full"
               autocomplete="off"
               #nameInput
             />

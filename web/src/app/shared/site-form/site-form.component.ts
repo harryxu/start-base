@@ -43,7 +43,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
               name="url"
               required
               placeholder="https://example.com"
-              class="input input-bordered input-sm w-full"
+              class="input input-bordered input-lg w-full"
               autocomplete="off"
             />
           </fieldset>
@@ -60,7 +60,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
               [(ngModel)]="formTitle"
               name="title"
               placeholder="My Site"
-              class="input input-bordered input-sm w-full"
+              class="input input-bordered input-lg w-full"
               autocomplete="off"
             />
           </fieldset>
@@ -77,7 +77,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
               [(ngModel)]="formIconUrl"
               name="iconUrl"
               placeholder="https://example.com/favicon.ico"
-              class="input input-bordered input-sm w-full"
+              class="input input-bordered input-lg w-full"
             />
           </fieldset>
 
@@ -90,7 +90,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
               [(ngModel)]="formDescription"
               name="description"
               placeholder="Optional description"
-              class="input input-bordered input-sm w-full"
+              class="input input-bordered input-lg w-full"
             />
           </fieldset>
 
@@ -101,7 +101,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
               id="site-group"
               [(ngModel)]="formGroupId"
               name="group"
-              class="select select-bordered select-sm w-full"
+              class="select select-bordered select-lg w-full"
             >
               <option [ngValue]="null">No group</option>
               @for (g of groups(); track g.id) {
