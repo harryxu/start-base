@@ -10,15 +10,20 @@ async def fetch_site_metadata(url: str) -> dict:
     Fetch the page title and favicon URL for a website.
 
     Returns a dict with keys 'title' and 'icon_url'; either may be None.
-    Falls back to Google Favicons API if HTML parsing fails.
+    Falls back to domain name and Google Favicons API if HTML parsing fails or site blocks bot requests.
     """
     result: dict = {"title": None, "icon_url": None}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
 
     try:
         async with httpx.AsyncClient(
             timeout=10.0,
             follow_redirects=True,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; StartBase/1.0)"},
+            headers=headers,
         ) as client:
             response = await client.get(url)
             response.raise_for_status()
@@ -28,7 +33,14 @@ async def fetch_site_metadata(url: str) -> dict:
             # Extract page title
             title_tag = soup.find("title")
             if title_tag and title_tag.string:
-                result["title"] = title_tag.string.strip()[:200]
+                title_str = title_tag.string.strip()[:200]
+                # Filter out Cloudflare / CDN anti-bot challenge titles
+                if title_str.lower() not in {"just a moment...", "attention required!", "403 forbidden", "access denied"}:
+                    result["title"] = title_str
+
+            if not result["title"]:
+                parsed = urlparse(url)
+                result["title"] = parsed.netloc.split(":")[0].replace("www.", "")
 
             # Extract favicon from <link> tags
             icon_url: str | None = None
@@ -63,9 +75,10 @@ async def fetch_site_metadata(url: str) -> dict:
             result["icon_url"] = icon_url
 
     except Exception:
-        # On any failure, use Google Favicons API as fallback
+        # On any failure (e.g. Cloudflare 403 / network timeout), fallback title to domain and icon to Google Favicons
         try:
             parsed = urlparse(url)
+            result["title"] = parsed.netloc.split(":")[0].replace("www.", "")
             result["icon_url"] = (
                 f"https://www.google.com/s2/favicons?domain={parsed.netloc}&sz=64"
             )
