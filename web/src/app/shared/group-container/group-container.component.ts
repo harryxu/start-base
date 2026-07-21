@@ -74,6 +74,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
               <app-site-card
                 #siteCard
                 [site]="site"
+                [isFetching]="isSiteFetching(site.id)"
                 (editSite)="editSite.emit($event)"
                 (deleteSite)="deleteSite.emit($event)"
               />
@@ -116,6 +117,7 @@ export class GroupContainerComponent {
   group = input.required<Group>();
   sites = input<Site[]>([]);
   allSiteDropListIds = input<string[]>([]);
+  fetchingSiteIds = input<Set<number>>(new Set());
 
   editGroup = output<Group>();
   deleteGroup = output<Group>();
@@ -140,5 +142,9 @@ export class GroupContainerComponent {
 
   toggleCollapse(): void {
     this.collapsed.update((v) => !v);
+  }
+
+  isSiteFetching(siteId: number): boolean {
+    return this.fetchingSiteIds().has(siteId);
   }
 }

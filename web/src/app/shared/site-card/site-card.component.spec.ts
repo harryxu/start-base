@@ -75,4 +75,24 @@ describe('SiteCardComponent', () => {
 
     expect(document.querySelector('.menu')).toBeFalsy();
   });
+
+  it('should render DaisyUI skeleton when site metadata is being fetched', () => {
+    fixture.componentRef.setInput('isFetching', true);
+    fixture.detectChanges();
+
+    const skeletonEl = fixture.nativeElement.querySelector('.skeleton');
+    expect(skeletonEl).toBeTruthy();
+  });
+
+  it('should render Lucide globe icon as default when site has no iconUrl', () => {
+    fixture.componentRef.setInput('isFetching', false);
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      icon_url: null,
+    });
+    fixture.detectChanges();
+
+    const globeEl = fixture.nativeElement.querySelector('svg[lucideGlobe]');
+    expect(globeEl).toBeTruthy();
+  });
 });

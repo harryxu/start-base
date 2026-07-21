@@ -1,6 +1,6 @@
 import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
 import { Component, computed, inject, input, output, signal, ViewChild } from '@angular/core';
-import { LucidePencil, LucideTrash2 } from '@lucide/angular';
+import { LucideGlobe, LucidePencil, LucideTrash2 } from '@lucide/angular';
 import { LongPressDirective } from '../long-press.directive';
 
 import { API_BASE } from '../../core/api/api.service';
@@ -15,6 +15,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
     CdkMenuItem,
     CdkContextMenuTrigger,
     LongPressDirective,
+    LucideGlobe,
     LucidePencil,
     LucideTrash2,
   ],
@@ -34,16 +35,26 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
         target="_blank"
         rel="noopener noreferrer"
         class="site-link"
-        [title]="site().title"
+        [title]="site().title || displayTitle()"
       >
-        <img
-          [src]="iconUrl()"
-          [alt]="displayTitle()"
-          class="site-icon"
-          width="32"
-          height="32"
-          (error)="onIconError()"
-        />
+        @if (showSkeleton()) {
+          <div class="skeleton w-8 h-8 rounded-[7px] shrink-0"></div>
+        } @else if (hasIcon()) {
+          <img
+            [src]="iconUrl()"
+            [alt]="displayTitle()"
+            class="site-icon"
+            width="32"
+            height="32"
+            (error)="onIconError()"
+          />
+        } @else {
+          <div
+            class="w-8 h-8 rounded-[7px] bg-base-200 flex items-center justify-center text-base-content/60 shrink-0"
+          >
+            <svg lucideGlobe class="w-5 h-5"></svg>
+          </div>
+        }
         <span class="site-title">{{ displayTitle() }}</span>
       </a>
 
@@ -135,6 +146,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
 })
 export class SiteCardComponent {
   site = input.required<Site>();
+  isFetching = input<boolean>(false);
 
   editSite = output<Site>();
   deleteSite = output<Site>();
@@ -165,12 +177,20 @@ export class SiteCardComponent {
 
   private iconFailed = signal(false);
 
-  iconUrl = computed(() => {
-    if (this.iconFailed()) {
-      return this.googleFavicon();
-    }
+  showSkeleton = computed(() => {
+    return this.isFetching();
+  });
+
+  hasIcon = computed(() => {
+    if (this.showSkeleton()) return false;
+    if (this.iconFailed()) return false;
     const url = this.site().icon_url;
-    if (!url) return this.googleFavicon();
+    return !!url && url.trim().length > 0;
+  });
+
+  iconUrl = computed(() => {
+    const url = this.site().icon_url;
+    if (!url) return '';
     if (url.startsWith('/')) {
       return `${API_BASE}${url}`;
     }
@@ -185,15 +205,6 @@ export class SiteCardComponent {
       return this.site().url;
     }
   });
-
-  private googleFavicon(): string {
-    try {
-      const { hostname } = new URL(this.site().url);
-      return `https://www.google.com/s2/favicons?domain=${hostname}&sz=64`;
-    } catch {
-      return '';
-    }
-  }
 
   onIconError(): void {
     if (!this.iconFailed()) {

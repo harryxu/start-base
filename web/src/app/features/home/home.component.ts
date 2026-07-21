@@ -90,9 +90,12 @@ export class HomeComponent {
 
   createSiteMutation = injectMutation(() => ({
     mutationFn: (data: SiteCreate) => firstValueFrom(this.api.createSite(data)),
-    onSuccess: (newSite) => {
+    onSuccess: (newSite, variables) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
       this.addLocalSite(newSite);
+      if (!variables.title || !variables.icon_url) {
+        this.fetchingSiteIds.update((set: Set<number>) => new Set(set).add(newSite.id));
+      }
     },
   }));
 
@@ -153,6 +156,12 @@ export class HomeComponent {
   }));
 
   // ---- UI state ----
+
+  fetchingSiteIds = signal<Set<number>>(new Set());
+
+  isSiteFetching(siteId: number): boolean {
+    return this.fetchingSiteIds().has(siteId);
+  }
 
   /** Mutable copy of the ungrouped sites. */
   localUngroupedSites = signal<Site[]>([]);
@@ -340,8 +349,13 @@ export class HomeComponent {
       this.createSiteMutation.mutate({ ...data, sort_order: maxOrder + 100 });
       // Re-fetch after a delay so server-populated metadata becomes visible
       if (!data.title || !data.icon_url) {
-        setTimeout(() => {
-          this.queryClient.invalidateQueries({ queryKey: ['sites'] });
+        setTimeout(async () => {
+          await this.queryClient.invalidateQueries({ queryKey: ['sites'] });
+          this.fetchingSiteIds.update((set: Set<number>) => {
+            const next = new Set(set);
+            next.clear();
+            return next;
+          });
         }, 2500);
       }
     }

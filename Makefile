@@ -4,6 +4,7 @@ PLATFORM ?= linux/amd64,linux/arm64
 
 .PHONY: docker docker-push
 
+# Require docker and docker buildx to be installed and enabled.
 docker:
 	@docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use
 	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) -t $(IMAGE_NAME):latest . || { \
