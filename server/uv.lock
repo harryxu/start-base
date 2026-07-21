@@ -868,6 +868,7 @@ dependencies = [
     { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "sqlmodel" },
+    { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.dev-dependencies]
@@ -882,6 +883,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.139.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "sqlmodel", specifier = ">=0.0.39" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.51.0" },
 ]
 
 [package.metadata.requires-dev]
