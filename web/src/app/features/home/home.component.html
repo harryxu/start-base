@@ -4,7 +4,7 @@
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="max-w-5xl mx-auto px-6 py-6 relative">
-    <app-external-drop-zone (droppedUrl)="openAddSiteForm($event)" />
+    <app-external-drop-zone (droppedUrl)="onExternalSiteDropped($event)" />
 
     <!-- Loading state -->
     @if (sitesQuery.isLoading() || groupsQuery.isLoading()) {

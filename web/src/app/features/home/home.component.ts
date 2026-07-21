@@ -344,22 +344,30 @@ export class HomeComponent {
     if (editing) {
       this.updateSiteMutation.mutate({ id: editing.id, data });
     } else {
-      const sites = this.sitesQuery.data() ?? [];
-      const maxOrder = sites.length > 0 ? Math.max(...sites.map((s) => s.sort_order)) : 0;
-      this.createSiteMutation.mutate({ ...data, sort_order: maxOrder + 100 });
-      // Re-fetch after a delay so server-populated metadata becomes visible
-      if (!data.title || !data.icon_url) {
-        setTimeout(async () => {
-          await this.queryClient.invalidateQueries({ queryKey: ['sites'] });
-          this.fetchingSiteIds.update((set: Set<number>) => {
-            const next = new Set(set);
-            next.clear();
-            return next;
-          });
-        }, 2500);
-      }
+      this.saveNewSite(data);
     }
     this.closeSiteForm();
+  }
+
+  onExternalSiteDropped(url: string): void {
+    if (!url) return;
+    this.saveNewSite({ url });
+  }
+
+  private saveNewSite(data: SiteCreate): void {
+    const sites = this.sitesQuery.data() ?? [];
+    const maxOrder = sites.length > 0 ? Math.max(...sites.map((s) => s.sort_order)) : 0;
+    this.createSiteMutation.mutate({ ...data, sort_order: data.sort_order ?? maxOrder + 100 });
+    if (!data.title || !data.icon_url) {
+      setTimeout(async () => {
+        await this.queryClient.invalidateQueries({ queryKey: ['sites'] });
+        this.fetchingSiteIds.update((set: Set<number>) => {
+          const next = new Set(set);
+          next.clear();
+          return next;
+        });
+      }, 2500);
+    }
   }
 
   onDeleteSite(site: Site): void {
