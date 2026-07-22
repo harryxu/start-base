@@ -41,8 +41,9 @@ app.add_middleware(
 app.include_router(groups.router)
 app.include_router(sites.router)
 
-os.makedirs("data/icons", exist_ok=True)
-app.mount("/static/icons", StaticFiles(directory="data/icons"), name="icons")
+os.makedirs("data/db", exist_ok=True)
+os.makedirs("data/files/icons", exist_ok=True)
+app.mount("/static", StaticFiles(directory="data/files"), name="static")
 
 # Mount Angular built frontend files if they exist (production)
 if os.path.exists("web-dist"):

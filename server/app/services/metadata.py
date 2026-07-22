@@ -110,9 +110,9 @@ async def download_icon(icon_url: str, site_id: int) -> str | None:
             if not ext:
                 ext = ".png"
 
-            os.makedirs("data/icons", exist_ok=True)
+            os.makedirs("data/files/icons", exist_ok=True)
             filename = f"{site_id}{ext}"
-            filepath = os.path.join("data/icons", filename)
+            filepath = os.path.join("data/files/icons", filename)
             with open(filepath, "wb") as f:
                 f.write(response.content)
 

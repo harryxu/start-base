@@ -19,7 +19,7 @@ start-base/
 │   │       └── metadata.py ← Fetch page title & favicon from URL
 │   ├── alembic/       ← DB migrations (Alembic)
 │   ├── tests/         ← API tests (pytest)
-│   └── start_base.db  ← Local SQLite database
+│   └── data/          ← Data directory (db/start_base.db, files/icons)
 └── web/               ← Angular v22 frontend (pnpm)
     └── src/app/
         ├── core/
@@ -40,7 +40,7 @@ start-base/
 | Package manager (backend)  | [uv](https://docs.astral.sh/uv/)                                                |
 | Web framework              | [FastAPI](https://fastapi.tiangolo.com/)                                        |
 | ORM                        | [SQLModel](https://sqlmodel.tiangolo.com/)                                      |
-| DB                         | SQLite (`server/start_base.db`)                                                 |
+| DB                         | SQLite (`server/data/db/start_base.db`)                                         |
 | Migrations                 | [Alembic](https://alembic.sqlalchemy.org/)                                      |
 | Frontend framework         | [Angular v22](https://angular.dev/) standalone components                       |
 | Package manager (frontend) | pnpm                                                                            |
@@ -144,4 +144,4 @@ pnpm build
 
 - Backend CORS allows: `http://localhost:4200`, `http://localhost:3000`, `http://127.0.0.1:4200`
 - Frontend API base URL: `http://localhost:8000` (configured in `core/api/api.service.ts`)
-- DB file: `server/start_base.db` (SQLite, gitignored)
+- DB file: `server/data/db/start_base.db` (SQLite, gitignored)

@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:5600"
     environment:
-      - DATABASE_URL=sqlite:////app/data/start_base.db
+      - DATABASE_URL=sqlite:////app/data/db/start_base.db
     volumes:
       - ./data:/app/data
     restart: unless-stopped
