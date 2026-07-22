@@ -32,83 +32,77 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
         </div>
 
         <!-- Form body -->
-        <form id="site-form" (ngSubmit)="onSubmit()" class="px-6 py-5 flex flex-col gap-4">
+        <form id="site-form" (ngSubmit)="onSubmit()" class="px-6 py-5 flex flex-col gap-6">
           <!-- URL (required) -->
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend text-xs">URL <span class="text-error">*</span></legend>
+          <label class="floating-label w-full text-base-content/60">
             <input
               id="site-url"
               type="url"
               [(ngModel)]="formUrl"
               name="url"
               required
-              placeholder="https://example.com"
-              class="input input-bordered input-lg w-full"
+              placeholder="URL"
+              class="input input-bordered input-lg w-full text-base-content"
               autocomplete="off"
             />
-          </fieldset>
+            <span>URL <span class="text-error">*</span></span>
+          </label>
 
           <!-- Title -->
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend text-xs">
-              Title
-              <span class="text-base-content/40 font-normal ml-1">— auto-fetched if blank</span>
-            </legend>
+          <label class="floating-label w-full text-base-content/60">
             <input
               id="site-title"
               type="text"
               [(ngModel)]="formTitle"
               name="title"
-              placeholder="My Site"
-              class="input input-bordered input-lg w-full"
+              placeholder="Title"
+              class="input input-bordered input-lg w-full text-base-content"
               autocomplete="off"
             />
-          </fieldset>
+            <span>Title</span>
+          </label>
 
           <!-- Icon URL -->
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend text-xs">
-              Icon URL
-              <span class="text-base-content/40 font-normal ml-1">— auto-fetched if blank</span>
-            </legend>
+          <label class="floating-label w-full text-base-content/60">
             <input
               id="site-icon"
               type="url"
               [(ngModel)]="formIconUrl"
               name="iconUrl"
-              placeholder="https://example.com/favicon.ico"
-              class="input input-bordered input-lg w-full"
+              placeholder="Icon URL"
+              class="input input-bordered input-lg w-full text-base-content"
             />
-          </fieldset>
+            <span>Icon URL</span>
+          </label>
 
           <!-- Description -->
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend text-xs">Description</legend>
+          <label class="floating-label w-full text-base-content/60">
             <input
               id="site-desc"
               type="text"
               [(ngModel)]="formDescription"
               name="description"
-              placeholder="Optional description"
-              class="input input-bordered input-lg w-full"
+              placeholder="Description"
+              class="input input-bordered input-lg w-full text-base-content"
             />
-          </fieldset>
+            <span>Description</span>
+          </label>
 
           <!-- Group select -->
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend text-xs">Group</legend>
+          <label class="floating-label w-full text-base-content/60">
             <select
               id="site-group"
               [(ngModel)]="formGroupId"
               name="group"
-              class="select select-bordered select-lg w-full"
+              class="select select-bordered select-lg w-full text-base-content"
             >
               <option [ngValue]="null">No group</option>
               @for (g of groups(); track g.id) {
                 <option [ngValue]="g.id">{{ g.name }}</option>
               }
             </select>
-          </fieldset>
+            <span>Group</span>
+          </label>
 
           <!-- Footer actions -->
           <div class="modal-action mt-2">

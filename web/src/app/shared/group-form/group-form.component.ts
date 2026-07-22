@@ -32,24 +32,22 @@ import type { Group, GroupCreate } from '../../core/models/types';
         </div>
 
         <!-- Form body -->
-        <form id="group-form" (ngSubmit)="onSubmit()" class="px-6 py-5 flex flex-col gap-4">
+        <form id="group-form" (ngSubmit)="onSubmit()" class="px-6 py-5 flex flex-col gap-5">
           <!-- Name (required) -->
-          <fieldset class="fieldset">
-            <legend class="fieldset-legend text-xs">
-              Group Name <span class="text-error">*</span>
-            </legend>
+          <label class="floating-label w-full text-base-content/60">
             <input
               id="group-name"
               type="text"
               [(ngModel)]="formName"
               name="name"
               required
-              placeholder="My Group"
-              class="input input-bordered input-lg w-full"
+              placeholder="Group Name"
+              class="input input-bordered input-lg w-full text-base-content"
               autocomplete="off"
               #nameInput
             />
-          </fieldset>
+            <span>Group Name <span class="text-error">*</span></span>
+          </label>
 
           <!-- Footer actions -->
           <div class="modal-action mt-2">
