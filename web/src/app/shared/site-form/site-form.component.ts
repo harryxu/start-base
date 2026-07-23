@@ -1,13 +1,14 @@
-import { Component, effect, input, output } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideX } from '@lucide/angular';
+import { LucideGlobe, LucideX } from '@lucide/angular';
 
+import { API_BASE } from '../../core/api/api.service';
 import type { Group, Site, SiteCreate } from '../../core/models/types';
 
 @Component({
   selector: 'app-site-form',
   standalone: true,
-  imports: [FormsModule, LucideX],
+  imports: [FormsModule, LucideX, LucideGlobe],
   template: `
     <!-- DaisyUI modal (modal-open keeps it visible while rendered) -->
     <div
@@ -63,14 +64,28 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
           </label>
 
           <!-- Icon URL -->
-          <label class="floating-label w-full text-base-content/60">
+          <label
+            class="floating-label input input-bordered input-lg w-full flex items-center gap-2 text-base-content/60"
+          >
+            @if (site()) {
+              @if (hasDbIcon() && !iconFailed()) {
+                <img
+                  [src]="dbIconUrl()"
+                  alt="Site icon"
+                  class="w-5 h-5 rounded object-contain shrink-0"
+                  (error)="onIconError()"
+                />
+              } @else {
+                <svg lucideGlobe class="w-5 h-5 opacity-70 shrink-0"></svg>
+              }
+            }
             <input
               id="site-icon"
               type="url"
               [(ngModel)]="formIconUrl"
               name="iconUrl"
               placeholder="Icon URL"
-              class="input input-bordered input-lg w-full text-base-content"
+              class="grow text-base-content"
             />
             <span>Icon URL</span>
           </label>
@@ -138,11 +153,28 @@ export class SiteFormComponent {
   formDescription = '';
   formGroupId: number | null = null;
 
+  iconFailed = signal(false);
+
+  dbIconUrl = computed(() => {
+    const url = this.site()?.icon_url;
+    if (!url) return '';
+    if (url.startsWith('/')) {
+      return `${API_BASE}${url}`;
+    }
+    return url;
+  });
+
+  hasDbIcon = computed(() => {
+    const url = this.site()?.icon_url;
+    return !!url && url.trim().length > 0;
+  });
+
   constructor() {
     // Populate form when site input changes (edit mode) or when a URL is pre-filled
     effect(() => {
       const s = this.site();
       const url = this.prefilledUrl();
+      this.iconFailed.set(false);
       if (s) {
         this.formUrl = s.url;
         this.formTitle = s.title ?? '';
@@ -159,6 +191,10 @@ export class SiteFormComponent {
     });
   }
 
+  onIconError(): void {
+    this.iconFailed.set(true);
+  }
+
   onSubmit(): void {
     if (!this.formUrl) return;
 
@@ -171,3 +207,4 @@ export class SiteFormComponent {
     });
   }
 }
+
