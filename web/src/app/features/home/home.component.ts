@@ -143,14 +143,14 @@ export class HomeComponent {
 
   reorderGroupsMutation = injectMutation(() => ({
     mutationFn: (groups: ReorderItem[]) => firstValueFrom(this.api.reorderGroups(groups)),
-    onSuccess: () => {
+    onError: () => {
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
   }));
 
   reorderSitesMutation = injectMutation(() => ({
     mutationFn: (sites: SiteReorderItem[]) => firstValueFrom(this.api.reorderSites(sites)),
-    onSuccess: () => {
+    onError: () => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
     },
   }));
