@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 
 from app.database import engine
-from app.routers import groups, sites
+from app.routers import groups, sites, system
 import os
 from fastapi.staticfiles import StaticFiles
 
@@ -40,6 +40,7 @@ app.add_middleware(
 
 app.include_router(groups.router)
 app.include_router(sites.router)
+app.include_router(system.router)
 
 os.makedirs("data/db", exist_ok=True)
 os.makedirs("data/files/icons", exist_ok=True)

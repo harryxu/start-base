@@ -109,6 +109,11 @@ pnpm build
 | `DELETE` | `/api/groups/{id}`    | Delete group (sites become ungrouped)     |
 | `POST`   | `/api/groups/reorder` | Bulk update `sort_order`                  |
 
+### System
+| Method   | Path                       | Description                                                                     |
+| -------- | -------------------------- | ------------------------------------------------------------------------------- |
+| `POST`   | `/api/system/upload-image` | Upload image file (supports optional `folder` relative to `server/data/files`) |
+
 ### Data Models
 
 ```typescript
@@ -139,9 +144,3 @@ pnpm build
 - **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
 - **No auth**: Single-user local tool, no authentication needed
 - **Testing**: Ensure that test coverage is updated synchronously whenever features are added, modified, or adjusted across both Python backend (`server/tests/`) and Angular frontend (`web/` via `ng test --no-watch`). All tests must be kept green.
-
-## Environment
-
-- Backend CORS allows: `http://localhost:4200`, `http://localhost:3000`, `http://127.0.0.1:4200`
-- Frontend API base URL: `http://localhost:8000` (configured in `core/api/api.service.ts`)
-- DB file: `server/data/db/start_base.db` (SQLite, gitignored)
