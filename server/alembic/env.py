@@ -11,7 +11,7 @@ from sqlmodel import SQLModel
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import all models so Alembic can detect them
-from app.models import Group, Site  # noqa: F401, E402
+from app.models import Group, Site, SystemConfig  # noqa: F401, E402
 from app.database import DATABASE_URL  # noqa: E402
 
 # this is the Alembic Config object

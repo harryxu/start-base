@@ -1,17 +1,18 @@
-import { Component, output } from '@angular/core';
-import { LucideFolderPlus, LucidePlus } from '@lucide/angular';
+import { Component, inject, output } from '@angular/core';
+import { LucideFolderPlus, LucidePlus, LucideSettings } from '@lucide/angular';
+import { ConfigService } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [LucidePlus, LucideFolderPlus],
+  imports: [LucidePlus, LucideFolderPlus, LucideSettings],
   template: `
     <header class="navbar bg-base-100 sticky top-0 z-30 shadow-sm">
       <div class="max-w-5xl mx-auto w-full px-6 flex justify-between items-center">
         <!-- Logo Section -->
         <div class="flex items-center gap-2">
           <img src="start-base-logo.svg" alt="Start Base Logo" class="w-6 h-6" />
-          <span class="text-lg font-bold tracking-tight text-base-content">Start Base</span>
+          <span class="text-lg font-bold tracking-tight text-base-content">{{ configService.pageTitle() }}</span>
         </div>
 
         <!-- Actions Toolbar -->
@@ -33,12 +34,24 @@ import { LucideFolderPlus, LucidePlus } from '@lucide/angular';
           >
             <svg lucideFolderPlus class="w-4 h-4"></svg>
           </button>
+
+          <button
+            id="btn-settings"
+            (click)="openSettings.emit()"
+            class="btn btn-sm btn-ghost btn-square"
+            title="System Settings"
+          >
+            <svg lucideSettings class="w-4 h-4"></svg>
+          </button>
         </div>
       </div>
     </header>
   `,
 })
 export class HeaderComponent {
+  configService = inject(ConfigService);
+
   addSite = output<void>();
   addGroup = output<void>();
+  openSettings = output<void>();
 }

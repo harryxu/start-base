@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import SQLModel
 
 from app.database import engine
-from app.routers import groups, sites, system
+from app.routers import config, groups, sites, system
 import os
 from fastapi.staticfiles import StaticFiles
 
@@ -38,6 +38,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(config.router)
 app.include_router(groups.router)
 app.include_router(sites.router)
 app.include_router(system.router)

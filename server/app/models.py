@@ -27,7 +27,27 @@ class Site(SQLModel, table=True):
     group_id: Optional[int] = Field(default=None, foreign_key="group.id")
 
 
+class SystemConfig(SQLModel, table=True):
+    """Generic key-value system configuration entry."""
+
+    key: str = Field(primary_key=True, max_length=100)
+    value: Optional[str] = Field(default=None)
+    description: Optional[str] = Field(default=None, max_length=255)
+
+
 # ---- API Schemas ----
+
+
+class SystemConfigRead(SQLModel):
+    key: str
+    value: Optional[str] = None
+    description: Optional[str] = None
+
+
+class SystemConfigUpdate(SQLModel):
+    value: Optional[str] = None
+    description: Optional[str] = None
+
 
 
 class GroupCreate(SQLModel):

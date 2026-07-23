@@ -38,6 +38,7 @@ import { GroupFormComponent } from '../../shared/group-form/group-form.component
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/external-drop-zone.component';
 import { HeaderComponent } from '../../shared/header/header.component';
+import { SettingsModalComponent } from '../../shared/settings-modal/settings-modal.component';
 
 import { LucideGripVertical, LucidePlus } from '@lucide/angular';
 
@@ -58,6 +59,7 @@ import { LucideGripVertical, LucidePlus } from '@lucide/angular';
     ConfirmDialogComponent,
     ExternalDropZoneComponent,
     HeaderComponent,
+    SettingsModalComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -174,6 +176,8 @@ export class HomeComponent {
 
   showGroupForm = signal(false);
   editingGroup = signal<Group | null>(null);
+
+  showSettingsForm = signal(false);
 
   deletingSite = signal<Site | null>(null);
   deletingGroup = signal<Group | null>(null);
@@ -431,6 +435,16 @@ export class HomeComponent {
 
   cancelDeleteGroup(): void {
     this.deletingGroup.set(null);
+  }
+
+  // ---- Settings actions ----
+
+  openSettingsModal(): void {
+    this.showSettingsForm.set(true);
+  }
+
+  closeSettingsModal(): void {
+    this.showSettingsForm.set(false);
   }
 
   // ---- Helper methods to sync local state in edit mode ----

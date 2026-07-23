@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50">
   <!-- ===== HEADER ===== -->
-  <app-header (addSite)="openAddSiteForm()" (addGroup)="openAddGroupDialog()" />
+  <app-header (addSite)="openAddSiteForm()" (addGroup)="openAddGroupDialog()" (openSettings)="openSettingsModal()" />
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="max-w-5xl mx-auto px-6 py-6 relative">
@@ -95,6 +95,11 @@
   <!-- ===== GROUP FORM MODAL ===== -->
   @if (showGroupForm()) {
   <app-group-form [group]="editingGroup()" (submitted)="onGroupFormSubmit($event)" (cancelled)="closeGroupForm()" />
+  }
+
+  <!-- ===== SETTINGS MODAL ===== -->
+  @if (showSettingsForm()) {
+  <app-settings-modal (closed)="closeSettingsModal()" />
   }
 
   <!-- ===== DELETE CONFIRMATIONS ===== -->

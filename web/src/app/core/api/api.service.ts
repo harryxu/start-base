@@ -75,5 +75,16 @@ export class ApiService {
     }
     return this.http.post<{ url: string }>(`${API_BASE}/api/system/upload-image`, formData);
   }
+
+  // ---- System Config ----
+
+  getConfig(): Observable<Record<string, any>> {
+    return this.http.get<Record<string, any>>(`${API_BASE}/api/config/`);
+  }
+
+  updateConfig(data: Record<string, any>): Observable<Record<string, any>> {
+    return this.http.patch<Record<string, any>>(`${API_BASE}/api/config/`, data);
+  }
 }
+
 

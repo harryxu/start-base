@@ -66,3 +66,9 @@ export interface SiteReorderItem {
 export type LayoutRow =
   | { type: 'ungrouped'; sites: Site[]; id: string }
   | { type: 'group'; group: Group; sites: Site[]; id: string };
+
+/**
+ * System configuration map dictionary interface.
+ */
+export type SystemConfigMap = Record<string, any>;
+
