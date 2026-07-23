@@ -1,7 +1,9 @@
-"""Site CRUD API endpoints."""
+import mimetypes
+import os
 from typing import List
+import uuid
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, UploadFile
 from sqlmodel import Session, select
 
 from app.database import DATABASE_URL, get_session
@@ -9,6 +11,54 @@ from app.models import Site, SiteCreate, SiteRead, SiteReorderItem, SiteUpdate
 from app.services.metadata import fetch_site_metadata
 
 router = APIRouter(prefix="/api/sites", tags=["sites"])
+
+
+ALLOWED_IMAGE_EXTENSIONS = {
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".webp",
+    ".ico",
+    ".bmp",
+    ".avif",
+}
+
+
+@router.post("/upload-icon")
+async def upload_icon(file: UploadFile = File(...)) -> dict:
+    """Upload an icon file and return static icon URL."""
+    filename = file.filename or ""
+    ext = os.path.splitext(filename)[1].lower()
+    content_type = (file.content_type or "").lower()
+
+    if not ext and content_type:
+        guessed = mimetypes.guess_extension(content_type)
+        if guessed:
+            ext = guessed.lower()
+
+    is_image_mime = content_type.startswith("image/") or content_type in (
+        "application/octet-stream",
+        "",
+    )
+    is_allowed_ext = ext in ALLOWED_IMAGE_EXTENSIONS
+
+    if not (is_allowed_ext and is_image_mime):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file type. Only image or icon files are allowed.",
+        )
+
+    saved_filename = f"custom_{uuid.uuid4().hex[:12]}{ext}"
+    os.makedirs("data/files/icons", exist_ok=True)
+    filepath = os.path.join("data/files/icons", saved_filename)
+
+    contents = await file.read()
+    with open(filepath, "wb") as f:
+        f.write(contents)
+
+    return {"icon_url": f"/static/icons/{saved_filename}"}
 
 
 async def _update_site_metadata(site_id: int, url: str, db_url: str) -> None:

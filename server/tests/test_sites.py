@@ -184,3 +184,27 @@ def test_update_site_metadata_task(session: Session) -> None:
         assert updated_site is not None
         assert updated_site.title == "Fetched Title"
         assert updated_site.icon_url == "/static/icons/1.png"
+
+
+def test_upload_icon(client: TestClient) -> None:
+    """Test uploading an icon file."""
+    file_content = b"fake image bytes"
+    files = {"file": ("test_logo.png", file_content, "image/png")}
+    response = client.post("/api/sites/upload-icon", files=files)
+    assert response.status_code == 200
+    data = response.json()
+    assert "icon_url" in data
+    assert data["icon_url"].startswith("/static/icons/custom_")
+    assert data["icon_url"].endswith(".png")
+
+
+def test_upload_icon_invalid_file_type(client: TestClient) -> None:
+    """Test uploading non-image file type returns 400 Bad Request."""
+    file_content = b"print('hello')"
+    files = {"file": ("script.py", file_content, "text/x-python")}
+    response = client.post("/api/sites/upload-icon", files=files)
+    assert response.status_code == 400
+    data = response.json()
+    assert "Only image or icon files are allowed" in data["detail"]
+
+

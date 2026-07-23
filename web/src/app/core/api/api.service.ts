@@ -62,4 +62,11 @@ export class ApiService {
   reorderSites(items: SiteReorderItem[]): Observable<void> {
     return this.http.post<void>(`${API_BASE}/api/sites/reorder`, items);
   }
+
+  uploadIcon(file: File): Observable<{ icon_url: string }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ icon_url: string }>(`${API_BASE}/api/sites/upload-icon`, formData);
+  }
 }
+
