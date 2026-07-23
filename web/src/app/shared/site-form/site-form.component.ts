@@ -277,9 +277,9 @@ export class SiteFormComponent {
       this.isUploading.set(true);
       this.uploadError.set('');
       try {
-        const res = await firstValueFrom(this.api.uploadIcon(this.selectedIconFile));
-        if (res && res.icon_url) {
-          this.formIconUrl = res.icon_url;
+        const res = await firstValueFrom(this.api.uploadImage(this.selectedIconFile, 'icons'));
+        if (res && res.url) {
+          this.formIconUrl = res.url;
         }
       } catch (err: unknown) {
         console.error('Failed to upload icon:', err);

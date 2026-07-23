@@ -63,10 +63,17 @@ export class ApiService {
     return this.http.post<void>(`${API_BASE}/api/sites/reorder`, items);
   }
 
-  uploadIcon(file: File): Observable<{ icon_url: string }> {
+  uploadIcon(file: File, folder: string = 'icons'): Observable<{ url: string }> {
+    return this.uploadImage(file, folder);
+  }
+
+  uploadImage(file: File, folder: string = ''): Observable<{ url: string }> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<{ icon_url: string }>(`${API_BASE}/api/sites/upload-icon`, formData);
+    if (folder) {
+      formData.append('folder', folder);
+    }
+    return this.http.post<{ url: string }>(`${API_BASE}/api/sites/upload-image`, formData);
   }
 }
 

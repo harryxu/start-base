@@ -186,25 +186,49 @@ def test_update_site_metadata_task(session: Session) -> None:
         assert updated_site.icon_url == "/static/icons/1.png"
 
 
-def test_upload_icon(client: TestClient) -> None:
-    """Test uploading an icon file."""
+def test_upload_image(client: TestClient) -> None:
+    """Test uploading an image file with default root folder."""
     file_content = b"fake image bytes"
     files = {"file": ("test_logo.png", file_content, "image/png")}
-    response = client.post("/api/sites/upload-icon", files=files)
+    response = client.post("/api/sites/upload-image", files=files)
     assert response.status_code == 200
     data = response.json()
-    assert "icon_url" in data
-    assert data["icon_url"].startswith("/static/icons/custom_")
-    assert data["icon_url"].endswith(".png")
+    assert "url" in data
+    assert data["url"].startswith("/static/custom_")
+    assert data["url"].endswith(".png")
 
 
-def test_upload_icon_invalid_file_type(client: TestClient) -> None:
+def test_upload_image_invalid_file_type(client: TestClient) -> None:
     """Test uploading non-image file type returns 400 Bad Request."""
     file_content = b"print('hello')"
     files = {"file": ("script.py", file_content, "text/x-python")}
-    response = client.post("/api/sites/upload-icon", files=files)
+    response = client.post("/api/sites/upload-image", files=files)
     assert response.status_code == 400
     data = response.json()
     assert "Only image or icon files are allowed" in data["detail"]
+
+
+def test_upload_image_custom_folder(client: TestClient) -> None:
+    """Test uploading an image with a custom target folder relative to data/files."""
+    file_content = b"fake image bytes"
+    files = {"file": ("group_banner.png", file_content, "image/png")}
+    data = {"folder": "groups/banners"}
+    response = client.post("/api/sites/upload-image", files=files, data=data)
+    assert response.status_code == 200
+    res_data = response.json()
+    assert "url" in res_data
+    assert res_data["url"].startswith("/static/groups/banners/custom_")
+    assert res_data["url"].endswith(".png")
+
+
+def test_upload_image_path_traversal(client: TestClient) -> None:
+    """Test path traversal attempt in folder returns 400 Bad Request."""
+    file_content = b"fake image bytes"
+    files = {"file": ("test.png", file_content, "image/png")}
+    data = {"folder": "../../outside"}
+    response = client.post("/api/sites/upload-image", files=files, data=data)
+    assert response.status_code == 400
+    assert response.json()["detail"] == "Invalid target path."
+
 
 

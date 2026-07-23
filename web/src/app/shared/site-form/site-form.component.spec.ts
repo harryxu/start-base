@@ -112,7 +112,7 @@ describe('SiteFormComponent', () => {
     expect(component.formIconUrl).toBe('my-logo.png');
 
     // HTTP request should NOT have been made yet
-    httpMock.expectNone(`${API_BASE}/api/sites/upload-icon`);
+    httpMock.expectNone(`${API_BASE}/api/sites/upload-image`);
   });
 
   it('should upload selected file and emit submitted data on form submit', async () => {
@@ -131,9 +131,9 @@ describe('SiteFormComponent', () => {
 
     const submitPromise = component.onSubmit();
 
-    const req = httpMock.expectOne(`${API_BASE}/api/sites/upload-icon`);
+    const req = httpMock.expectOne(`${API_BASE}/api/sites/upload-image`);
     expect(req.request.method).toBe('POST');
-    req.flush({ icon_url: '/static/icons/custom_123.png' });
+    req.flush({ url: '/static/icons/custom_123.png' });
 
     await submitPromise;
 
