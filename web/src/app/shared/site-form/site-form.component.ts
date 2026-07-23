@@ -74,9 +74,9 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
           </label>
 
           <!-- Icon URL -->
-          <div class="flex items-center gap-2">
+          <div class="join w-full flex items-stretch">
             <label
-              class="floating-label input input-bordered input-lg flex-1 flex items-center gap-2 text-base-content/60"
+              class="floating-label input input-bordered input-lg join-item flex-1 flex items-center gap-2 text-base-content/60"
             >
               @if (previewUrl()) {
                 <img
@@ -117,7 +117,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
             />
             <button
               type="button"
-              class="btn btn-bordered input-lg btn-square shrink-0"
+              class="btn btn-lg join-item shrink-0 self-stretch flex items-center justify-center px-4 min-h-0 h-auto"
               (click)="fileInput.click()"
               [title]="selectedFileName() ? selectedFileName() : 'Upload icon'"
               aria-label="Upload icon"
