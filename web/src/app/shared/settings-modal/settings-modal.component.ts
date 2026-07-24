@@ -2,7 +2,8 @@ import { Component, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideX, LucideSettings } from '@lucide/angular';
 
-import { ConfigService, SUPPORTED_THEMES } from '../../core/services/config.service';
+import { ConfigService } from '../../core/services/config.service';
+import { SUPPORTED_THEMES } from '../theme-switcher/theme-switcher.component';
 
 @Component({
   selector: 'app-settings-modal',

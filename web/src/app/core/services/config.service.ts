@@ -3,21 +3,9 @@ import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
 
-export const SUPPORTED_THEMES = [
-  'light',
-  'cupcake',
-  'emerald',
-  'corporate',
-  'pastel',
-  'fantasy',
-  'coffee',
-  'night',
-  'nord',
-  'dim',
-  'dracula',
-] as const;
-
-export type ThemeName = (typeof SUPPORTED_THEMES)[number];
+import { SUPPORTED_THEMES, type ThemeName } from '../../shared/theme-switcher/theme-switcher.component';
+export { SUPPORTED_THEMES };
+export type { ThemeName };
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
