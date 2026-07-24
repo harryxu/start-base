@@ -8,12 +8,19 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
   standalone: true,
   imports: [LucidePlus, LucideFolderPlus, LucideSettings, ThemeSwitcherComponent],
   template: `
-    <header class="navbar bg-base-100 sticky top-0 z-30 shadow-sm">
+    <header
+      class="navbar sticky top-0 z-30 shadow-sm transition-all duration-200"
+      [class.bg-base-100]="!configService.bgUrl()"
+      [class.bg-base-100/35]="configService.bgUrl()"
+      [class.backdrop-blur-md]="configService.bgUrl()"
+    >
       <div class="max-w-5xl mx-auto w-full px-6 flex justify-between items-center">
         <!-- Logo Section -->
         <div class="flex items-center gap-2">
           <img src="start-base-logo.svg" alt="Start Base Logo" class="w-6 h-6" />
-          <span class="text-lg font-bold tracking-tight text-base-content">{{ configService.pageTitle() }}</span>
+          <span class="text-lg font-bold tracking-tight text-base-content">{{
+            configService.pageTitle()
+          }}</span>
         </div>
 
         <!-- Actions Toolbar -->

@@ -1,7 +1,7 @@
-import { Injectable, inject, signal, effect } from '@angular/core';
+import { Injectable, inject, signal, computed, effect } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
-import { ApiService } from '../api/api.service';
+import { ApiService, API_BASE } from '../api/api.service';
 
 import { SUPPORTED_THEMES, type ThemeName } from '../../shared/theme-switcher/theme-switcher.component';
 export { SUPPORTED_THEMES };
@@ -14,6 +14,13 @@ export class ConfigService {
 
   pageTitle = signal<string>('Start Base');
   theme = signal<string>('emerald');
+  bgUrl = signal<string>('');
+
+  fullBgUrl = computed(() => {
+    const url = this.bgUrl();
+    if (!url) return '';
+    return url.startsWith('/') ? `${API_BASE}${url}` : url;
+  });
 
   constructor() {
     // Title effect
@@ -44,6 +51,9 @@ export class ConfigService {
       } else {
         this.theme.set('emerald');
       }
+      if (config['bg_url'] !== undefined) {
+        this.bgUrl.set(config['bg_url'] || '');
+      }
     } catch (err) {
       console.error('Failed to load system config:', err);
     }
@@ -58,6 +68,9 @@ export class ConfigService {
       if (res['theme']) {
         this.theme.set(res['theme']);
       }
+      if (res['bg_url'] !== undefined) {
+        this.bgUrl.set(res['bg_url'] || '');
+      }
     } catch (err) {
       console.error('Failed to update system config:', err);
       throw err;
@@ -70,8 +83,8 @@ export class ConfigService {
   }
 
   private applyTheme(targetTheme: string): void {
-    if (typeof document === 'undefined') return;
-    const htmlEl = document.documentElement;
-    htmlEl.setAttribute('data-theme', targetTheme || 'emerald');
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', targetTheme || 'emerald');
+    }
   }
 }

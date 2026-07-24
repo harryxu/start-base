@@ -40,6 +40,8 @@ import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/exter
 import { HeaderComponent } from '../../shared/header/header.component';
 import { SettingsModalComponent } from '../../shared/settings-modal/settings-modal.component';
 
+import { ConfigService } from '../../core/services/config.service';
+
 import { LucideGripVertical, LucidePlus } from '@lucide/angular';
 
 @Component({
@@ -65,6 +67,7 @@ import { LucideGripVertical, LucidePlus } from '@lucide/angular';
   styleUrl: './home.component.css',
 })
 export class HomeComponent {
+  configService = inject(ConfigService);
   private api = inject(ApiService);
   private queryClient = inject(QueryClient);
 

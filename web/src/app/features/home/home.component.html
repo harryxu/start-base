@@ -1,4 +1,9 @@
-<div class="min-h-screen bg-base-100/90">
+<div
+  class="min-h-screen bg-cover bg-center bg-fixed bg-no-repeat"
+  [class.bg-base-100/90]="!configService.bgUrl()"
+  [class.has-bg-image]="configService.bgUrl()"
+  [style.background-image]="configService.fullBgUrl() ? 'url(' + configService.fullBgUrl() + ')' : null"
+>
   <!-- ===== HEADER ===== -->
   <app-header (addSite)="openAddSiteForm()" (addGroup)="openAddGroupDialog()" (openSettings)="openSettingsModal()" />
 

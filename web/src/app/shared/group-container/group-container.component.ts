@@ -6,6 +6,7 @@ import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/
 import type { Group, Site } from '../../core/models/types';
 import { SiteCardComponent } from '../site-card/site-card.component';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
+import { ConfigService } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-group-container',
@@ -24,13 +25,19 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
   ],
   template: `
     <div
-      class="collapse collapse-arrow border border-base-300 rounded-xl bg-base-100 shadow-sm transition-all duration-200 overflow-hidden"
+      class="collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden"
       [class.collapse-open]="!collapsed()"
       [class.collapse-close]="collapsed()"
+      [class.border-base-300]="!configService.bgUrl()"
+      [class.border-base-300/70]="configService.bgUrl()"
+      [class.backdrop-blur-md]="configService.bgUrl()"
     >
       <!-- Group header -->
       <div
-        class="collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 bg-base-200/80 select-none cursor-pointer"
+        class="collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 select-none cursor-pointer"
+        [class.bg-base-200/80]="!configService.bgUrl()"
+        [class.bg-base-200/50]="configService.bgUrl()"
+        [class.backdrop-blur-sm]="configService.bgUrl()"
         (click)="toggleCollapse()"
       >
         <span class="text-sm font-semibold text-base-content flex-1">
@@ -50,7 +57,12 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
       </div>
 
       <!-- Sites grid inside collapse-content -->
-      <div class="collapse-content p-0 bg-base-100 rounded-b-xl">
+      <div
+        class="collapse-content p-0 rounded-b-xl"
+        [class.bg-base-100]="!configService.bgUrl()"
+        [class.bg-base-100/35]="configService.bgUrl()"
+        [class.backdrop-blur-sm]="configService.bgUrl()"
+      >
         <div
           cdkDropList
           cdkDropListOrientation="mixed"
@@ -114,6 +126,8 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
   `,
 })
 export class GroupContainerComponent {
+  configService = inject(ConfigService);
+
   group = input.required<Group>();
   sites = input<Site[]>([]);
   allSiteDropListIds = input<string[]>([]);
