@@ -3,12 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { LucideX, LucideSettings } from '@lucide/angular';
 
 import { ConfigService } from '../../core/services/config.service';
-import { SUPPORTED_THEMES } from '../theme-switcher/theme-switcher.component';
+import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.component';
 
 @Component({
   selector: 'app-settings-modal',
   standalone: true,
-  imports: [FormsModule, LucideX, LucideSettings],
+  imports: [FormsModule, LucideX, LucideSettings, ThemeSwitcherComponent],
   template: `
     <div
       class="modal modal-open modal-middle"
@@ -16,7 +16,7 @@ import { SUPPORTED_THEMES } from '../theme-switcher/theme-switcher.component';
       aria-modal="true"
       aria-label="System Settings"
     >
-      <div class="modal-box max-w-md p-0">
+      <div class="modal-box max-w-md p-0 overflow-visible">
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-base-200">
           <div class="flex items-center gap-2">
@@ -51,27 +51,10 @@ import { SUPPORTED_THEMES } from '../theme-switcher/theme-switcher.component';
             />
           </div>
 
-          <!-- Theme -->
-          <div class="flex flex-col gap-2">
+          <!-- Theme Selection via ThemeSwitcherComponent -->
+          <div class="flex items-center justify-between">
             <label class="text-xs font-medium text-base-content/70"> System Theme </label>
-            <div class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
-              @for (t of themes; track t) {
-                <button
-                  type="button"
-                  [id]="'theme-' + t"
-                  class="btn btn-outline btn-sm flex items-center justify-start gap-2 capitalize h-auto py-2 text-xs"
-                  [class.btn-primary]="formTheme === t"
-                  [class.btn-active]="formTheme === t"
-                  (click)="formTheme = t"
-                >
-                  <span
-                    class="w-2.5 h-2.5 rounded-full border border-base-content/20 bg-primary inline-block shrink-0"
-                    [attr.data-theme]="t"
-                  ></span>
-                  <span class="truncate">{{ t }}</span>
-                </button>
-              }
-            </div>
+            <app-theme-switcher [showLabel]="true" position="dropdown-top dropdown-end" />
           </div>
 
           <!-- Footer Actions -->
@@ -102,9 +85,7 @@ export class SettingsModalComponent {
 
   closed = output<void>();
 
-  themes = SUPPORTED_THEMES;
   formTitle = this.configService.pageTitle();
-  formTheme: string = this.configService.theme();
   saving = signal(false);
 
   async onSubmit(): Promise<void> {
@@ -114,7 +95,6 @@ export class SettingsModalComponent {
     try {
       await this.configService.updateConfig({
         page_title: this.formTitle.trim(),
-        theme: this.formTheme,
       });
       this.closed.emit();
     } catch (err) {

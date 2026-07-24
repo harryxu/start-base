@@ -32,6 +32,5 @@ describe('SettingsModalComponent', () => {
     const component = fixture.componentInstance;
     expect(component).toBeTruthy();
     expect(component.formTitle).toBe('Start Base');
-    expect(component.formTheme).toBe('emerald');
   });
 });

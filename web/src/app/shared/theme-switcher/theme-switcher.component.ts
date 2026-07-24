@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { LucidePalette, LucideCheck } from '@lucide/angular';
 import { ConfigService } from '../../core/services/config.service';
 
@@ -22,28 +22,34 @@ export type ThemeName = (typeof SUPPORTED_THEMES)[number];
   selector: 'app-theme-switcher',
   standalone: true,
   imports: [LucidePalette, LucideCheck],
-  styles: [`
-    :host {
-      display: inline-block;
-    }
+  styles: [
+    `
+      :host {
+        display: inline-block;
+      }
 
-    /* Ensure DaisyUI dropdown content is non-interactive and hidden when not focused */
-    .dropdown:not(:focus-within):not(.dropdown-open) > .dropdown-content {
-      pointer-events: none !important;
-      visibility: hidden !important;
-    }
-  `],
+      /* Ensure DaisyUI dropdown content is non-interactive and hidden when not focused */
+      .dropdown:not(:focus-within):not(.dropdown-open) > .dropdown-content {
+        pointer-events: none !important;
+        visibility: hidden !important;
+      }
+    `,
+  ],
   template: `
     <!-- Theme Switcher Dropdown (DaisyUI Method 3: CSS focus) -->
-    <div class="dropdown dropdown-end">
+    <div class="dropdown" [class]="position()">
       <div
         tabindex="0"
         role="button"
         id="btn-theme-dropdown"
-        class="btn btn-sm btn-ghost btn-square"
+        class="btn btn-sm btn-ghost gap-2 capitalize"
+        [class.btn-square]="!showLabel()"
         title="Theme Switcher"
       >
         <svg lucidePalette class="w-4 h-4"></svg>
+        @if (showLabel()) {
+          <span class="text-xs font-medium">{{ configService.theme() }}</span>
+        }
       </div>
       <ul
         tabindex="0"
@@ -65,7 +71,7 @@ export type ThemeName = (typeof SUPPORTED_THEMES)[number];
                 {{ t }}
               </span>
               @if (configService.theme() === t) {
-                <svg lucideCheck class="w-3.5 h-3.5 text-primary shrink-0"></svg>
+                <svg lucideCheck class="w-3.5 h-3.5 text-secondary shrink-0"></svg>
               }
             </button>
           </li>
@@ -77,6 +83,9 @@ export type ThemeName = (typeof SUPPORTED_THEMES)[number];
 export class ThemeSwitcherComponent {
   configService = inject(ConfigService);
   themes = SUPPORTED_THEMES;
+
+  showLabel = input<boolean>(false);
+  position = input<string>('dropdown-end');
 
   selectTheme(theme: string): void {
     this.configService.selectTheme(theme);
