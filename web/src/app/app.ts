@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HomeComponent } from './features/home/home.component';
+import { ConfigService } from './core/services/config.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,6 @@ import { HomeComponent } from './features/home/home.component';
   imports: [HomeComponent],
   template: `<app-home />`,
 })
-export class App {}
+export class App {
+  configService = inject(ConfigService);
+}
