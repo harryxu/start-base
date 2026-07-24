@@ -30,7 +30,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
     >
       <!-- Group header -->
       <div
-        class="collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 bg-base-200/40 select-none cursor-pointer"
+        class="collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 bg-base-200/80 select-none cursor-pointer"
         (click)="toggleCollapse()"
       >
         <span class="text-sm font-semibold text-base-content flex-1">
@@ -58,7 +58,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
           [cdkDropListData]="sites()"
           [cdkDropListConnectedTo]="allSiteDropListIds()"
           (cdkDropListDropped)="siteDropped.emit($event)"
-          class="flex flex-wrap gap-1 p-3 min-h-20 bg-base-100 rounded-b-xl"
+          class="flex flex-wrap gap-1 p-3 min-h-20"
         >
           @for (site of sites(); track site.id) {
             <div
@@ -69,7 +69,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
             >
               <div
                 *cdkDragPlaceholder
-                class="w-[72px] h-[66px] rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"
+                class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"
               ></div>
               <app-site-card
                 #siteCard
@@ -90,7 +90,7 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
       <ng-template #groupMenu>
         <div
           cdkMenu
-          class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-[140px] z-50 flex flex-col gap-1"
+          class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-35 z-50 flex flex-col gap-1"
         >
           <button
             cdkMenuItem
