@@ -29,14 +29,14 @@ import { ConfigService } from '../../core/services/config.service';
       [class.collapse-open]="!collapsed()"
       [class.collapse-close]="collapsed()"
       [class.border-base-300]="!configService.bgUrl()"
-      [class.border-base-300/70]="configService.bgUrl()"
+      [class.border-base-300/50]="configService.bgUrl()"
       [class.backdrop-blur-md]="configService.bgUrl()"
     >
       <!-- Group header -->
       <div
         class="collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 select-none cursor-pointer"
-        [class.bg-base-200/80]="!configService.bgUrl()"
-        [class.bg-base-200/50]="configService.bgUrl()"
+        [class.bg-base-200]="!configService.bgUrl()"
+        [class.bg-base-200/60]="configService.bgUrl()"
         [class.backdrop-blur-sm]="configService.bgUrl()"
         (click)="toggleCollapse()"
       >
@@ -60,7 +60,7 @@ import { ConfigService } from '../../core/services/config.service';
       <div
         class="collapse-content p-0 rounded-b-xl"
         [class.bg-base-100]="!configService.bgUrl()"
-        [class.bg-base-100/35]="configService.bgUrl()"
+        [class.bg-base-100/50]="configService.bgUrl()"
         [class.backdrop-blur-sm]="configService.bgUrl()"
       >
         <div
