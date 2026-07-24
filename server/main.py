@@ -8,8 +8,11 @@ from sqlmodel import SQLModel
 
 from app.database import engine
 from app.routers import config, groups, sites, system
+import mimetypes
 import os
 from fastapi.staticfiles import StaticFiles
+
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 
 @asynccontextmanager
