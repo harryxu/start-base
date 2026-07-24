@@ -14,7 +14,7 @@ router = APIRouter(prefix="/api/config", tags=["config"])
 # Known default system configurations
 DEFAULT_CONFIGS: Dict[str, Any] = {
     "page_title": "Start Base",
-    "theme": "system",
+    "theme": "emerald",
 }
 
 

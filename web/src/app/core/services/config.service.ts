@@ -3,7 +3,21 @@ import { Title } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
 
-export type ThemeMode = 'system' | 'light' | 'dark';
+export const SUPPORTED_THEMES = [
+  'light',
+  'cupcake',
+  'emerald',
+  'corporate',
+  'pastel',
+  'fantasy',
+  'coffee',
+  'night',
+  'nord',
+  'dim',
+  'dracula',
+] as const;
+
+export type ThemeName = (typeof SUPPORTED_THEMES)[number];
 
 @Injectable({ providedIn: 'root' })
 export class ConfigService {
@@ -11,7 +25,7 @@ export class ConfigService {
   private titleService = inject(Title);
 
   pageTitle = signal<string>('Start Base');
-  theme = signal<ThemeMode>('system');
+  theme = signal<string>('emerald');
 
   constructor() {
     // Title effect
@@ -28,15 +42,6 @@ export class ConfigService {
       this.applyTheme(currentTheme);
     });
 
-    // Listen for system theme changes when in system mode
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-        if (this.theme() === 'system') {
-          this.applyTheme('system');
-        }
-      });
-    }
-
     this.loadConfig();
   }
 
@@ -47,7 +52,9 @@ export class ConfigService {
         this.pageTitle.set(config['page_title']);
       }
       if (config['theme']) {
-        this.theme.set(config['theme'] as ThemeMode);
+        this.theme.set(config['theme']);
+      } else {
+        this.theme.set('emerald');
       }
     } catch (err) {
       console.error('Failed to load system config:', err);
@@ -61,7 +68,7 @@ export class ConfigService {
         this.pageTitle.set(res['page_title']);
       }
       if (res['theme']) {
-        this.theme.set(res['theme'] as ThemeMode);
+        this.theme.set(res['theme']);
       }
     } catch (err) {
       console.error('Failed to update system config:', err);
@@ -69,21 +76,14 @@ export class ConfigService {
     }
   }
 
-  private applyTheme(mode: ThemeMode): void {
+  async selectTheme(themeName: string): Promise<void> {
+    this.theme.set(themeName);
+    await this.updateConfig({ theme: themeName });
+  }
+
+  private applyTheme(targetTheme: string): void {
     if (typeof document === 'undefined') return;
-
-    let targetTheme = mode;
-    if (mode === 'system') {
-      const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      targetTheme = isDark ? 'dark' : 'light';
-    }
-
     const htmlEl = document.documentElement;
-    htmlEl.setAttribute('data-theme', targetTheme);
-    if (targetTheme === 'dark') {
-      htmlEl.classList.add('dark');
-    } else {
-      htmlEl.classList.remove('dark');
-    }
+    htmlEl.setAttribute('data-theme', targetTheme || 'emerald');
   }
 }

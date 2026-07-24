@@ -1,8 +1,8 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { LucideX, LucideSettings, LucideSun, LucideMoon, LucideLaptop } from '@lucide/angular';
+import { LucideX, LucideSettings } from '@lucide/angular';
 
-import { ConfigService, ThemeMode } from '../../core/services/config.service';
+import { ConfigService, SUPPORTED_THEMES } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-settings-modal',
@@ -52,42 +52,24 @@ import { ConfigService, ThemeMode } from '../../core/services/config.service';
 
           <!-- Theme -->
           <div class="flex flex-col gap-2">
-            <label class="text-xs font-medium text-base-content/70">
-              Theme Mode
-            </label>
-            <div class="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                id="theme-system"
-                class="btn btn-outline btn-sm flex flex-col gap-1 h-auto py-2"
-                [class.btn-primary]="formTheme === 'system'"
-                [class.btn-active]="formTheme === 'system'"
-                (click)="formTheme = 'system'"
-              >
-                <span class="text-xs">System</span>
-              </button>
-
-              <button
-                type="button"
-                id="theme-light"
-                class="btn btn-outline btn-sm flex flex-col gap-1 h-auto py-2"
-                [class.btn-primary]="formTheme === 'light'"
-                [class.btn-active]="formTheme === 'light'"
-                (click)="formTheme = 'light'"
-              >
-                <span class="text-xs">Light</span>
-              </button>
-
-              <button
-                type="button"
-                id="theme-dark"
-                class="btn btn-outline btn-sm flex flex-col gap-1 h-auto py-2"
-                [class.btn-primary]="formTheme === 'dark'"
-                [class.btn-active]="formTheme === 'dark'"
-                (click)="formTheme = 'dark'"
-              >
-                <span class="text-xs">Dark</span>
-              </button>
+            <label class="text-xs font-medium text-base-content/70"> System Theme </label>
+            <div class="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto p-1">
+              @for (t of themes; track t) {
+                <button
+                  type="button"
+                  [id]="'theme-' + t"
+                  class="btn btn-outline btn-sm flex items-center justify-start gap-2 capitalize h-auto py-2 text-xs"
+                  [class.btn-primary]="formTheme === t"
+                  [class.btn-active]="formTheme === t"
+                  (click)="formTheme = t"
+                >
+                  <span
+                    class="w-2.5 h-2.5 rounded-full border border-base-content/20 bg-primary inline-block shrink-0"
+                    [attr.data-theme]="t"
+                  ></span>
+                  <span class="truncate">{{ t }}</span>
+                </button>
+              }
             </div>
           </div>
 
@@ -119,8 +101,9 @@ export class SettingsModalComponent {
 
   closed = output<void>();
 
+  themes = SUPPORTED_THEMES;
   formTitle = this.configService.pageTitle();
-  formTheme: ThemeMode = this.configService.theme();
+  formTheme: string = this.configService.theme();
   saving = signal(false);
 
   async onSubmit(): Promise<void> {

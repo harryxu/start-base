@@ -27,11 +27,11 @@ describe('SettingsModalComponent', () => {
   it('should create the component and handle initial config request', () => {
     const fixture = TestBed.createComponent(SettingsModalComponent);
     const req = httpMock.expectOne('http://localhost:5600/api/config/');
-    req.flush({ page_title: 'Start Base', theme: 'system' });
+    req.flush({ page_title: 'Start Base', theme: 'emerald' });
 
     const component = fixture.componentInstance;
     expect(component).toBeTruthy();
     expect(component.formTitle).toBe('Start Base');
-    expect(component.formTheme).toBe('system');
+    expect(component.formTheme).toBe('emerald');
   });
 });

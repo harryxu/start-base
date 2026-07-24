@@ -1,6 +1,17 @@
 @import 'tailwindcss';
 @plugin "daisyui" {
-  themes: emerald --default;
+  themes:
+    light,
+    cupcake,
+    emerald --default,
+    corporate,
+    pastel,
+    fantasy,
+    coffee,
+    night,
+    nord,
+    dim,
+    dracula;
 }
 
 /* Inter font (loaded via index.html) */
