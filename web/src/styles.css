@@ -7,9 +7,10 @@
     corporate,
     pastel,
     fantasy,
+    business,
     coffee,
     night,
-    nord,
+    dark,
     dim,
     dracula;
 }
@@ -85,4 +86,3 @@
     outline-offset: 0;
   }
 }
-

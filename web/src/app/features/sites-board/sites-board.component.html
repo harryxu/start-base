@@ -1,0 +1,82 @@
+<main class="max-w-5xl mx-auto px-6 py-6 relative">
+  <app-external-drop-zone (droppedUrl)="externalSiteDropped.emit($event)" />
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+  <div class="flex items-center gap-2 justify-center py-20 text-neutral-content">
+    <span class="loading loading-spinner loading-xs"></span>
+    Loading…
+  </div>
+  }
+
+  <!-- Error state -->
+  @else if (isError()) {
+  <div class="flex flex-col items-center justify-center py-20 text-center">
+    <p class="text-error text-sm font-medium">Failed to load data</p>
+    <p class="text-error text-xs mt-1">
+      Make sure the server is running.
+    </p>
+  </div>
+  }
+
+  <!-- Empty state -->
+  @else if (layoutRows().length === 0) {
+  <div class="flex flex-col items-center justify-center py-24 text-center">
+    <div class="w-14 h-14 rounded-2xl bg-base-200 flex items-center justify-center mb-4 cursor-pointer"
+      (click)="addSite.emit()">
+      <svg lucidePlus class="w-6 h-6 text-base-content"></svg>
+    </div>
+    <p class="text-base-content text-sm font-medium">No sites yet</p>
+    <p class="text-base-content text-xs mt-1 max-w-xs">
+      Click "Add Site" to get started, or drag a favicon from your browser address bar.
+    </p>
+  </div>
+  }
+
+  @else {
+  <!-- Unified Operations View -->
+  <div class="space-y-4">
+    <!-- ---- UNGROUPED ROW ---- -->
+    <div cdkDropList cdkDropListOrientation="mixed" id="ungrouped-0" [cdkDropListData]="localUngroupedSites()"
+      [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="onSiteDrop($event)"
+      class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-transparent">
+      @for (site of localUngroupedSites(); track site.id) {
+      <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
+        (cdkDragStarted)="closeAllMenus()">
+        <div *cdkDragPlaceholder
+          class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
+        <app-site-card [site]="site" [isFetching]="isSiteFetching(site.id)" (editSite)="editSite.emit($event)"
+          (deleteSite)="deleteSite.emit($event)" />
+      </div>
+      }
+    </div>
+
+    <!-- OUTER cdkDropList: handles row (section) reordering. -->
+    <div cdkDropList cdkDropListOrientation="vertical" [cdkDropListData]="localGroupRows()"
+      (cdkDropListDropped)="onRowDrop($event)" class="space-y-4 min-h-24">
+      @for (row of localGroupRows(); track row.id) {
+      <div cdkDrag [cdkDragData]="row" (cdkDragStarted)="closeAllMenus()" class="relative group">
+        <!-- Drag placeholder shown while the row is being dragged -->
+        <div *cdkDragPlaceholder class="h-16 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5"></div>
+
+        <!-- Drag handle -->
+        <div cdkDragHandle
+          class="drag-handle absolute top-3.5 left-3 z-10 cursor-grab text-base-content/30 hover:text-base-content/60 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+          title="Drag to reorder group">
+          <svg lucideGripVertical class="w-4 h-4"></svg>
+        </div>
+
+        <!-- GROUP ROW -->
+        @if (row.type === 'group') {
+        <app-group-container class="block" [group]="row.group" [sites]="row.sites"
+          [allSiteDropListIds]="allSiteDropListIds()" [fetchingSiteIds]="fetchingSiteIds()"
+          (siteDropped)="onSiteDrop($event)" (siteDragStarted)="closeAllMenus()" (editGroup)="editGroup.emit($event)"
+          (deleteGroup)="deleteGroup.emit($event)" (editSite)="editSite.emit($event)"
+          (deleteSite)="deleteSite.emit($event)" />
+        }
+      </div>
+      }
+    </div>
+  </div>
+  }
+</main>

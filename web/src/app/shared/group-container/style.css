@@ -1,0 +1,7 @@
+.site-group {
+  &.app-with-out-bgimg {
+    .group-content {
+      background-color: color-mix(in oklab, var(--color-base-100) 93%, var(--color-base-content));
+    }
+  }
+}

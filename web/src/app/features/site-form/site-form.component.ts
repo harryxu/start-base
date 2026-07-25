@@ -4,7 +4,8 @@ import { LucideGlobe, LucideUpload, LucideX } from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService, API_BASE } from '../../core/api/api.service';
-import type { Group, Site, SiteCreate } from '../../core/models/types';
+import type { Site, SiteCreate } from '../../core/models/types';
+import { BoardService } from '../../core/services/board.service';
 
 @Component({
   selector: 'app-site-form',
@@ -26,7 +27,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
           </h2>
           <button
             class="btn btn-ghost btn-sm btn-square"
-            (click)="cancelled.emit()"
+            (click)="closed.emit()"
             aria-label="Close"
           >
             <svg lucideX class="w-4 h-4"></svg>
@@ -161,7 +162,7 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
 
           <!-- Footer actions -->
           <div class="modal-action mt-2">
-            <button type="button" class="btn btn-ghost btn-sm" (click)="cancelled.emit()">
+            <button type="button" class="btn btn-ghost btn-sm" (click)="closed.emit()">
               Cancel
             </button>
             <button
@@ -180,13 +181,15 @@ import type { Group, Site, SiteCreate } from '../../core/models/types';
 })
 export class SiteFormComponent {
   private api = inject(ApiService);
+  private boardService = inject(BoardService);
 
   site = input<Site | null>(null);
   prefilledUrl = input<string>('');
-  groups = input<Group[]>([]);
 
-  submitted = output<SiteCreate>();
-  cancelled = output<void>();
+  groups = computed(() => this.boardService.groupsQuery.data() ?? []);
+
+  closed = output<void>();
+  cancelled = this.closed;
 
   // Bound form fields
   formUrl = '';
@@ -217,7 +220,6 @@ export class SiteFormComponent {
   });
 
   constructor() {
-    // Populate form when site input changes (edit mode) or when a URL is pre-filled
     effect(() => {
       const s = this.site();
       const url = this.prefilledUrl();
@@ -292,14 +294,21 @@ export class SiteFormComponent {
       }
     }
 
-    this.submitted.emit({
+    const payload: SiteCreate = {
       url: this.formUrl.trim(),
       title: this.formTitle.trim() || null,
       icon_url: this.formIconUrl.trim() || null,
       description: this.formDescription.trim() || null,
       group_id: this.formGroupId,
-    });
+    };
+
+    const editingSite = this.site();
+    if (editingSite) {
+      this.boardService.updateSite(editingSite.id, payload);
+    } else {
+      this.boardService.saveNewSite(payload);
+    }
+
+    this.closed.emit();
   }
 }
-
-
