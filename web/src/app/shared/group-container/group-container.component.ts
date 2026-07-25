@@ -10,7 +10,6 @@ import { ConfigService } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-group-container',
-  styleUrl: './style.css',
   standalone: true,
   imports: [
     SiteCardComponent,
@@ -24,15 +23,28 @@ import { ConfigService } from '../../core/services/config.service';
     LucidePencil,
     LucideTrash2,
   ],
+  styles: [
+    `
+      .site-group {
+        &.app-without-bgimg {
+          .group-content {
+            background-color: color-mix(
+              in oklab,
+              var(--color-base-100) 93%,
+              var(--color-base-content)
+            );
+          }
+        }
+      }
+    `,
+  ],
   template: `
     <div
-      class="site-group collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden"
+      class="site-group collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden border-base-300/60"
       [class.app-with-bgimg]="configService.bgUrl()"
-      [class.app-without-bgimg]="configService.bgUrl()"
+      [class.app-without-bgimg]="!configService.bgUrl()"
       [class.collapse-open]="!collapsed()"
       [class.collapse-close]="collapsed()"
-      [class.border-base-300]="!configService.bgUrl()"
-      [class.border-base-300/50]="configService.bgUrl()"
       [class.backdrop-blur-md]="configService.bgUrl()"
     >
       <!-- Group header -->

@@ -6,6 +6,7 @@ import { LongPressDirective } from '../long-press.directive';
 import { API_BASE } from '../../core/api/api.service';
 import type { Site } from '../../core/models/types';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
+import { ConfigService } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-site-card',
@@ -23,6 +24,10 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
     <div
       class="site-card"
       [class.is-floating]="isMenuOpen()"
+      [class.app-with-bgimg]="configService.bgUrl()"
+      [class.app-without-bgimg]="!configService.bgUrl()"
+      [class.grouped]="!!site().group_id"
+      [class.ungrouped]="!site().group_id"
       [cdkContextMenuTriggerFor]="menu"
       #trigger="cdkContextMenuTriggerFor"
       (cdkContextMenuOpened)="onContextMenuOpened()"
@@ -140,11 +145,22 @@ import { GlobalMenuService } from '../../core/services/global-menu.service';
             white-space: nowrap;
           }
         }
+
+        &.app-with-bgimg.ungrouped {
+          .site-link {
+            .site-title {
+              text-shadow:
+                0 0 3px color-mix(in oklab, var(--color-base-100) 60%, transparent),
+                0 0 8px color-mix(in oklab, var(--color-base-100) 50%, transparent);
+            }
+          }
+        }
       }
     `,
   ],
 })
 export class SiteCardComponent {
+  configService = inject(ConfigService);
   site = input.required<Site>();
   isFetching = input<boolean>(false);
 
