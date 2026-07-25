@@ -29,9 +29,7 @@
     <app-site-form
       [site]="editingSite()"
       [prefilledUrl]="prefilledUrl()"
-      [groups]="boardService.groupsQuery.data() ?? []"
-      (submitted)="onSiteFormSubmit($event)"
-      (cancelled)="closeSiteForm()"
+      (closed)="closeSiteForm()"
     />
   }
 
@@ -39,8 +37,7 @@
   @if (showGroupForm()) {
     <app-group-form
       [group]="editingGroup()"
-      (submitted)="onGroupFormSubmit($event)"
-      (cancelled)="closeGroupForm()"
+      (closed)="closeGroupForm()"
     />
   }
 

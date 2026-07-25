@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { ConfigService } from '../../core/services/config.service';
 import { ApiService, API_BASE } from '../../core/api/api.service';
-import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.component';
+import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switcher.component';
 
 @Component({
   selector: 'app-settings-modal',

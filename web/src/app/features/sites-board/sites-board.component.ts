@@ -25,10 +25,10 @@ import type {
   ReorderItem,
   Site,
   SiteReorderItem,
-} from '../../../../core/models/types';
-import { GroupContainerComponent } from '../../../../shared/group-container/group-container.component';
-import { SiteCardComponent } from '../../../../shared/site-card/site-card.component';
-import { ExternalDropZoneComponent } from '../../../../shared/external-drop-zone/external-drop-zone.component';
+} from '../../core/models/types';
+import { GroupContainerComponent } from '../../shared/group-container/group-container.component';
+import { SiteCardComponent } from '../../shared/site-card/site-card.component';
+import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/external-drop-zone.component';
 
 @Component({
   selector: 'app-sites-board',

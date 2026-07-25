@@ -1,8 +1,9 @@
-import { Component, effect, input, output } from '@angular/core';
+import { Component, effect, inject, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LucideX } from '@lucide/angular';
 
-import type { Group, GroupCreate } from '../../core/models/types';
+import type { Group } from '../../core/models/types';
+import { BoardService } from '../../core/services/board.service';
 
 @Component({
   selector: 'app-group-form',
@@ -24,7 +25,7 @@ import type { Group, GroupCreate } from '../../core/models/types';
           </h2>
           <button
             class="btn btn-ghost btn-sm btn-square"
-            (click)="cancelled.emit()"
+            (click)="closed.emit()"
             aria-label="Close"
           >
             <svg lucideX class="w-4 h-4"></svg>
@@ -51,7 +52,7 @@ import type { Group, GroupCreate } from '../../core/models/types';
 
           <!-- Footer actions -->
           <div class="modal-action mt-2">
-            <button type="button" class="btn btn-ghost btn-sm" (click)="cancelled.emit()">
+            <button type="button" class="btn btn-ghost btn-sm" (click)="closed.emit()">
               Cancel
             </button>
             <button
@@ -69,10 +70,11 @@ import type { Group, GroupCreate } from '../../core/models/types';
   `,
 })
 export class GroupFormComponent {
+  private boardService = inject(BoardService);
+
   group = input<Group | null>(null);
 
-  submitted = output<GroupCreate>();
-  cancelled = output<void>();
+  closed = output<void>();
 
   // Bound form fields
   formName = '';
@@ -89,10 +91,18 @@ export class GroupFormComponent {
   }
 
   onSubmit(): void {
-    if (!this.formName.trim()) return;
+    const trimmedName = this.formName.trim();
+    if (!trimmedName) return;
 
-    this.submitted.emit({
-      name: this.formName.trim(),
-    });
+    const editingGroup = this.group();
+    if (editingGroup) {
+      if (trimmedName !== editingGroup.name) {
+        this.boardService.updateGroup(editingGroup.id, trimmedName);
+      }
+    } else {
+      this.boardService.saveNewGroup(trimmedName);
+    }
+
+    this.closed.emit();
   }
 }

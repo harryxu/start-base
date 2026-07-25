@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { describe, beforeEach, it, expect } from 'vitest';
 
 import { SitesBoardComponent } from './sites-board.component';
-import type { Group, Site } from '../../../../core/models/types';
+import type { Group, Site } from '../../core/models/types';
 
 describe('SitesBoardComponent', () => {
   beforeEach(async () => {

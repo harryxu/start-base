@@ -1,14 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
 
-import type { Group, GroupCreate, Site, SiteCreate } from '../../core/models/types';
-import { SiteFormComponent } from '../../shared/site-form/site-form.component';
-import { GroupFormComponent } from '../../shared/group-form/group-form.component';
+import type { Group, Site } from '../../core/models/types';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { HeaderComponent } from '../../shared/header/header.component';
-import { SettingsModalComponent } from '../../shared/settings-modal/settings-modal.component';
 import { ConfigService } from '../../core/services/config.service';
 import { BoardService } from '../../core/services/board.service';
-import { SitesBoardComponent } from './components/sites-board/sites-board.component';
+import { SitesBoardComponent } from '../sites-board/sites-board.component';
+import { SiteFormComponent } from '../site-form/site-form.component';
+import { GroupFormComponent } from '../group-form/group-form.component';
+import { SettingsModalComponent } from '../settings-modal/settings-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -62,16 +62,6 @@ export class HomeComponent {
     this.prefilledUrl.set('');
   }
 
-  onSiteFormSubmit(data: SiteCreate): void {
-    const editing = this.editingSite();
-    if (editing) {
-      this.boardService.updateSite(editing.id, data);
-    } else {
-      this.boardService.saveNewSite(data);
-    }
-    this.closeSiteForm();
-  }
-
   onExternalSiteDropped(url: string): void {
     if (!url) return;
     this.boardService.saveNewSite({ url });
@@ -108,18 +98,6 @@ export class HomeComponent {
   closeGroupForm(): void {
     this.showGroupForm.set(false);
     this.editingGroup.set(null);
-  }
-
-  onGroupFormSubmit(data: GroupCreate): void {
-    const editing = this.editingGroup();
-    if (editing) {
-      if (data.name !== editing.name) {
-        this.boardService.updateGroup(editing.id, data.name);
-      }
-    } else {
-      this.boardService.saveNewGroup(data.name);
-    }
-    this.closeGroupForm();
   }
 
   onDeleteGroup(group: Group): void {
