@@ -15,7 +15,7 @@ export type { ThemeName };
 export class ConfigService {
   private api = inject(ApiService);
   private titleService = inject(Title);
-  private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute, { optional: true });
 
   pageTitle = signal<string>('Start Base');
   theme = signal<string>('emerald');
@@ -57,7 +57,7 @@ export class ConfigService {
         this.theme.set('emerald');
       }
 
-      if (config['bg_url'] !== undefined && !this.route.snapshot.queryParams['nbm']) {
+      if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
     } catch (err) {
@@ -74,7 +74,7 @@ export class ConfigService {
       if (res['theme']) {
         this.theme.set(res['theme']);
       }
-      if (res['bg_url'] !== undefined && !this.route.snapshot.queryParams['nbm']) {
+      if (res['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((res['bg_url'] || '').trim() || null);
       }
     } catch (err) {
