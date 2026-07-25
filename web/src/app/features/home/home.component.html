@@ -1,67 +1,43 @@
-<div
-  class="min-h-screen bg-cover bg-center bg-fixed bg-no-repeat"
-  [class.bg-base-100/90]="!configService.bgUrl()"
+<div class="min-h-screen bg-cover bg-center bg-fixed bg-no-repeat" [class.bg-base-100/90]="!configService.bgUrl()"
   [class.has-bg-image]="configService.bgUrl()"
-  [style.background-image]="configService.fullBgUrl() ? 'url(' + configService.fullBgUrl() + ')' : null"
->
+  [style.background-image]="configService.fullBgUrl() ? 'url(' + configService.fullBgUrl() + ')' : null">
   <!-- ===== HEADER ===== -->
   <app-header (addSite)="openAddSiteForm()" (addGroup)="openAddGroupDialog()" (openSettings)="openSettingsModal()" />
 
   <!-- ===== MAIN BOARD ===== -->
-  <app-sites-board
-    [sites]="boardService.sitesQuery.data() ?? []"
-    [groups]="boardService.groupsQuery.data() ?? []"
+  <app-sites-board [sites]="boardService.sitesQuery.data() ?? []" [groups]="boardService.groupsQuery.data() ?? []"
     [isLoading]="boardService.sitesQuery.isLoading() || boardService.groupsQuery.isLoading()"
     [isError]="boardService.sitesQuery.isError() || boardService.groupsQuery.isError()"
-    [fetchingSiteIds]="boardService.fetchingSiteIds()"
-    (addSite)="openAddSiteForm()"
-    (editSite)="openEditSiteForm($event)"
-    (deleteSite)="onDeleteSite($event)"
-    (editGroup)="onEditGroup($event)"
-    (deleteGroup)="onDeleteGroup($event)"
-    (reorderGroups)="boardService.reorderGroups($event)"
-    (reorderSites)="boardService.reorderSites($event)"
-    (externalSiteDropped)="onExternalSiteDropped($event)"
-  />
+    [fetchingSiteIds]="boardService.fetchingSiteIds()" (addSite)="openAddSiteForm()"
+    (editSite)="openEditSiteForm($event)" (deleteSite)="onDeleteSite($event)" (editGroup)="onEditGroup($event)"
+    (deleteGroup)="onDeleteGroup($event)" (reorderGroups)="boardService.reorderGroups($event)"
+    (reorderSites)="boardService.reorderSites($event)" (externalSiteDropped)="onExternalSiteDropped($event)" />
 
   <!-- ===== SITE FORM MODAL ===== -->
   @if (showSiteForm()) {
-    <app-site-form
-      [site]="editingSite()"
-      [prefilledUrl]="prefilledUrl()"
-      (closed)="closeSiteForm()"
-    />
+  <app-site-form [site]="editingSite()" [prefilledUrl]="prefilledUrl()" (closed)="closeSiteForm()" />
   }
 
   <!-- ===== GROUP FORM MODAL ===== -->
   @if (showGroupForm()) {
-    <app-group-form
-      [group]="editingGroup()"
-      (closed)="closeGroupForm()"
-    />
+  <app-group-form [group]="editingGroup()" (closed)="closeGroupForm()" />
   }
 
   <!-- ===== SETTINGS MODAL ===== -->
   @if (showSettingsForm()) {
-    <app-settings-modal (closed)="closeSettingsModal()" />
+  <app-settings-modal (closed)="closeSettingsModal()" />
   }
 
   <!-- ===== DELETE CONFIRMATIONS ===== -->
   @if (deletingSite()) {
-    <app-confirm-dialog
-      title="Delete Site"
-      [message]="'Are you sure you want to delete \'' + (deletingSite()!.title || deletingSite()!.url) + '\'?'"
-      (confirmed)="confirmDeleteSite()"
-      (cancelled)="cancelDeleteSite()"
-    />
+  <app-confirm-dialog title="Delete Site"
+    [message]="'Are you sure you want to delete \'' + (deletingSite()!.title || deletingSite()!.url) + '\'?'"
+    (confirmed)="confirmDeleteSite()" (cancelled)="cancelDeleteSite()" />
   }
 
   @if (deletingGroup()) {
-    <app-confirm-dialog
-      title="Delete Group"
-      [message]="'Delete group \'' + deletingGroup()!.name + '\'?\n\nSites in this group will become ungrouped.'"
-      (confirmed)="confirmDeleteGroup()"
-      (cancelled)="cancelDeleteGroup()"
-    />
+  <app-confirm-dialog title="Delete Group"
+    [message]="'Delete group \'' + deletingGroup()!.name + '\'?\n\nSites in this group will become ungrouped.'"
+    (confirmed)="confirmDeleteGroup()" (cancelled)="cancelDeleteGroup()" />
   }
 </div>

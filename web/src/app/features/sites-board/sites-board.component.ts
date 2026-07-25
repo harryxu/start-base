@@ -19,13 +19,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { LucideGripVertical, LucidePlus } from '@lucide/angular';
 
-import type {
-  Group,
-  LayoutRow,
-  ReorderItem,
-  Site,
-  SiteReorderItem,
-} from '../../core/models/types';
+import type { Group, LayoutRow, ReorderItem, Site, SiteReorderItem } from '../../core/models/types';
 import { GroupContainerComponent } from '../../shared/group-container/group-container.component';
 import { SiteCardComponent } from '../../shared/site-card/site-card.component';
 import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/external-drop-zone.component';
@@ -76,6 +70,7 @@ export class SitesBoardComponent {
 
   /** Mutable copy of the ungrouped sites for drag-and-drop animations. */
   localUngroupedSites = signal<Site[]>([]);
+
   /** Mutable copy of the group rows for drag-and-drop animations. */
   localGroupRows = signal<LayoutRow[]>([]);
 
