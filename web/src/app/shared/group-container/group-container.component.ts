@@ -37,9 +37,9 @@ import { ConfigService } from '../../core/services/config.service';
     >
       <!-- Group header -->
       <div
-        class="group-header collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 select-none cursor-pointer"
+        class="group-header collapse-title flex items-center justify-between min-h-0 py-1.5 pl-9 pr-12 select-none cursor-pointer"
         [class.bg-base-200]="!configService.bgUrl()"
-        [class.bg-base-200/60]="configService.bgUrl()"
+        [class.bg-base-200/70]="configService.bgUrl()"
         [class.backdrop-blur-sm]="configService.bgUrl()"
         (click)="toggleCollapse()"
       >

@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Service, inject, signal } from '@angular/core';
 import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { firstValueFrom } from 'rxjs';
 
@@ -14,7 +14,7 @@ import type {
   SiteUpdate,
 } from '../models/types';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class BoardService {
   private api = inject(ApiService);
   private queryClient = inject(QueryClient);

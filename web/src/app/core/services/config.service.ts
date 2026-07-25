@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, inject, signal } from '@angular/core';
+import { Service, computed, effect, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -11,7 +11,7 @@ import {
 export { SUPPORTED_THEMES };
 export type { ThemeName };
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class ConfigService {
   private api = inject(ApiService);
   private titleService = inject(Title);
