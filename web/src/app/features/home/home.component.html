@@ -9,18 +9,18 @@
 
   <!-- ===== MAIN BOARD ===== -->
   <app-sites-board
-    [sites]="sitesQuery.data() ?? []"
-    [groups]="groupsQuery.data() ?? []"
-    [isLoading]="sitesQuery.isLoading() || groupsQuery.isLoading()"
-    [isError]="sitesQuery.isError() || groupsQuery.isError()"
-    [fetchingSiteIds]="fetchingSiteIds()"
+    [sites]="boardService.sitesQuery.data() ?? []"
+    [groups]="boardService.groupsQuery.data() ?? []"
+    [isLoading]="boardService.sitesQuery.isLoading() || boardService.groupsQuery.isLoading()"
+    [isError]="boardService.sitesQuery.isError() || boardService.groupsQuery.isError()"
+    [fetchingSiteIds]="boardService.fetchingSiteIds()"
     (addSite)="openAddSiteForm()"
     (editSite)="openEditSiteForm($event)"
     (deleteSite)="onDeleteSite($event)"
     (editGroup)="onEditGroup($event)"
     (deleteGroup)="onDeleteGroup($event)"
-    (reorderGroups)="reorderGroupsMutation.mutate($event)"
-    (reorderSites)="reorderSitesMutation.mutate($event)"
+    (reorderGroups)="boardService.reorderGroups($event)"
+    (reorderSites)="boardService.reorderSites($event)"
     (externalSiteDropped)="onExternalSiteDropped($event)"
   />
 
@@ -29,7 +29,7 @@
     <app-site-form
       [site]="editingSite()"
       [prefilledUrl]="prefilledUrl()"
-      [groups]="groupsQuery.data() ?? []"
+      [groups]="boardService.groupsQuery.data() ?? []"
       (submitted)="onSiteFormSubmit($event)"
       (cancelled)="closeSiteForm()"
     />
