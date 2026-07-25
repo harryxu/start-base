@@ -1,5 +1,5 @@
 import { Component, input, output, signal, ViewChild, inject } from '@angular/core';
-import { LucideMoreHorizontal, LucidePencil, LucideTrash2 } from '@lucide/angular';
+import { LucideEllipsis, LucidePencil, LucideTrash2 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
 
@@ -10,6 +10,7 @@ import { ConfigService } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-group-container',
+  styleUrl: './style.css',
   standalone: true,
   imports: [
     SiteCardComponent,
@@ -19,13 +20,15 @@ import { ConfigService } from '../../core/services/config.service';
     CdkDropList,
     CdkDrag,
     CdkDragPlaceholder,
-    LucideMoreHorizontal,
+    LucideEllipsis,
     LucidePencil,
     LucideTrash2,
   ],
   template: `
     <div
-      class="collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden"
+      class="site-group collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden"
+      [class.app-with-bgimg]="configService.bgUrl()"
+      [class.app-without-bgimg]="configService.bgUrl()"
       [class.collapse-open]="!collapsed()"
       [class.collapse-close]="collapsed()"
       [class.border-base-300]="!configService.bgUrl()"
@@ -34,7 +37,7 @@ import { ConfigService } from '../../core/services/config.service';
     >
       <!-- Group header -->
       <div
-        class="collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 select-none cursor-pointer"
+        class="group-header collapse-title flex items-center justify-between min-h-0 py-2.5 pl-9 pr-12 select-none cursor-pointer"
         [class.bg-base-200]="!configService.bgUrl()"
         [class.bg-base-200/60]="configService.bgUrl()"
         [class.backdrop-blur-sm]="configService.bgUrl()"
@@ -52,13 +55,13 @@ import { ConfigService } from '../../core/services/config.service';
           class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
           title="Group actions"
         >
-          <svg lucideMoreHorizontal class="w-4 h-4"></svg>
+          <svg lucideEllipsis class="w-4 h-4"></svg>
         </button>
       </div>
 
       <!-- Sites grid inside collapse-content -->
       <div
-        class="collapse-content p-0 rounded-b-xl"
+        class="group-content collapse-content p-0 rounded-b-xl"
         [class.bg-base-100]="!configService.bgUrl()"
         [class.bg-base-100/50]="configService.bgUrl()"
         [class.backdrop-blur-sm]="configService.bgUrl()"

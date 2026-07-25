@@ -10,8 +10,9 @@ export const SUPPORTED_THEMES = [
   'pastel',
   'fantasy',
   'coffee',
+  'business',
   'night',
-  'nord',
+  'dark',
   'dim',
   'dracula',
 ] as const;

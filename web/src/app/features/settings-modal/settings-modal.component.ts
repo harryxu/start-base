@@ -73,8 +73,14 @@ import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switch
             <div class="flex items-center gap-3">
               <!-- Preview Box -->
               @if (previewUrl()) {
-                <div class="relative w-20 h-14 rounded-lg border border-base-300 overflow-hidden shrink-0 group">
-                  <img [src]="previewUrl()" alt="Background Preview" class="w-full h-full object-cover" />
+                <div
+                  class="relative w-20 h-14 rounded-lg border border-base-300 overflow-hidden shrink-0 group"
+                >
+                  <img
+                    [src]="previewUrl()"
+                    alt="Background Preview"
+                    class="w-full h-full object-cover"
+                  />
                   <button
                     type="button"
                     (click)="removeBackground()"
@@ -85,7 +91,9 @@ import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switch
                   </button>
                 </div>
               } @else {
-                <div class="w-20 h-14 rounded-lg border border-dashed border-base-300 flex items-center justify-center bg-base-200/50 shrink-0 text-base-content/40">
+                <div
+                  class="w-20 h-14 rounded-lg border border-dashed border-base-300 flex items-center justify-center bg-base-200/50 shrink-0 text-base-content/40"
+                >
                   <svg lucideImage class="w-6 h-6"></svg>
                 </div>
               }
@@ -119,9 +127,13 @@ import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switch
                     Pending upload: {{ selectedFile.name }}
                   </span>
                 } @else if (configService.bgUrl() && !isBgRemoved) {
-                  <span class="text-[11px] text-base-content/50 truncate">Custom background active</span>
+                  <span class="text-[11px] text-base-content/50 truncate"
+                    >Custom background active</span
+                  >
                 } @else if (isBgRemoved) {
-                  <span class="text-[11px] text-warning truncate">Background will be cleared on save</span>
+                  <span class="text-[11px] text-warning truncate"
+                    >Background will be cleared on save</span
+                  >
                 } @else {
                   <span class="text-[11px] text-base-content/40">No background image set</span>
                 }
@@ -163,7 +175,7 @@ export class SettingsModalComponent {
 
   selectedFile: File | null = null;
   isBgRemoved = false;
-  previewUrl = signal<string>(this.getFormattedUrl(this.configService.bgUrl()));
+  previewUrl = signal<string | null>(this.getFormattedUrl(this.configService.bgUrl()));
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -194,7 +206,7 @@ export class SettingsModalComponent {
 
       if (this.selectedFile) {
         const uploadRes = await firstValueFrom(
-          this.apiService.uploadImage(this.selectedFile, 'backgrounds')
+          this.apiService.uploadImage(this.selectedFile, 'backgrounds'),
         );
         updates['bg_url'] = uploadRes.url;
       } else if (this.isBgRemoved && this.configService.bgUrl()) {
@@ -212,7 +224,7 @@ export class SettingsModalComponent {
     }
   }
 
-  private getFormattedUrl(url: string): string {
+  private getFormattedUrl(url: string | null): string {
     if (!url) return '';
     return url.startsWith('/') ? `${API_BASE}${url}` : url;
   }
