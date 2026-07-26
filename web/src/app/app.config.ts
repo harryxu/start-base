@@ -1,26 +1,17 @@
-import { ApplicationConfig, provideZonelessChangeDetection, isDevMode } from '@angular/core';
-import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
-import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { ApplicationConfig, isDevMode, provideZonelessChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 
-import { routes } from './app.routes';
 import { provideServiceWorker } from '@angular/service-worker';
+import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(),
-    provideAngularQuery(
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 30_000, // 30 s before data is considered stale
-            refetchOnWindowFocus: false,
-          },
-        },
-      }),
-    ),
+    provideTanStackQuery(new QueryClient()),
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
       registrationStrategy: 'registerImmediately',
