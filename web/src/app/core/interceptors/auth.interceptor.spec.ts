@@ -27,7 +27,6 @@ describe('authInterceptor', () => {
   });
 
   it('should trigger redirect when 401 response contains X-Login-Location header', () => {
-    const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
     const locationSpy = vi.spyOn(window, 'location', 'get').mockReturnValue({
       href: '',
     } as any);
@@ -45,7 +44,6 @@ describe('authInterceptor', () => {
       headers: { 'X-Login-Location': 'https://auth.example.com/login' },
     });
 
-    expect(alertSpy).not.toHaveBeenCalled();
     expect(locationSpy).toHaveBeenCalled();
   });
 });

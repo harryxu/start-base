@@ -9,7 +9,7 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
   imports: [LucidePlus, LucideFolderPlus, LucideSettings, ThemeSwitcherComponent],
   template: `
     <header
-      class="navbar sticky top-0 z-30 shadow-sm transition-all duration-200"
+      class="navbar sticky top-0 z-30 shadow-sm transition-all duration-200 min-h-0"
       [class.bg-base-100]="!configService.bgUrl()"
       [class.bg-base-100/35]="configService.bgUrl()"
       [class.backdrop-blur-md]="configService.bgUrl()"

@@ -22,7 +22,7 @@ import { ConfigService } from '../../core/services/config.service';
   ],
   template: `
     <div
-      class="site-card"
+      class="site-card min-w-2"
       [class.is-floating]="isMenuOpen()"
       [class.app-with-bgimg]="configService.bgUrl()"
       [class.app-without-bgimg]="!configService.bgUrl()"
@@ -39,7 +39,7 @@ import { ConfigService } from '../../core/services/config.service';
         [href]="site().url"
         target="_blank"
         rel="noopener noreferrer"
-        class="site-link"
+        class="site-link flex flex-col items-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer select-none [-webkit-touch-callout:none] [-webkit-user-drag:none] py-3 hover:bg-base-200"
         [title]="site().title || displayTitle()"
       >
         @if (showSkeleton()) {
@@ -48,9 +48,7 @@ import { ConfigService } from '../../core/services/config.service';
           <img
             [src]="iconUrl()"
             [alt]="displayTitle()"
-            class="site-icon"
-            width="32"
-            height="32"
+            class="site-icon w-8 h-8 rounded-[7px] object-contain shrink-0"
             (error)="onIconError()"
           />
         } @else {
@@ -60,7 +58,10 @@ import { ConfigService } from '../../core/services/config.service';
             <svg lucideGlobe class="w-5 h-5"></svg>
           </div>
         }
-        <span class="site-title">{{ displayTitle() }}</span>
+        <span
+          class="site-title text-xs sm:text-sm leading-[1.3] text-base-content max-w-full truncate px-1"
+          >{{ displayTitle() }}</span
+        >
       </a>
 
       <!-- CDK Context Menu Template -->
@@ -93,7 +94,6 @@ import { ConfigService } from '../../core/services/config.service';
     `
       .site-card {
         position: relative;
-        width: 72px;
         flex-shrink: 0;
 
         &.is-floating {
@@ -104,45 +104,6 @@ import { ConfigService } from '../../core/services/config.service';
 
           .site-link:hover {
             background: none;
-          }
-        }
-
-        .site-link {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-          padding: 8px 4px 6px;
-          border-radius: 10px;
-          text-decoration: none;
-          width: 100%;
-          text-align: center;
-          position: relative;
-          cursor: pointer;
-          -webkit-touch-callout: none; /* iOS Safari link popup */
-          -webkit-user-drag: none; /* Prevent iOS/Safari drag ghosting */
-          user-select: none; /* Prevent text selection */
-
-          &:hover {
-            background: var(--color-base-200);
-          }
-
-          .site-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 7px;
-            object-fit: contain;
-            flex-shrink: 0;
-          }
-
-          .site-title {
-            font-size: 14px;
-            line-height: 1.3;
-            color: var(--color-base-content);
-            max-width: 70px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
           }
         }
 
