@@ -53,7 +53,7 @@ import { ConfigService } from '../../core/services/config.service';
             <svg lucideGlobe class="w-5 h-5"></svg>
           </div>
         }
-        <span class="site-title">{{ displayTitle() }}</span>
+        <span class="site-title px-1">{{ displayTitle() }}</span>
       </a>
 
       <!-- CDK Context Menu Template -->
@@ -105,7 +105,6 @@ import { ConfigService } from '../../core/services/config.service';
           align-items: center;
           gap: 10px;
           border-radius: 10px;
-          text-decoration: none;
           width: 100%;
           text-align: center;
           position: relative;
