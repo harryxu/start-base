@@ -85,7 +85,7 @@ import { ConfigService } from '../../core/services/config.service';
           [cdkDropListData]="sites()"
           [cdkDropListConnectedTo]="allSiteDropListIds()"
           (cdkDropListDropped)="siteDropped.emit($event)"
-          class="flex flex-wrap gap-1 p-3 min-h-20"
+          class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 p-3 min-h-20"
         >
           @for (site of sites(); track site.id) {
             <div

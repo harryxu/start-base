@@ -1,4 +1,4 @@
-<main class="max-w-5xl mx-auto px-6 py-6 relative">
+<main class="max-w-5xl mx-auto px-2 py-6 relative">
   <app-external-drop-zone (droppedUrl)="externalSiteDropped.emit($event)" />
 
   <!-- Loading state -->
@@ -39,7 +39,7 @@
     <!-- ---- UNGROUPED ROW ---- -->
     <div cdkDropList cdkDropListOrientation="mixed" id="ungrouped-0" [cdkDropListData]="localUngroupedSites()"
       [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="onSiteDrop($event)"
-      class="flex flex-wrap gap-1 min-h-20 p-2 rounded-xl border border-transparent">
+      class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 min-h-20 p-2 rounded-xl border border-transparent">
       @for (site of localUngroupedSites(); track site.id) {
       <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
         (cdkDragStarted)="closeAllMenus()">
