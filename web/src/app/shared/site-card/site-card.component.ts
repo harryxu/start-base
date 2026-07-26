@@ -22,7 +22,7 @@ import { ConfigService } from '../../core/services/config.service';
   ],
   template: `
     <div
-      class="site-card"
+      class="site-card min-w-2"
       [class.is-floating]="isMenuOpen()"
       [class.app-with-bgimg]="configService.bgUrl()"
       [class.app-without-bgimg]="!configService.bgUrl()"
@@ -39,20 +39,13 @@ import { ConfigService } from '../../core/services/config.service';
         [href]="site().url"
         target="_blank"
         rel="noopener noreferrer"
-        class="site-link"
+        class="site-link  py-3"
         [title]="site().title || displayTitle()"
       >
         @if (showSkeleton()) {
           <div class="skeleton w-8 h-8 rounded-[7px] shrink-0"></div>
         } @else if (hasIcon()) {
-          <img
-            [src]="iconUrl()"
-            [alt]="displayTitle()"
-            class="site-icon"
-            width="32"
-            height="32"
-            (error)="onIconError()"
-          />
+          <img [src]="iconUrl()" [alt]="displayTitle()" class="site-icon" (error)="onIconError()" />
         } @else {
           <div
             class="w-8 h-8 rounded-[7px] bg-base-200 flex items-center justify-center text-base-content/60 shrink-0"
@@ -93,7 +86,6 @@ import { ConfigService } from '../../core/services/config.service';
     `
       .site-card {
         position: relative;
-        width: 72px;
         flex-shrink: 0;
 
         &.is-floating {
@@ -112,7 +104,6 @@ import { ConfigService } from '../../core/services/config.service';
           flex-direction: column;
           align-items: center;
           gap: 10px;
-          padding: 8px 4px 6px;
           border-radius: 10px;
           text-decoration: none;
           width: 100%;
@@ -139,7 +130,7 @@ import { ConfigService } from '../../core/services/config.service';
             font-size: 14px;
             line-height: 1.3;
             color: var(--color-base-content);
-            max-width: 70px;
+            max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
