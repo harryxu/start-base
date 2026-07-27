@@ -85,6 +85,12 @@ export class ApiService {
   updateConfig(data: Record<string, any>): Observable<Record<string, any>> {
     return this.http.patch<Record<string, any>>(`${API_BASE}/api/config/`, data);
   }
+
+  updateAccessMode(data: {
+    access_mode: string;
+    username?: string;
+    password?: string;
+  }): Observable<Record<string, any>> {
+    return this.http.patch<Record<string, any>>(`${API_BASE}/api/config/access-mode`, data);
+  }
 }
-
-

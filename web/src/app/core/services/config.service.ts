@@ -20,6 +20,7 @@ export class ConfigService {
   pageTitle = signal<string>('Start Base');
   theme = signal<string>('emerald');
   bgUrl = signal<string | null>(null);
+  accessMode = signal<string>('none_guard');
 
   fullBgUrl = computed(() => {
     const url = this.bgUrl();
@@ -57,6 +58,10 @@ export class ConfigService {
         this.theme.set('emerald');
       }
 
+      if (config['access_mode']) {
+        this.accessMode.set(config['access_mode']);
+      }
+
       if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
@@ -73,6 +78,9 @@ export class ConfigService {
       }
       if (res['theme']) {
         this.theme.set(res['theme']);
+      }
+      if (res['access_mode']) {
+        this.accessMode.set(res['access_mode']);
       }
       if (res['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((res['bg_url'] || '').trim() || null);
