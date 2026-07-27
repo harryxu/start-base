@@ -6,11 +6,17 @@ import { describe, beforeEach, it, expect } from 'vitest';
 import { SitesBoardComponent } from './sites-board.component';
 import type { Group, Site } from '../../core/models/types';
 
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
+
 describe('SitesBoardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SitesBoardComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        ...COMMON_TEST_PROVIDERS,
+      ],
     }).compileComponents();
   });
 

@@ -3,6 +3,8 @@ import { SiteCardComponent } from './site-card.component';
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 import type { Site } from '../../core/models/types';
 
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
+
 describe('SiteCardComponent', () => {
   let component: SiteCardComponent;
   let fixture: ComponentFixture<SiteCardComponent>;
@@ -20,6 +22,7 @@ describe('SiteCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SiteCardComponent],
+      providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SiteCardComponent);

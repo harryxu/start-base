@@ -1,13 +1,18 @@
 import { TestBed } from '@angular/core/testing';
-import { provideAngularQuery, QueryClient } from '@tanstack/angular-query-experimental';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { App } from './app';
 import { describe, beforeEach, it, expect } from 'vitest';
+
+import { COMMON_TEST_PROVIDERS } from './testing/test-mocks';
 
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideAngularQuery(new QueryClient())],
+      providers: [
+        provideTanStackQuery(new QueryClient()),
+        ...COMMON_TEST_PROVIDERS,
+      ],
     }).compileComponents();
   });
 

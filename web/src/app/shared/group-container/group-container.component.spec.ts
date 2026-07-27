@@ -3,6 +3,8 @@ import { GroupContainerComponent } from './group-container.component';
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 import type { Group, Site } from '../../core/models/types';
 
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
+
 describe('GroupContainerComponent', () => {
   let component: GroupContainerComponent;
   let fixture: ComponentFixture<GroupContainerComponent>;
@@ -28,6 +30,7 @@ describe('GroupContainerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [GroupContainerComponent],
+      providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupContainerComponent);
