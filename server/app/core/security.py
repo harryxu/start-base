@@ -1,19 +1,13 @@
 """Security, password hashing, Starlette SessionMiddleware integration, and global access control dependencies."""
-import os
 from typing import Optional
 
 from fastapi import Depends, HTTPException, Request, status
 from pwdlib import PasswordHash
 from sqlmodel import Session, select
 
+from app import settings
 from app.database import get_session
 from app.models import SystemConfig, User
-
-SECRET_KEY = os.environ.get(
-    "SESSION_SECRET_KEY", "start-base-secret-session-key-change-in-production"
-)
-SESSION_COOKIE_NAME = "start_base_session"
-MAX_AGE_SECONDS = 60 * 60 * 24 * 30  # 30 days
 
 password_hash = PasswordHash.recommended()
 

@@ -10,12 +10,8 @@ from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
 from starlette.middleware.sessions import SessionMiddleware
 
-from app.core.security import (
-    MAX_AGE_SECONDS,
-    SECRET_KEY,
-    SESSION_COOKIE_NAME,
-    check_access_permission,
-)
+from app import settings
+from app.core.security import check_access_permission
 from app.database import engine
 from app.routers import auth, config, groups, sites, system
 
@@ -39,9 +35,9 @@ app = FastAPI(
 
 app.add_middleware(
     SessionMiddleware,
-    secret_key=SECRET_KEY,
-    session_cookie=SESSION_COOKIE_NAME,
-    max_age=MAX_AGE_SECONDS,
+    secret_key=settings.SESSION_SECRET_KEY,
+    session_cookie=settings.SESSION_COOKIE_NAME,
+    max_age=settings.MAX_AGE_SECONDS,
     same_site="lax",
     https_only=False,
 )
