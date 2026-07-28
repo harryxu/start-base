@@ -4,7 +4,7 @@ import { LucideGlobe, LucideUpload, LucideX } from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService, API_BASE } from '../../core/api/api.service';
-import type { Site, SiteCreate } from '../../core/models/types';
+import type { Site } from '../../core/models/types';
 import { BoardService } from '../../core/services/board.service';
 
 @Component({
@@ -184,7 +184,7 @@ export class SiteFormComponent {
   private boardService = inject(BoardService);
 
   site = input<Site | null>(null);
-  prefilledUrl = input<string>('');
+  defaults = input<Partial<Site> | null>(null);
 
   groups = computed(() => this.boardService.groupsQuery.data() ?? []);
 
@@ -222,7 +222,7 @@ export class SiteFormComponent {
   constructor() {
     effect(() => {
       const s = this.site();
-      const url = this.prefilledUrl();
+      const def = this.defaults();
       this.iconFailed.set(false);
       this.selectedIconFile = null;
       this.selectedFileName.set('');
@@ -236,8 +236,14 @@ export class SiteFormComponent {
         this.formIconUrl = s.icon_url ?? '';
         this.formDescription = s.description ?? '';
         this.formGroupId = s.group_id;
+      } else if (def) {
+        this.formUrl = def.url ?? '';
+        this.formTitle = def.title ?? '';
+        this.formIconUrl = def.icon_url ?? '';
+        this.formDescription = def.description ?? '';
+        this.formGroupId = def.group_id ?? null;
       } else {
-        this.formUrl = url;
+        this.formUrl = '';
         this.formTitle = '';
         this.formIconUrl = '';
         this.formDescription = '';
@@ -294,7 +300,7 @@ export class SiteFormComponent {
       }
     }
 
-    const payload: SiteCreate = {
+    const payload: Partial<Site> = {
       url: this.formUrl.trim(),
       title: this.formTitle.trim() || null,
       icon_url: this.formIconUrl.trim() || null,

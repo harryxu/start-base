@@ -1,5 +1,5 @@
 import { Component, input, output, signal, ViewChild, inject } from '@angular/core';
-import { LucideEllipsis, LucidePencil, LucideTrash2 } from '@lucide/angular';
+import { LucideEllipsis, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
 
@@ -20,6 +20,7 @@ import { ConfigService } from '../../core/services/config.service';
     CdkDrag,
     CdkDragPlaceholder,
     LucideEllipsis,
+    LucidePlus,
     LucidePencil,
     LucideTrash2,
   ],
@@ -124,6 +125,14 @@ import { ConfigService } from '../../core/services/config.service';
         >
           <button
             cdkMenuItem
+            (click)="addSite.emit({ group_id: group().id })"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
+          >
+            <svg lucidePlus class="w-4 h-4"></svg>
+            <span>Add Site</span>
+          </button>
+          <button
+            cdkMenuItem
             (click)="editGroup.emit(group())"
             class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
           >
@@ -151,6 +160,7 @@ export class GroupContainerComponent {
   allSiteDropListIds = input<string[]>([]);
   fetchingSiteIds = input<Set<number>>(new Set());
 
+  addSite = output<Partial<Site>>();
   editGroup = output<Group>();
   deleteGroup = output<Group>();
   editSite = output<Site>();

@@ -5,13 +5,9 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import type {
   Group,
-  GroupCreate,
-  GroupUpdate,
   ReorderItem,
   Site,
-  SiteCreate,
   SiteReorderItem,
-  SiteUpdate,
 } from '../models/types';
 
 @Service()
@@ -36,10 +32,10 @@ export class BoardService {
   // ---- Mutations ----
 
   createSiteMutation = injectMutation(() => ({
-    mutationFn: (data: SiteCreate) => firstValueFrom(this.api.createSite(data)),
+    mutationFn: (data: Partial<Site>) => firstValueFrom(this.api.createSite(data)),
     onSuccess: (newSite, variables) => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
-      if (!variables.title || !variables.icon_url) {
+      if (newSite?.id && (!variables.title || !variables.icon_url)) {
         this.fetchingSiteIds.update((set: Set<number>) => new Set(set).add(newSite.id));
         setTimeout(async () => {
           await this.queryClient.invalidateQueries({ queryKey: ['sites'] });
@@ -54,7 +50,7 @@ export class BoardService {
   }));
 
   updateSiteMutation = injectMutation(() => ({
-    mutationFn: ({ id, data }: { id: number; data: SiteUpdate }) =>
+    mutationFn: ({ id, data }: { id: number; data: Partial<Site> }) =>
       firstValueFrom(this.api.updateSite(id, data)),
     onSuccess: () => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
@@ -69,14 +65,14 @@ export class BoardService {
   }));
 
   createGroupMutation = injectMutation(() => ({
-    mutationFn: (data: GroupCreate) => firstValueFrom(this.api.createGroup(data)),
+    mutationFn: (data: Partial<Group>) => firstValueFrom(this.api.createGroup(data)),
     onSuccess: () => {
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
   }));
 
   updateGroupMutation = injectMutation(() => ({
-    mutationFn: ({ id, data }: { id: number; data: GroupUpdate }) =>
+    mutationFn: ({ id, data }: { id: number; data: Partial<Group> }) =>
       firstValueFrom(this.api.updateGroup(id, data)),
     onSuccess: () => {
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
@@ -107,13 +103,13 @@ export class BoardService {
 
   // ---- Public Actions ----
 
-  saveNewSite(data: SiteCreate): void {
+  saveNewSite(data: Partial<Site>): void {
     const sites = this.sitesQuery.data() ?? [];
     const maxOrder = sites.length > 0 ? Math.max(...sites.map((s) => s.sort_order)) : 0;
     this.createSiteMutation.mutate({ ...data, sort_order: data.sort_order ?? maxOrder + 100 });
   }
 
-  updateSite(id: number, data: SiteUpdate): void {
+  updateSite(id: number, data: Partial<Site>): void {
     this.updateSiteMutation.mutate({ id, data });
   }
 

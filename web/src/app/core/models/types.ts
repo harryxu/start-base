@@ -19,34 +19,6 @@ export interface Site {
   group_id: number | null;
 }
 
-export interface GroupCreate {
-  name: string;
-  sort_order?: number;
-}
-
-export interface GroupUpdate {
-  name?: string;
-  sort_order?: number;
-}
-
-export interface SiteCreate {
-  url: string;
-  title?: string | null;
-  icon_url?: string | null;
-  description?: string | null;
-  sort_order?: number;
-  group_id?: number | null;
-}
-
-export interface SiteUpdate {
-  url?: string;
-  title?: string | null;
-  icon_url?: string | null;
-  description?: string | null;
-  sort_order?: number;
-  group_id?: number | null;
-}
-
 export interface ReorderItem {
   id: number;
   sort_order: number;
@@ -83,4 +55,3 @@ export interface UserPublic {
   id: number;
   username: string;
 }
-

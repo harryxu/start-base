@@ -34,7 +34,7 @@ export class HomeComponent {
 
   showSiteForm = signal(false);
   editingSite = signal<Site | null>(null);
-  prefilledUrl = signal('');
+  siteFormDefaults = signal<Partial<Site> | null>(null);
 
   showGroupForm = signal(false);
   editingGroup = signal<Group | null>(null);
@@ -46,27 +46,27 @@ export class HomeComponent {
 
   // ---- Site actions ----
 
-  openAddSiteForm(url = ''): void {
+  openAddSiteForm(defaults?: Partial<Site> | null): void {
     this.editingSite.set(null);
-    this.prefilledUrl.set(url);
+    this.siteFormDefaults.set(defaults ?? null);
     this.showSiteForm.set(true);
   }
 
   openEditSiteForm(site: Site): void {
     this.editingSite.set(site);
-    this.prefilledUrl.set('');
+    this.siteFormDefaults.set(null);
     this.showSiteForm.set(true);
   }
 
   closeSiteForm(): void {
     this.showSiteForm.set(false);
     this.editingSite.set(null);
-    this.prefilledUrl.set('');
+    this.siteFormDefaults.set(null);
   }
 
   onExternalSiteDropped(url: string): void {
     if (!url) return;
-    this.boardService.saveNewSite({ url });
+    this.openAddSiteForm({ url });
   }
 
   onDeleteSite(site: Site): void {

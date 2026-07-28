@@ -52,6 +52,7 @@ export class SitesBoardComponent {
   fetchingSiteIds = input<Set<number>>(new Set());
 
   addSite = output<void>();
+  addSiteInGroup = output<Partial<Site>>();
   editSite = output<Site>();
   deleteSite = output<Site>();
   editGroup = output<Group>();

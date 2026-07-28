@@ -4,13 +4,9 @@ import { Observable } from 'rxjs';
 
 import type {
   Group,
-  GroupCreate,
-  GroupUpdate,
   ReorderItem,
   Site,
-  SiteCreate,
   SiteReorderItem,
-  SiteUpdate,
   UserLogin,
   UserPublic,
 } from '../models/types';
@@ -28,11 +24,11 @@ export class ApiService {
     return this.http.get<Group[]>(`${API_BASE}/api/groups/`);
   }
 
-  createGroup(data: GroupCreate): Observable<Group> {
+  createGroup(data: Partial<Group>): Observable<Group> {
     return this.http.post<Group>(`${API_BASE}/api/groups/`, data);
   }
 
-  updateGroup(id: number, data: GroupUpdate): Observable<Group> {
+  updateGroup(id: number, data: Partial<Group>): Observable<Group> {
     return this.http.patch<Group>(`${API_BASE}/api/groups/${id}`, data);
   }
 
@@ -50,11 +46,11 @@ export class ApiService {
     return this.http.get<Site[]>(`${API_BASE}/api/sites/`);
   }
 
-  createSite(data: SiteCreate): Observable<Site> {
+  createSite(data: Partial<Site>): Observable<Site> {
     return this.http.post<Site>(`${API_BASE}/api/sites/`, data);
   }
 
-  updateSite(id: number, data: SiteUpdate): Observable<Site> {
+  updateSite(id: number, data: Partial<Site>): Observable<Site> {
     return this.http.patch<Site>(`${API_BASE}/api/sites/${id}`, data);
   }
 
