@@ -30,11 +30,6 @@ export class HomeComponent {
   authService = inject(AuthService);
   boardService = inject(BoardService);
 
-  constructor() {
-    // Fetch current user state on app load (only relevant in guarded modes)
-    this.authService.fetchCurrentUser();
-  }
-
   // ---- UI state ----
 
   showSiteForm = signal(false);
