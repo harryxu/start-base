@@ -11,9 +11,7 @@ export const mockConfigService = {
   bgUrl: signal<string | null>(null),
   fullBgUrl: computed(() => ''),
   accessMode: mockAccessMode,
-  isReadOnly: computed(
-    () => mockAccessMode() !== 'none_guard' && mockCurrentUser() === null,
-  ),
+  isReadOnly: computed(() => mockAccessMode() !== 'none_guard' && mockCurrentUser() === null),
   loadConfig: async () => {},
 };
 

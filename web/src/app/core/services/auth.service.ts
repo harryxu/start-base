@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import { ConfigService } from './config.service';
+import { resetAuthInterceptorState } from '../interceptors/auth.interceptor';
 import type { UserLogin, UserPublic } from '../models/types';
 
 @Injectable({ providedIn: 'root' })
@@ -26,6 +27,7 @@ export class AuthService {
 
   /** Log in user, refresh system config, and update user state. */
   async login(credentials: UserLogin): Promise<UserPublic> {
+    resetAuthInterceptorState();
     const user = await firstValueFrom(this.api.login(credentials));
     this.currentUser.set(user);
     await this.refreshConfig();
@@ -34,9 +36,13 @@ export class AuthService {
 
   /** Log out, refresh system config, and clear user state. */
   async logout(): Promise<void> {
-    await firstValueFrom(this.api.logout());
-    this.currentUser.set(null);
-    await this.refreshConfig();
+    try {
+      await firstValueFrom(this.api.logout());
+    } finally {
+      this.currentUser.set(null);
+      await this.refreshConfig();
+      await this.router.navigate(['/']);
+    }
   }
 
   private async refreshConfig(): Promise<void> {

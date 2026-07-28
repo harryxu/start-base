@@ -4,13 +4,14 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { provideRouter } from '@angular/router';
 import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest';
 
-import { authInterceptor } from './auth.interceptor';
+import { authInterceptor, resetAuthInterceptorState } from './auth.interceptor';
 
 describe('authInterceptor', () => {
   let http: HttpClient;
   let httpMock: HttpTestingController;
 
   beforeEach(() => {
+    resetAuthInterceptorState();
     TestBed.configureTestingModule({
       providers: [
         provideRouter([{ path: 'login', component: class {} }]),
