@@ -7,8 +7,6 @@ import {
   LucideTrash2,
   LucideImage,
   LucideShield,
-  LucideUser,
-  LucideLock,
   LucideAlertCircle,
 } from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
@@ -29,8 +27,6 @@ import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switch
     LucideTrash2,
     LucideImage,
     LucideShield,
-    LucideUser,
-    LucideLock,
     LucideAlertCircle,
     ThemeSwitcherComponent,
   ],

@@ -63,21 +63,19 @@
       <!-- TAB 1: General -->
       @if (activeTab() === 'general') {
         <!-- Page Title -->
-        <div class="flex flex-col gap-2">
-          <label for="settings-page-title" class="text-xs font-medium text-base-content/70">
-            Page Title
-          </label>
+        <label class="floating-label w-full text-base-content/60">
           <input
             id="settings-page-title"
             type="text"
             [(ngModel)]="formTitle"
             name="pageTitle"
             required
-            placeholder="Start Base"
-            class="input input-bordered w-full input-sm"
+            placeholder="Page Title"
+            class="input input-bordered input-lg w-full text-base-content"
             autocomplete="off"
           />
-        </div>
+          <span>Page Title <span class="text-error">*</span></span>
+        </label>
 
         <!-- Theme Selection via ThemeSwitcherComponent -->
         <div class="flex items-center justify-between">
@@ -89,17 +87,21 @@
         <div class="flex flex-col gap-2">
           <label class="text-xs font-medium text-base-content/70">Background Image</label>
           <div class="flex items-center gap-3">
-            <!-- Preview Box -->
+            <!-- Preview Box (clickable to open in new tab) -->
             @if (previewUrl()) {
-              <div
-                class="w-20 h-14 rounded-lg border border-base-300 overflow-hidden shrink-0 bg-base-200"
+              <a
+                [href]="previewUrl()"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-20 h-14 rounded-lg border border-base-300 overflow-hidden shrink-0 bg-base-200 block hover:opacity-85 transition-opacity"
+                title="Open original image in new tab"
               >
                 <img
                   [src]="previewUrl()"
                   alt="Background Preview"
                   class="w-full h-full object-cover"
                 />
-              </div>
+              </a>
             } @else {
               <div
                 class="w-20 h-14 rounded-lg border border-dashed border-base-300 flex items-center justify-center bg-base-200/50 shrink-0 text-base-content/40"
@@ -227,44 +229,32 @@
 
           <!-- Username & Password inputs (if accessMode !== 'none_guard') -->
           @if (formAccessMode() !== 'none_guard') {
-            <div class="flex flex-col gap-3 pt-2 border-t border-base-200">
-              <div class="flex flex-col gap-1.5">
-                <label
-                  for="settings-auth-username"
-                  class="text-xs font-medium text-base-content/70 flex items-center gap-1"
-                >
-                  <svg lucideUser class="w-3.5 h-3.5"></svg>
-                  <span>Username</span>
-                </label>
+            <div class="flex flex-col gap-5 pt-2 border-t border-base-200">
+              <label class="floating-label w-full text-base-content/60">
                 <input
                   id="settings-auth-username"
                   type="text"
                   [(ngModel)]="formUsername"
                   name="authUsername"
-                  placeholder="Admin username"
-                  class="input input-bordered w-full input-sm"
+                  placeholder="Username"
+                  class="input input-bordered input-lg w-full text-base-content"
                   autocomplete="username"
                 />
-              </div>
+                <span>Username</span>
+              </label>
 
-              <div class="flex flex-col gap-1.5">
-                <label
-                  for="settings-auth-password"
-                  class="text-xs font-medium text-base-content/70 flex items-center gap-1"
-                >
-                  <svg lucideLock class="w-3.5 h-3.5"></svg>
-                  <span>Password</span>
-                </label>
+              <label class="floating-label w-full text-base-content/60">
                 <input
                   id="settings-auth-password"
                   type="password"
                   [(ngModel)]="formPassword"
                   name="authPassword"
-                  placeholder="Admin password"
-                  class="input input-bordered w-full input-sm"
+                  placeholder="Password"
+                  class="input input-bordered input-lg w-full text-base-content"
                   autocomplete="new-password"
                 />
-              </div>
+                <span>Password</span>
+              </label>
             </div>
           }
         </div>
