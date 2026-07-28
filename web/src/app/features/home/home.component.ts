@@ -66,7 +66,7 @@ export class HomeComponent {
 
   onExternalSiteDropped(url: string): void {
     if (!url) return;
-    this.openAddSiteForm({ url });
+    this.boardService.saveNewSite({ url });
   }
 
   onDeleteSite(site: Site): void {

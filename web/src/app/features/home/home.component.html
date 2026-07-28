@@ -8,12 +8,11 @@
   <app-sites-board [sites]="boardService.sitesQuery.data() ?? []" [groups]="boardService.groupsQuery.data() ?? []"
     [isLoading]="boardService.sitesQuery.isLoading() || boardService.groupsQuery.isLoading()"
     [isError]="boardService.sitesQuery.isError() || boardService.groupsQuery.isError()"
-    [fetchingSiteIds]="boardService.fetchingSiteIds()"
-    (addSite)="openAddSiteForm()"
-    (addSiteInGroup)="openAddSiteForm($event)"
-    (editSite)="openEditSiteForm($event)" (deleteSite)="onDeleteSite($event)" (editGroup)="onEditGroup($event)"
-    (deleteGroup)="onDeleteGroup($event)" (reorderGroups)="boardService.reorderGroups($event)"
-    (reorderSites)="boardService.reorderSites($event)" (externalSiteDropped)="onExternalSiteDropped($event)" />
+    [fetchingSiteIds]="boardService.fetchingSiteIds()" (addSite)="openAddSiteForm()"
+    (addSiteInGroup)="openAddSiteForm($event)" (editSite)="openEditSiteForm($event)" (deleteSite)="onDeleteSite($event)"
+    (editGroup)="onEditGroup($event)" (deleteGroup)="onDeleteGroup($event)"
+    (reorderGroups)="boardService.reorderGroups($event)" (reorderSites)="boardService.reorderSites($event)"
+    (externalSiteDropped)="onExternalSiteDropped($event)" />
 
   <!-- ===== SITE FORM MODAL ===== -->
   @if (showSiteForm()) {
