@@ -53,32 +53,28 @@ export class ConfigService {
       this.applyTheme(currentTheme);
     });
 
-    this.loadConfig();
+    this.loadConfig().catch((err) => {
+      console.error('Initial loadConfig failed:', err);
+    });
   }
 
-  async loadConfig(): Promise<boolean> {
-    try {
-      const config = await firstValueFrom(this.api.getConfig());
-      if (config['page_title']) {
-        this.pageTitle.set(config['page_title']);
-      }
-      if (config['theme']) {
-        this.theme.set(config['theme']);
-      } else {
-        this.theme.set('emerald');
-      }
+  async loadConfig(): Promise<void> {
+    const config = await firstValueFrom(this.api.getConfig());
+    if (config['page_title']) {
+      this.pageTitle.set(config['page_title']);
+    }
+    if (config['theme']) {
+      this.theme.set(config['theme']);
+    } else {
+      this.theme.set('emerald');
+    }
 
-      if (config['access_mode']) {
-        this.accessMode.set(config['access_mode']);
-      }
+    if (config['access_mode']) {
+      this.accessMode.set(config['access_mode']);
+    }
 
-      if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
-        this.bgUrl.set((config['bg_url'] || '').trim() || null);
-      }
-      return true;
-    } catch (err) {
-      console.error('Failed to load system config:', err);
-      return false;
+    if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
+      this.bgUrl.set((config['bg_url'] || '').trim() || null);
     }
   }
 

@@ -34,25 +34,13 @@ export class AuthService {
 
   /** Log out, refresh system config, and clear user state. */
   async logout(): Promise<void> {
-    try {
-      await firstValueFrom(this.api.logout());
-    } finally {
-      this.currentUser.set(null);
-      const refreshed = await this.refreshConfig();
-      // Only navigate to '/' if config refreshed successfully (i.e. not redirected to /login by 401 interceptor)
-      if (refreshed) {
-        await this.router.navigate(['/']);
-      }
-    }
+    await firstValueFrom(this.api.logout());
+    this.currentUser.set(null);
+    await this.refreshConfig();
   }
 
-  private async refreshConfig(): Promise<boolean> {
-    try {
-      const configService = this.injector.get(ConfigService);
-      return await configService.loadConfig();
-    } catch (err) {
-      console.error('Failed to refresh config after auth change:', err);
-      return false;
-    }
+  private async refreshConfig(): Promise<void> {
+    const configService = this.injector.get(ConfigService);
+    await configService.loadConfig();
   }
 }
