@@ -35,7 +35,7 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
       [class.bg-base-100/35]="configService.bgUrl()"
       [class.backdrop-blur-md]="configService.bgUrl()"
     >
-      <div class="max-w-5xl mx-auto w-full px-6 flex justify-between items-center">
+      <div class="max-w-5xl mx-auto w-full px-2 flex justify-between items-center">
         <!-- Logo Section -->
         <div class="flex items-center gap-2">
           <img src="start-base-logo.svg" alt="Start Base Logo" class="w-6 h-6" />
@@ -47,9 +47,6 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
         <!-- Actions Toolbar -->
         <div class="flex items-center gap-2">
           @if (!configService.isReadOnly()) {
-            <!-- Theme Switcher: only for users with write access -->
-            <app-theme-switcher />
-
             <!-- Add Site -->
             <button
               id="btn-add-site"
@@ -70,6 +67,12 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
               <svg lucideFolderPlus class="w-4 h-4"></svg>
             </button>
 
+            <!-- Divider after Add Group -->
+            <div class="h-4 w-px bg-base-content/20 shrink-0 mx-0.5"></div>
+
+            <!-- Theme Switcher: only for users with write access -->
+            <app-theme-switcher />
+
             <!-- Settings: only for users with write access -->
             <button
               id="btn-settings"
@@ -79,6 +82,11 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
             >
               <svg lucideSettings class="w-4 h-4"></svg>
             </button>
+
+            <!-- Divider after Settings (if Auth controls present) -->
+            @if (configService.accessMode() !== 'none_guard') {
+              <div class="h-4 w-px bg-base-content/20 shrink-0 mx-0.5"></div>
+            }
           }
 
           <!-- Auth controls (only shown when access_mode !== 'none_guard') -->
