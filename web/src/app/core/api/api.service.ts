@@ -11,7 +11,10 @@ import type {
   SiteCreate,
   SiteReorderItem,
   SiteUpdate,
+  UserLogin,
+  UserPublic,
 } from '../models/types';
+
 
 export const API_BASE = isDevMode() ? 'http://localhost:5600' : '';
 
@@ -76,6 +79,29 @@ export class ApiService {
     return this.http.post<{ url: string }>(`${API_BASE}/api/system/upload-image`, formData);
   }
 
+  // ---- Auth ----
+
+  login(data: UserLogin): Observable<UserPublic> {
+    return this.http.post<UserPublic>(`${API_BASE}/api/auth/login`, data, {
+      withCredentials: true,
+    });
+  }
+
+  logout(): Observable<{ status: string }> {
+    return this.http.post<{ status: string }>(
+      `${API_BASE}/api/auth/logout`,
+      {},
+      { withCredentials: true },
+    );
+  }
+
+  getCurrentUser(): Observable<{ user: UserPublic | null; access_mode: string }> {
+    return this.http.get<{ user: UserPublic | null; access_mode: string }>(
+      `${API_BASE}/api/auth/me`,
+      { withCredentials: true },
+    );
+  }
+
   // ---- System Config ----
 
   getConfig(): Observable<Record<string, any>> {
@@ -85,6 +111,12 @@ export class ApiService {
   updateConfig(data: Record<string, any>): Observable<Record<string, any>> {
     return this.http.patch<Record<string, any>>(`${API_BASE}/api/config/`, data);
   }
+
+  updateAccessMode(data: {
+    access_mode: string;
+    username?: string;
+    password?: string;
+  }): Observable<Record<string, any>> {
+    return this.http.patch<Record<string, any>>(`${API_BASE}/api/config/access-mode`, data);
+  }
 }
-
-

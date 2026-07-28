@@ -1,13 +1,11 @@
-import { Component, inject } from '@angular/core';
-import { HomeComponent } from './features/home/home.component';
-import { ConfigService } from './core/services/config.service';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [HomeComponent],
-  template: `<app-home />`,
+  imports: [RouterOutlet],
+  template: `<router-outlet />`,
 })
-export class App {
-  configService = inject(ConfigService);
-}
+export class App {}
+

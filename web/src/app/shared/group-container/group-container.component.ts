@@ -60,15 +60,17 @@ import { ConfigService } from '../../core/services/config.service';
         </span>
 
         <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
-        <button
-          [cdkMenuTriggerFor]="groupMenu"
-          (cdkMenuOpened)="onGroupMenuOpened()"
-          (click)="$event.stopPropagation()"
-          class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
-          title="Group actions"
-        >
-          <svg lucideEllipsis class="w-4 h-4"></svg>
-        </button>
+        @if (!configService.isReadOnly()) {
+          <button
+            [cdkMenuTriggerFor]="groupMenu"
+            (cdkMenuOpened)="onGroupMenuOpened()"
+            (click)="$event.stopPropagation()"
+            class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
+            title="Group actions"
+          >
+            <svg lucideEllipsis class="w-4 h-4"></svg>
+          </button>
+        }
       </div>
 
       <!-- Sites grid inside collapse-content -->
@@ -92,6 +94,7 @@ import { ConfigService } from '../../core/services/config.service';
               cdkDrag
               [cdkDragData]="site"
               [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
+              [cdkDragDisabled]="configService.isReadOnly()"
               (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
             >
               <div

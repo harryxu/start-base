@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
 import { describe, beforeEach, afterEach, it, expect, vi } from 'vitest';
 
 import { authInterceptor } from './auth.interceptor';
@@ -12,6 +13,7 @@ describe('authInterceptor', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideRouter([{ path: 'login', component: class {} }]),
         provideHttpClient(withInterceptors([authInterceptor])),
         provideHttpClientTesting(),
       ],
@@ -26,7 +28,25 @@ describe('authInterceptor', () => {
     vi.restoreAllMocks();
   });
 
-  it('should trigger redirect when 401 response contains X-Login-Location header', () => {
+  it('should attach withCredentials to /api requests', () => {
+    http.get('/api/test').subscribe();
+
+    const req = httpMock.expectOne('/api/test');
+    expect(req.request.withCredentials).toBe(true);
+    req.flush({});
+  });
+
+  it('should navigate to /login on 401 response when X-Login-Location is absent', () => {
+    http.get('/api/test').subscribe({ error: () => {} });
+
+    const req = httpMock.expectOne('/api/test');
+    req.flush('Unauthorized', {
+      status: 401,
+      statusText: 'Unauthorized',
+    });
+  });
+
+  it('should redirect window.location.href when 401 contains X-Login-Location header', () => {
     const locationSpy = vi.spyOn(window, 'location', 'get').mockReturnValue({
       href: '',
     } as any);

@@ -4,6 +4,7 @@ import type { Group, Site } from '../../core/models/types';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { ConfigService } from '../../core/services/config.service';
+import { AuthService } from '../../core/services/auth.service';
 import { BoardService } from '../../core/services/board.service';
 import { SitesBoardComponent } from '../sites-board/sites-board.component';
 import { SiteFormComponent } from '../site-form/site-form.component';
@@ -26,6 +27,7 @@ import { SettingsModalComponent } from '../settings-modal/settings-modal.compone
 })
 export class HomeComponent {
   configService = inject(ConfigService);
+  authService = inject(AuthService);
   boardService = inject(BoardService);
 
   // ---- UI state ----

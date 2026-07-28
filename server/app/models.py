@@ -1,10 +1,28 @@
 """SQLModel database models and API schemas for Start Base."""
+from datetime import datetime, timezone
 from typing import Optional
 
 from sqlmodel import Field, SQLModel
 
 
 # ---- Database Models ----
+
+
+class UserBase(SQLModel):
+    """Base fields for User."""
+
+    username: str = Field(unique=True, index=True, min_length=3, max_length=50)
+
+
+class User(UserBase, table=True):
+    """User account model."""
+
+    __tablename__ = "users"
+
+    id: Optional[int] = Field(default=None, primary_key=True)
+    hashed_password: str = Field(nullable=False)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
 class Group(SQLModel, table=True):
@@ -38,6 +56,36 @@ class SystemConfig(SQLModel, table=True):
 # ---- API Schemas ----
 
 
+class UserPublic(UserBase):
+    """Public user schema returned in API responses."""
+
+    id: int
+    created_at: datetime
+
+
+class UserLogin(SQLModel):
+    """Request payload for logging in."""
+
+    username: str
+    password: str
+
+
+class UpdateCredentials(SQLModel):
+    """Request payload for updating username and/or password."""
+
+    username: Optional[str] = None
+    current_password: Optional[str] = None
+    new_password: Optional[str] = None
+
+
+class AccessModeUpdate(SQLModel):
+    """Request payload for updating system access_mode."""
+
+    access_mode: str  # none_guard | write_guard | full_guard
+    username: Optional[str] = None
+    password: Optional[str] = None
+
+
 class SystemConfigRead(SQLModel):
     key: str
     value: Optional[str] = None
@@ -47,7 +95,6 @@ class SystemConfigRead(SQLModel):
 class SystemConfigUpdate(SQLModel):
     value: Optional[str] = None
     description: Optional[str] = None
-
 
 
 class GroupCreate(SQLModel):

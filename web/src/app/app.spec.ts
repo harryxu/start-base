@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { App } from './app';
 import { describe, beforeEach, it, expect } from 'vitest';
@@ -10,11 +11,13 @@ describe('App', () => {
     await TestBed.configureTestingModule({
       imports: [App],
       providers: [
+        provideRouter([]),
         provideTanStackQuery(new QueryClient()),
         ...COMMON_TEST_PROVIDERS,
       ],
     }).compileComponents();
   });
+
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);

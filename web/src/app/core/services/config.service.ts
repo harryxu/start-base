@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE, ApiService } from '../api/api.service';
+import { AuthService } from './auth.service';
 
 import {
   SUPPORTED_THEMES,
@@ -16,10 +17,23 @@ export class ConfigService {
   private api = inject(ApiService);
   private titleService = inject(Title);
   private route = inject(ActivatedRoute, { optional: true });
+  private authService = inject(AuthService);
 
   pageTitle = signal<string>('Start Base');
   theme = signal<string>('emerald');
   bgUrl = signal<string | null>(null);
+  accessMode = signal<string>('none_guard');
+
+  /** In-flight Promise deduplication for concurrent loadConfig calls. */
+  private inFlightLoadPromise: Promise<void> | null = null;
+
+  /**
+   * True when write operations should be hidden/disabled.
+   * In guarded modes (write_guard / full_guard), only authenticated users can write.
+   */
+  isReadOnly = computed(
+    () => this.accessMode() !== 'none_guard' && this.authService.currentUser() === null,
+  );
 
   fullBgUrl = computed(() => {
     const url = this.bgUrl();
@@ -42,11 +56,17 @@ export class ConfigService {
       this.applyTheme(currentTheme);
     });
 
-    this.loadConfig();
+    this.loadConfig().catch((err) => {
+      console.error('Initial loadConfig failed:', err);
+    });
   }
 
-  async loadConfig(): Promise<void> {
-    try {
+  async loadConfig(force = false): Promise<void> {
+    if (this.inFlightLoadPromise && !force) {
+      return this.inFlightLoadPromise;
+    }
+
+    this.inFlightLoadPromise = (async () => {
       const config = await firstValueFrom(this.api.getConfig());
       if (config['page_title']) {
         this.pageTitle.set(config['page_title']);
@@ -57,11 +77,19 @@ export class ConfigService {
         this.theme.set('emerald');
       }
 
+      if (config['access_mode']) {
+        this.accessMode.set(config['access_mode']);
+      }
+
       if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
-    } catch (err) {
-      console.error('Failed to load system config:', err);
+    })();
+
+    try {
+      await this.inFlightLoadPromise;
+    } finally {
+      this.inFlightLoadPromise = null;
     }
   }
 
@@ -73,6 +101,9 @@ export class ConfigService {
       }
       if (res['theme']) {
         this.theme.set(res['theme']);
+      }
+      if (res['access_mode']) {
+        this.accessMode.set(res['access_mode']);
       }
       if (res['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((res['bg_url'] || '').trim() || null);

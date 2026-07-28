@@ -2,6 +2,7 @@ import {
   Component,
   computed,
   effect,
+  inject,
   input,
   output,
   signal,
@@ -23,6 +24,7 @@ import type { Group, LayoutRow, ReorderItem, Site, SiteReorderItem } from '../..
 import { GroupContainerComponent } from '../../shared/group-container/group-container.component';
 import { SiteCardComponent } from '../../shared/site-card/site-card.component';
 import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/external-drop-zone.component';
+import { ConfigService } from '../../core/services/config.service';
 
 @Component({
   selector: 'app-sites-board',
@@ -41,6 +43,8 @@ import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/exter
   templateUrl: './sites-board.component.html',
 })
 export class SitesBoardComponent {
+  configService = inject(ConfigService);
+
   sites = input<Site[]>([]);
   groups = input<Group[]>([]);
   isLoading = input<boolean>(false);
