@@ -1,10 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
 import { LucideLogIn, LucideEye, LucideEyeOff } from '@lucide/angular';
 
-import { ApiService } from '../../core/api/api.service';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -14,12 +12,8 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.component.html',
 })
 export class LoginComponent {
-
-  private api = inject(ApiService);
   private router = inject(Router);
   private authService = inject(AuthService);
-
-
 
   username = signal('');
   password = signal('');
@@ -34,10 +28,10 @@ export class LoginComponent {
     this.errorMessage.set('');
 
     try {
-      const user = await firstValueFrom(
-        this.api.login({ username: this.username().trim(), password: this.password() }),
-      );
-      this.authService.currentUser.set(user);
+      await this.authService.login({
+        username: this.username().trim(),
+        password: this.password(),
+      });
       await this.router.navigate(['/']);
     } catch {
       this.errorMessage.set('Invalid username or password.');

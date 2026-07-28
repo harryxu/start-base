@@ -14,12 +14,20 @@ export const mockConfigService = {
   isReadOnly: computed(
     () => mockAccessMode() !== 'none_guard' && mockCurrentUser() === null,
   ),
+  loadConfig: async () => {},
 };
 
 export const mockAuthService = {
   currentUser: mockCurrentUser,
   fetchCurrentUser: async () => {},
-  logout: async () => {},
+  login: async (credentials: any) => {
+    const user = { id: 1, username: credentials.username || 'admin' };
+    mockCurrentUser.set(user);
+    return user;
+  },
+  logout: async () => {
+    mockCurrentUser.set(null);
+  },
 };
 
 export const COMMON_TEST_PROVIDERS = [

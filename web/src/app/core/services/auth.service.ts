@@ -1,13 +1,15 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, Injector, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import type { UserPublic } from '../models/types';
+import { ConfigService } from './config.service';
+import type { UserLogin, UserPublic } from '../models/types';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private api = inject(ApiService);
   private router = inject(Router);
+  private injector = inject(Injector);
 
   currentUser = signal<UserPublic | null>(null);
 
@@ -22,13 +24,35 @@ export class AuthService {
     }
   }
 
-  /** Log out and clear user state. */
+  /** Log in user, refresh system config, and update user state. */
+  async login(credentials: UserLogin): Promise<UserPublic> {
+    const user = await firstValueFrom(this.api.login(credentials));
+    this.currentUser.set(user);
+    await this.refreshConfig();
+    return user;
+  }
+
+  /** Log out, refresh system config, and clear user state. */
   async logout(): Promise<void> {
     try {
       await firstValueFrom(this.api.logout());
     } finally {
       this.currentUser.set(null);
-      await this.router.navigate(['/']);
+      const refreshed = await this.refreshConfig();
+      // Only navigate to '/' if config refreshed successfully (i.e. not redirected to /login by 401 interceptor)
+      if (refreshed) {
+        await this.router.navigate(['/']);
+      }
+    }
+  }
+
+  private async refreshConfig(): Promise<boolean> {
+    try {
+      const configService = this.injector.get(ConfigService);
+      return await configService.loadConfig();
+    } catch (err) {
+      console.error('Failed to refresh config after auth change:', err);
+      return false;
     }
   }
 }

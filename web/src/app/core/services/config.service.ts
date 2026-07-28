@@ -56,7 +56,7 @@ export class ConfigService {
     this.loadConfig();
   }
 
-  async loadConfig(): Promise<void> {
+  async loadConfig(): Promise<boolean> {
     try {
       const config = await firstValueFrom(this.api.getConfig());
       if (config['page_title']) {
@@ -75,8 +75,10 @@ export class ConfigService {
       if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
+      return true;
     } catch (err) {
       console.error('Failed to load system config:', err);
+      return false;
     }
   }
 
