@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE, ApiService } from '../api/api.service';
+import { AuthService } from './auth.service';
 
 import {
   SUPPORTED_THEMES,
@@ -16,11 +17,20 @@ export class ConfigService {
   private api = inject(ApiService);
   private titleService = inject(Title);
   private route = inject(ActivatedRoute, { optional: true });
+  private authService = inject(AuthService);
 
   pageTitle = signal<string>('Start Base');
   theme = signal<string>('emerald');
   bgUrl = signal<string | null>(null);
   accessMode = signal<string>('none_guard');
+
+  /**
+   * True when write operations should be hidden/disabled.
+   * In guarded modes (write_guard / full_guard), only authenticated users can write.
+   */
+  isReadOnly = computed(
+    () => this.accessMode() !== 'none_guard' && this.authService.currentUser() === null,
+  );
 
   fullBgUrl = computed(() => {
     const url = this.bgUrl();

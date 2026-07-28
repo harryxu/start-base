@@ -1,12 +1,33 @@
 import { Component, inject, output } from '@angular/core';
-import { LucideFolderPlus, LucidePlus, LucideSettings } from '@lucide/angular';
+import { Router } from '@angular/router';
+import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
+import {
+  LucideFolderPlus,
+  LucideLogIn,
+  LucideLogOut,
+  LucidePlus,
+  LucideSettings,
+  LucideUser,
+} from '@lucide/angular';
+
 import { ConfigService } from '../../core/services/config.service';
+import { AuthService } from '../../core/services/auth.service';
 import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.component';
 
 @Component({
   selector: 'app-header',
-  standalone: true,
-  imports: [LucidePlus, LucideFolderPlus, LucideSettings, ThemeSwitcherComponent],
+  imports: [
+    CdkMenu,
+    CdkMenuItem,
+    CdkMenuTrigger,
+    LucidePlus,
+    LucideFolderPlus,
+    LucideSettings,
+    LucideLogIn,
+    LucideLogOut,
+    LucideUser,
+    ThemeSwitcherComponent,
+  ],
   template: `
     <header
       class="navbar sticky top-0 z-30 shadow-sm transition-all duration-200 min-h-0"
@@ -25,35 +46,86 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
 
         <!-- Actions Toolbar -->
         <div class="flex items-center gap-2">
-          <!-- Standalone Theme Switcher Component -->
-          <app-theme-switcher />
+          @if (!configService.isReadOnly()) {
+            <!-- Theme Switcher: only for users with write access -->
+            <app-theme-switcher />
 
-          <button
-            id="btn-add-site"
-            (click)="addSite.emit()"
-            class="btn btn-sm btn-ghost btn-square"
-            title="Add Site"
-          >
-            <svg lucidePlus class="w-4 h-4"></svg>
-          </button>
+            <!-- Add Site -->
+            <button
+              id="btn-add-site"
+              (click)="addSite.emit()"
+              class="btn btn-sm btn-ghost btn-square"
+              title="Add Site"
+            >
+              <svg lucidePlus class="w-4 h-4"></svg>
+            </button>
 
-          <button
-            id="btn-add-group"
-            (click)="addGroup.emit()"
-            class="btn btn-sm btn-ghost btn-square"
-            title="Add Group"
-          >
-            <svg lucideFolderPlus class="w-4 h-4"></svg>
-          </button>
+            <!-- Add Group -->
+            <button
+              id="btn-add-group"
+              (click)="addGroup.emit()"
+              class="btn btn-sm btn-ghost btn-square"
+              title="Add Group"
+            >
+              <svg lucideFolderPlus class="w-4 h-4"></svg>
+            </button>
 
-          <button
-            id="btn-settings"
-            (click)="openSettings.emit()"
-            class="btn btn-sm btn-ghost btn-square"
-            title="System Settings"
-          >
-            <svg lucideSettings class="w-4 h-4"></svg>
-          </button>
+            <!-- Settings: only for users with write access -->
+            <button
+              id="btn-settings"
+              (click)="openSettings.emit()"
+              class="btn btn-sm btn-ghost btn-square"
+              title="System Settings"
+            >
+              <svg lucideSettings class="w-4 h-4"></svg>
+            </button>
+          }
+
+          <!-- Auth controls (only shown when access_mode !== 'none_guard') -->
+          @if (configService.accessMode() !== 'none_guard') {
+            @if (authService.currentUser()) {
+              <!-- Logged-in: show username + dropdown -->
+              <button
+                id="btn-user-menu"
+                [cdkMenuTriggerFor]="userMenu"
+                class="btn btn-sm btn-ghost gap-1.5 px-2"
+                [attr.aria-label]="'User menu for ' + authService.currentUser()!.username"
+              >
+                <svg lucideUser class="w-4 h-4"></svg>
+                <span class="text-xs font-medium max-w-24 truncate">{{
+                  authService.currentUser()!.username
+                }}</span>
+              </button>
+
+              <ng-template #userMenu>
+                <div
+                  cdkMenu
+                  class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-36 z-50 flex flex-col gap-1"
+                >
+                  <button
+                    id="btn-logout"
+                    cdkMenuItem
+                    (click)="onLogout()"
+                    class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error outline-none focus:outline-none rounded-lg w-full font-medium transition-colors"
+                  >
+                    <svg lucideLogOut class="w-4 h-4"></svg>
+                    <span>Logout</span>
+                  </button>
+                </div>
+              </ng-template>
+            } @else {
+              <!-- Not logged in: show Login button -->
+              <button
+                id="btn-login"
+                (click)="navigateToLogin()"
+                class="btn btn-sm btn-ghost gap-1.5 px-2"
+                title="Login"
+              >
+                <svg lucideLogIn class="w-4 h-4"></svg>
+                <span class="text-xs font-medium">Login</span>
+              </button>
+            }
+          }
         </div>
       </div>
     </header>
@@ -61,8 +133,18 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
 })
 export class HeaderComponent {
   configService = inject(ConfigService);
+  authService = inject(AuthService);
+  private router = inject(Router);
 
   addSite = output<void>();
   addGroup = output<void>();
   openSettings = output<void>();
+
+  navigateToLogin(): void {
+    this.router.navigate(['/login']);
+  }
+
+  async onLogout(): Promise<void> {
+    await this.authService.logout();
+  }
 }

@@ -69,7 +69,6 @@ def check_access_permission(
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Authentication required for full guard mode",
-                headers={"X-Login-Location": "/login"},
             )
         return user
 
@@ -80,7 +79,6 @@ def check_access_permission(
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Authentication required for write operations",
-                    headers={"X-Login-Location": "/login"},
                 )
         return user
 

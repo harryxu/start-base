@@ -5,6 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { LucideLogIn, LucideEye, LucideEyeOff } from '@lucide/angular';
 
 import { ApiService } from '../../core/api/api.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +17,7 @@ export class LoginComponent {
 
   private api = inject(ApiService);
   private router = inject(Router);
+  private authService = inject(AuthService);
 
 
 
@@ -32,9 +34,10 @@ export class LoginComponent {
     this.errorMessage.set('');
 
     try {
-      await firstValueFrom(
+      const user = await firstValueFrom(
         this.api.login({ username: this.username().trim(), password: this.password() }),
       );
+      this.authService.currentUser.set(user);
       await this.router.navigate(['/']);
     } catch {
       this.errorMessage.set('Invalid username or password.');

@@ -54,13 +54,12 @@ def test_write_guard_enforcement(client) -> None:
     get_res = client.get("/api/sites/")
     assert get_res.status_code == 200
 
-    # Write operation without login should fail with 401 and X-Login-Location header
+    # Write operation without login should fail with 401
     write_res = client.post(
         "/api/sites/",
         json={"url": "https://test.com", "title": "Test Site"},
     )
     assert write_res.status_code == 401
-    assert write_res.headers.get("X-Login-Location") == "/login"
 
     # Login
     login_res = client.post(
@@ -139,7 +138,6 @@ def test_full_guard_enforcement(client) -> None:
     # GET without login fails with 401
     get_res = client.get("/api/sites/")
     assert get_res.status_code == 401
-    assert get_res.headers.get("X-Login-Location") == "/login"
 
     # Login and verify GET succeeds
     client.post(

@@ -46,6 +46,7 @@ export class SitesBoardComponent {
   isLoading = input<boolean>(false);
   isError = input<boolean>(false);
   fetchingSiteIds = input<Set<number>>(new Set());
+  isReadOnly = input<boolean>(false);
 
   addSite = output<void>();
   editSite = output<Site>();

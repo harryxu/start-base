@@ -74,7 +74,6 @@ def update_credentials(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",
-            headers={"X-Login-Location": "/login"},
         )
 
     if payload.new_password:

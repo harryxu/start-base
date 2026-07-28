@@ -28,7 +28,7 @@ import { ConfigService } from '../../core/services/config.service';
       [class.app-without-bgimg]="!configService.bgUrl()"
       [class.grouped]="!!site().group_id"
       [class.ungrouped]="!site().group_id"
-      [cdkContextMenuTriggerFor]="menu"
+      [cdkContextMenuTriggerFor]="configService.isReadOnly() ? null : menu"
       #trigger="cdkContextMenuTriggerFor"
       (cdkContextMenuOpened)="onContextMenuOpened()"
       (cdkContextMenuClosed)="onContextMenuClosed()"
@@ -124,6 +124,7 @@ export class SiteCardComponent {
   configService = inject(ConfigService);
   site = input.required<Site>();
   isFetching = input<boolean>(false);
+  isReadOnly = input<boolean>(false);
 
   editSite = output<Site>();
   deleteSite = output<Site>();
@@ -135,6 +136,7 @@ export class SiteCardComponent {
   private globalMenuService = inject(GlobalMenuService);
 
   openContextMenu(event: PointerEvent): void {
+    if (this.isReadOnly()) return;
     this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
     this.triggerMenu?.open({ x: event.clientX, y: event.clientY });
   }

@@ -95,6 +95,13 @@ export class ApiService {
     );
   }
 
+  getCurrentUser(): Observable<{ user: UserPublic | null; access_mode: string }> {
+    return this.http.get<{ user: UserPublic | null; access_mode: string }>(
+      `${API_BASE}/api/auth/me`,
+      { withCredentials: true },
+    );
+  }
+
   // ---- System Config ----
 
   getConfig(): Observable<Record<string, any>> {

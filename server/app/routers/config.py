@@ -92,7 +92,6 @@ def update_access_mode(
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Authentication required to modify access_mode",
-                headers={"X-Login-Location": "/login"},
             )
 
     # 2. Check if target access_mode requires an admin user
