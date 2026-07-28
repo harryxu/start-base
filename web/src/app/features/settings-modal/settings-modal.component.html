@@ -1,9 +1,4 @@
-<div
-  class="modal modal-open modal-middle"
-  role="dialog"
-  aria-modal="true"
-  aria-label="System Settings"
->
+<div class="modal modal-open modal-middle" role="dialog" aria-modal="true" aria-label="System Settings">
   <div class="modal-box max-w-md p-0 overflow-visible flex flex-col max-h-[90vh]">
     <!-- Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-base-200 shrink-0">
@@ -11,31 +6,19 @@
         <svg lucideSettings class="w-4 h-4 text-primary"></svg>
         <h2 class="text-sm font-semibold">System Settings</h2>
       </div>
-      <button
-        class="btn btn-ghost btn-sm btn-square"
-        (click)="closed.emit()"
-        aria-label="Close"
-      >
+      <button class="btn btn-ghost btn-sm btn-square" (click)="closed.emit()" aria-label="Close">
         <svg lucideX class="w-4 h-4"></svg>
       </button>
     </div>
 
     <!-- DaisyUI Tabs -->
     <div class="tabs tabs-border px-6 border-b border-base-200 bg-base-100 shrink-0">
-      <button
-        type="button"
-        class="tab py-3 font-medium text-xs"
-        [class.tab-active]="activeTab() === 'general'"
-        (click)="activeTab.set('general')"
-      >
+      <button type="button" class="tab py-3 font-medium text-xs" [class.tab-active]="activeTab() === 'general'"
+        (click)="activeTab.set('general')">
         General
       </button>
-      <button
-        type="button"
-        class="tab py-3 font-medium text-xs gap-1.5"
-        [class.tab-active]="activeTab() === 'auth'"
-        (click)="activeTab.set('auth')"
-      >
+      <button type="button" class="tab py-3 font-medium text-xs gap-1.5" [class.tab-active]="activeTab() === 'auth'"
+        (click)="activeTab.set('auth')">
         <svg lucideShield class="w-3.5 h-3.5"></svg>
         <span>Authentication</span>
       </button>
@@ -45,265 +28,147 @@
     <form (ngSubmit)="onSubmit()" class="flex-1 overflow-visible px-6 py-5 flex flex-col gap-6">
       <!-- Global Error Banner -->
       @if (errorMessage()) {
-        <div class="alert alert-error text-xs py-2.5 px-3.5 rounded-lg flex items-start gap-2">
-          <svg lucideAlertCircle class="w-4 h-4 shrink-0 mt-0.5"></svg>
-          <div class="flex-1 min-w-0">
-            <span class="font-medium block break-words">{{ errorMessage() }}</span>
-          </div>
-          <button
-            type="button"
-            class="btn btn-ghost btn-xs btn-square shrink-0 -mr-1"
-            (click)="errorMessage.set(null)"
-          >
-            <svg lucideX class="w-3.5 h-3.5"></svg>
-          </button>
+      <div class="alert alert-error text-xs py-2.5 px-3.5 rounded-lg flex items-start gap-2">
+        <svg lucideAlertCircle class="w-4 h-4 shrink-0 mt-0.5"></svg>
+        <div class="flex-1 min-w-0">
+          <span class="font-medium block break-words">{{ errorMessage() }}</span>
         </div>
+        <button type="button" class="btn btn-ghost btn-xs btn-square shrink-0 -mr-1" (click)="errorMessage.set(null)">
+          <svg lucideX class="w-3.5 h-3.5"></svg>
+        </button>
+      </div>
       }
 
       <!-- TAB 1: General -->
       @if (activeTab() === 'general') {
-        <!-- Page Title -->
-        <label class="floating-label w-full text-base-content/60">
-          <input
-            id="settings-page-title"
-            type="text"
-            [(ngModel)]="formTitle"
-            name="pageTitle"
-            required
-            placeholder="Page Title"
-            class="input input-bordered input-lg w-full text-base-content"
-            autocomplete="off"
-          />
-          <span>Page Title <span class="text-error">*</span></span>
-        </label>
+      <!-- Page Title -->
+      <label class="floating-label w-full text-base-content/60">
+        <input id="settings-page-title" type="text" [(ngModel)]="formTitle" name="pageTitle" required
+          placeholder="Page Title" class="input input-bordered input-lg w-full text-base-content" autocomplete="off" />
+        <span>Page Title <span class="text-error">*</span></span>
+      </label>
 
-        <!-- Theme Selection via ThemeSwitcherComponent -->
+      <!-- Theme Selection via ThemeSwitcherComponent -->
+      <div class="flex items-center justify-between">
+        <label class="text-xs font-medium text-base-content/70">System Theme</label>
+        <app-theme-switcher [showLabel]="true" position="dropdown-bottom dropdown-end" />
+      </div>
+
+      <!-- Background Image Card Container -->
+      <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">
-          <label class="text-xs font-medium text-base-content/70">System Theme</label>
-          <app-theme-switcher [showLabel]="true" position="dropdown-bottom dropdown-end" />
+          <label class="text-xs font-medium text-base-content/70">Background Image</label>
         </div>
 
-        <!-- Background Image Card Container -->
-        <div class="flex flex-col gap-2">
-          <div class="flex items-center justify-between">
-            <label class="text-xs font-medium text-base-content/70">Background Image</label>
-            <!-- Status Pill -->
-            @if (selectedFile) {
-              <span class="badge badge-primary badge-xs text-[10px] font-medium gap-1 py-1.5 px-2">
-                Pending Upload
-              </span>
-            } @else if (configService.bgUrl() && !isBgRemoved) {
-              <span class="badge badge-success badge-xs text-[10px] font-medium gap-1 py-1.5 px-2">
-                Custom Active
-              </span>
-            } @else if (isBgRemoved) {
-              <span class="badge badge-warning badge-xs text-[10px] font-medium gap-1 py-1.5 px-2">
-                Will Clear on Save
-              </span>
-            } @else {
-              <span class="badge badge-ghost badge-xs text-[10px] text-base-content/50 py-1.5 px-2">
-                None (Default)
-              </span>
-            }
-          </div>
-
-          <!-- Card Content Box -->
-          <div class="border border-base-200 bg-base-200/40 rounded-xl p-3.5 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 transition-all">
-            <!-- Thumbnail Box -->
-            @if (previewUrl()) {
-              <a
-                [href]="previewUrl()"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="relative group aspect-video sm:w-32 h-20 rounded-lg border border-base-300 overflow-hidden shrink-0 bg-base-300 block shadow-xs"
-                title="Click to view full background image in new tab"
-              >
-                <img
-                  [src]="previewUrl()"
-                  alt="Background Preview"
-                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                  <svg lucideExternalLink class="w-4 h-4 drop-shadow"></svg>
-                </div>
-              </a>
-            } @else {
-              <div
-                class="aspect-video sm:w-32 h-20 rounded-lg border border-dashed border-base-300 flex flex-col items-center justify-center bg-base-100 shrink-0 text-base-content/40 gap-1"
-              >
-                <svg lucideImage class="w-6 h-6 opacity-60"></svg>
-                <span class="text-[10px] text-base-content/40 font-medium">No Background</span>
-              </div>
-            }
-
-            <!-- Info & Actions Container -->
-            <div class="flex flex-col justify-between gap-2.5 flex-1 min-w-0">
-              <!-- Subtitle / Filename info -->
-              <div class="flex flex-col min-w-0">
-                @if (selectedFile) {
-                  <span class="text-xs font-semibold text-base-content truncate" [title]="selectedFile.name">
-                    {{ selectedFile.name }}
-                  </span>
-                  <span class="text-[11px] text-base-content/50">
-                    {{ (selectedFile.size / 1024).toFixed(1) }} KB
-                  </span>
-                } @else if (configService.bgUrl() && !isBgRemoved) {
-                  <span class="text-xs font-medium text-base-content/80 truncate">
-                    Custom image active
-                  </span>
-                  <span class="text-[11px] text-base-content/50">
-                    Click preview to open original
-                  </span>
-                } @else if (isBgRemoved) {
-                  <span class="text-xs font-medium text-warning truncate">
-                    Background marked for removal
-                  </span>
-                  <span class="text-[11px] text-base-content/50">
-                    Click Save Settings to apply
-                  </span>
-                } @else {
-                  <span class="text-xs font-medium text-base-content/70">
-                    Default background active
-                  </span>
-                  <span class="text-[11px] text-base-content/40">
-                    PNG, JPG, WebP, SVG supported
-                  </span>
-                }
-              </div>
-
-              <!-- Action Buttons (Mobile touch friendly) -->
-              <div class="flex items-center gap-2">
-                <label
-                  class="btn btn-sm btn-primary btn-soft gap-1.5 flex-1 sm:flex-initial cursor-pointer min-h-[36px] px-3.5"
-                  [title]="selectedFile ? 'Change background image' : 'Upload background image'"
-                >
-                  <svg lucideUpload class="w-4 h-4"></svg>
-                  <span class="text-xs font-medium">{{ selectedFile || previewUrl() ? 'Change' : 'Upload' }}</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    class="hidden"
-                    (change)="onFileSelected($event)"
-                  />
-                </label>
-
-                @if (previewUrl()) {
-                  <button
-                    type="button"
-                    (click)="removeBackground()"
-                    class="btn btn-sm btn-ghost text-error hover:bg-error/15 gap-1.5 flex-1 sm:flex-initial min-h-[36px] px-3"
-                    title="Remove background image"
-                  >
-                    <svg lucideTrash2 class="w-4 h-4"></svg>
-                    <span class="text-xs font-medium">Clear</span>
-                  </button>
-                }
-              </div>
+        <!-- Card Content Box -->
+        <div
+          class="border border-base-200 bg-base-200/40 rounded-xl p-3 flex flex-col items-stretch justify-between gap-3 transition-all">
+          <!-- Thumbnail Box -->
+          @if (previewUrl()) {
+          <a [href]="previewUrl()" target="_blank" rel="noopener noreferrer"
+            class="relative group aspect-video h-16 rounded-lg border border-base-300 overflow-hidden shrink-0 bg-base-300 block shadow-xs"
+            title="Click to view full background image in new tab">
+            <img [src]="previewUrl()" alt="Background Preview"
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+            <div
+              class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+              <svg lucideExternalLink class="w-4 h-4 drop-shadow"></svg>
             </div>
+          </a>
+          } @else {
+          <div
+            class="aspect-video  h-16 rounded-lg border border-dashed border-base-300 flex items-center justify-center bg-base-100 shrink-0 text-base-content/40 gap-1.5">
+            <svg lucideImage class="w-5 h-5 opacity-60"></svg>
+            <span class="text-[10px] text-base-content/40 font-medium">No Image</span>
+          </div>
+          }
+
+          <!-- Solid Action Buttons (Mobile touch friendly) -->
+          <div class="flex items-center gap-2 shrink-0">
+            <label class="btn btn-sm btn-primary text-primary-content gap-1.5 flex-1 cursor-pointer min-h-9 px-4"
+              [title]="selectedFile ? 'Change background image' : 'Upload background image'">
+              <svg lucideUpload class="w-4 h-4"></svg>
+              <span class="text-xs font-medium">{{ selectedFile || previewUrl() ? 'Change' : 'Upload' }}</span>
+              <input type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
+            </label>
+
+            @if (previewUrl()) {
+            <button type="button" (click)="removeBackground()"
+              class="btn btn-sm btn-error text-error-content gap-1.5 flex-1  min-h-9 px-4"
+              title="Remove background image">
+              <svg lucideTrash2 class="w-4 h-4"></svg>
+              <span class="text-xs font-medium">Clear</span>
+            </button>
+            }
           </div>
         </div>
+      </div>
       }
 
       <!-- TAB 2: Authentication -->
       @if (activeTab() === 'auth') {
-        <div class="flex flex-col gap-4">
-          <!-- Access Mode Selection -->
+      <div class="flex flex-col gap-4">
+        <!-- Access Mode Selection -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-medium text-base-content/70">Access Mode</label>
           <div class="flex flex-col gap-2">
-            <label class="text-xs font-medium text-base-content/70">Access Mode</label>
-            <div class="flex flex-col gap-2">
-              <label
-                class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
-                [class.border-primary]="formAccessMode() === 'none_guard'"
-              >
-                <input
-                  type="radio"
-                  name="accessMode"
-                  value="none_guard"
-                  [checked]="formAccessMode() === 'none_guard'"
-                  (change)="formAccessMode.set('none_guard')"
-                  class="radio radio-xs radio-primary"
-                />
-                <div class="flex flex-col">
-                  <span class="text-xs font-medium">Public</span>
-                  <span class="text-[11px] text-base-content/50"
-                    >Public access; view and modify without authentication</span
-                  >
-                </div>
-              </label>
+            <label
+              class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+              [class.border-primary]="formAccessMode() === 'none_guard'">
+              <input type="radio" name="accessMode" value="none_guard" [checked]="formAccessMode() === 'none_guard'"
+                (change)="formAccessMode.set('none_guard')" class="radio radio-xs radio-primary" />
+              <div class="flex flex-col">
+                <span class="text-xs font-medium">Public</span>
+                <span class="text-[11px] text-base-content/50">Public access; view and modify without
+                  authentication</span>
+              </div>
+            </label>
 
-              <label
-                class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
-                [class.border-primary]="formAccessMode() === 'write_guard'"
-              >
-                <input
-                  type="radio"
-                  name="accessMode"
-                  value="write_guard"
-                  [checked]="formAccessMode() === 'write_guard'"
-                  (change)="formAccessMode.set('write_guard')"
-                  class="radio radio-xs radio-primary"
-                />
-                <div class="flex flex-col">
-                  <span class="text-xs font-medium">Protected Editing</span>
-                  <span class="text-[11px] text-base-content/50"
-                    >Public view; write operations require authentication</span
-                  >
-                </div>
-              </label>
+            <label
+              class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+              [class.border-primary]="formAccessMode() === 'write_guard'">
+              <input type="radio" name="accessMode" value="write_guard" [checked]="formAccessMode() === 'write_guard'"
+                (change)="formAccessMode.set('write_guard')" class="radio radio-xs radio-primary" />
+              <div class="flex flex-col">
+                <span class="text-xs font-medium">Protected Editing</span>
+                <span class="text-[11px] text-base-content/50">Public view; write operations require
+                  authentication</span>
+              </div>
+            </label>
 
-              <label
-                class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
-                [class.border-primary]="formAccessMode() === 'full_guard'"
-              >
-                <input
-                  type="radio"
-                  name="accessMode"
-                  value="full_guard"
-                  [checked]="formAccessMode() === 'full_guard'"
-                  (change)="formAccessMode.set('full_guard')"
-                  class="radio radio-xs radio-primary"
-                />
-                <div class="flex flex-col">
-                  <span class="text-xs font-medium">Private</span>
-                  <span class="text-[11px] text-base-content/50"
-                    >Full protection; all pages and APIs require authentication</span
-                  >
-                </div>
-              </label>
-            </div>
+            <label
+              class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+              [class.border-primary]="formAccessMode() === 'full_guard'">
+              <input type="radio" name="accessMode" value="full_guard" [checked]="formAccessMode() === 'full_guard'"
+                (change)="formAccessMode.set('full_guard')" class="radio radio-xs radio-primary" />
+              <div class="flex flex-col">
+                <span class="text-xs font-medium">Private</span>
+                <span class="text-[11px] text-base-content/50">Full protection; all pages and APIs require
+                  authentication</span>
+              </div>
+            </label>
           </div>
-
-          <!-- Username & Password inputs (if accessMode !== 'none_guard') -->
-          @if (formAccessMode() !== 'none_guard') {
-            <div class="flex flex-col gap-5 pt-2 border-t border-base-200">
-              <label class="floating-label w-full text-base-content/60">
-                <input
-                  id="settings-auth-username"
-                  type="text"
-                  [(ngModel)]="formUsername"
-                  name="authUsername"
-                  placeholder="Username"
-                  class="input input-bordered input-lg w-full text-base-content"
-                  autocomplete="username"
-                />
-                <span>Username</span>
-              </label>
-
-              <label class="floating-label w-full text-base-content/60">
-                <input
-                  id="settings-auth-password"
-                  type="password"
-                  [(ngModel)]="formPassword"
-                  name="authPassword"
-                  placeholder="Password"
-                  class="input input-bordered input-lg w-full text-base-content"
-                  autocomplete="new-password"
-                />
-                <span>Password</span>
-              </label>
-            </div>
-          }
         </div>
+
+        <!-- Username & Password inputs (if accessMode !== 'none_guard') -->
+        @if (formAccessMode() !== 'none_guard') {
+        <div class="flex flex-col gap-5 pt-2 border-t border-base-200">
+          <label class="floating-label w-full text-base-content/60">
+            <input id="settings-auth-username" type="text" [(ngModel)]="formUsername" name="authUsername"
+              placeholder="Username" class="input input-bordered input-lg w-full text-base-content"
+              autocomplete="username" />
+            <span>Username</span>
+          </label>
+
+          <label class="floating-label w-full text-base-content/60">
+            <input id="settings-auth-password" type="password" [(ngModel)]="formPassword" name="authPassword"
+              placeholder="Password" class="input input-bordered input-lg w-full text-base-content"
+              autocomplete="new-password" />
+            <span>Password</span>
+          </label>
+        </div>
+        }
+      </div>
       }
 
       <!-- Footer Actions -->
@@ -311,16 +176,12 @@
         <button type="button" class="btn btn-ghost btn-sm" (click)="closed.emit()">
           Cancel
         </button>
-        <button
-          id="settings-submit"
-          type="submit"
-          class="btn btn-primary btn-sm"
-          [disabled]="saving() || !formTitle.trim()"
-        >
+        <button id="settings-submit" type="submit" class="btn btn-primary btn-sm"
+          [disabled]="saving() || !formTitle.trim()">
           @if (saving()) {
-            <span class="loading loading-spinner loading-xs"></span>
+          <span class="loading loading-spinner loading-xs"></span>
           } @else {
-            Save Settings
+          Save Settings
           }
         </button>
       </div>

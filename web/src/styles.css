@@ -15,6 +15,66 @@
     dracula;
 }
 
+@plugin "daisyui/theme" {
+  name: 'light';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'cupcake';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'emerald';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'corporate';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'pastel';
+  --color-error-content: #8e0000;
+}
+
+@plugin "daisyui/theme" {
+  name: 'fantasy';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'business';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'coffee';
+  --color-error-content: #6f0202;
+}
+
+@plugin "daisyui/theme" {
+  name: 'night';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'dark';
+  --color-error-content: #ffffff;
+}
+
+@plugin "daisyui/theme" {
+  name: 'dim';
+  --color-error-content: #6f0202;
+}
+
+@plugin "daisyui/theme" {
+  name: 'dracula';
+  --color-error-content: #ffffff;
+}
+
 /* Inter font (loaded via index.html) */
 @layer base {
   *,
