@@ -64,9 +64,13 @@ export class HomeComponent {
     this.siteFormDefaults.set(null);
   }
 
-  onExternalSiteDropped(url: string): void {
-    if (!url) return;
-    this.boardService.saveNewSite({ url });
+  onExternalSiteDropped(payload: Partial<Site> | string): void {
+    if (typeof payload === 'string') {
+      if (!payload) return;
+      this.boardService.saveNewSite({ url: payload, group_id: null });
+    } else if (payload && payload.url) {
+      this.boardService.saveNewSite({ url: payload.url, group_id: payload.group_id ?? null });
+    }
   }
 
   onDeleteSite(site: Site): void {

@@ -59,7 +59,7 @@ export class SitesBoardComponent {
   deleteGroup = output<Group>();
   reorderGroups = output<ReorderItem[]>();
   reorderSites = output<SiteReorderItem[]>();
-  externalSiteDropped = output<string>();
+  externalSiteDropped = output<Partial<Site> | string>();
 
   @ViewChildren(GroupContainerComponent) groupContainers?: QueryList<GroupContainerComponent>;
   @ViewChildren(SiteCardComponent) siteCards?: QueryList<SiteCardComponent>;

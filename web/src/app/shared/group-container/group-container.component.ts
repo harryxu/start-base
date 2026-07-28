@@ -41,12 +41,18 @@ import { ConfigService } from '../../core/services/config.service';
   ],
   template: `
     <div
-      class="site-group collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden border-base-300/60"
+      class="site-group collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden border-base-300/60 transition-all duration-200"
       [class.app-with-bgimg]="configService.bgUrl()"
       [class.app-without-bgimg]="!configService.bgUrl()"
       [class.collapse-open]="!collapsed()"
       [class.collapse-close]="collapsed()"
       [class.backdrop-blur-md]="configService.bgUrl()"
+      [class.ring-2]="isExternalDragOver()"
+      [class.ring-primary]="isExternalDragOver()"
+      (dragenter)="onDragEnter($event)"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
     >
       <!-- Group header -->
       <div
@@ -167,10 +173,14 @@ export class GroupContainerComponent {
   deleteSite = output<Site>();
   siteDropped = output<CdkDragDrop<Site[]>>();
   siteDragStarted = output<void>();
+  externalSiteDropped = output<Partial<Site>>();
 
   @ViewChild(CdkMenuTrigger) triggerMenu?: CdkMenuTrigger;
 
   private globalMenuService = inject(GlobalMenuService);
+
+  isExternalDragOver = signal(false);
+  private dragCounter = 0;
 
   onGroupMenuOpened(): void {
     this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
@@ -188,5 +198,62 @@ export class GroupContainerComponent {
 
   isSiteFetching(siteId: number): boolean {
     return this.fetchingSiteIds().has(siteId);
+  }
+
+  // ---- HTML5 External Drag & Drop Handlers ----
+
+  onDragEnter(event: DragEvent): void {
+    if (this.configService.isReadOnly()) return;
+    const types = event.dataTransfer?.types;
+    const hasUrlOrFiles =
+      types &&
+      (types.includes('text/uri-list') || types.includes('Files') || types.includes('text/plain'));
+    if (!hasUrlOrFiles) return;
+
+    event.preventDefault();
+    this.dragCounter++;
+    if (this.dragCounter === 1) {
+      this.isExternalDragOver.set(true);
+    }
+  }
+
+  onDragOver(event: DragEvent): void {
+    if (this.configService.isReadOnly()) return;
+    const types = event.dataTransfer?.types;
+    const hasUrlOrFiles =
+      types &&
+      (types.includes('text/uri-list') || types.includes('Files') || types.includes('text/plain'));
+    if (!hasUrlOrFiles) return;
+
+    event.preventDefault();
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'copy';
+    }
+  }
+
+  onDragLeave(event: DragEvent): void {
+    if (this.configService.isReadOnly()) return;
+    event.preventDefault();
+    this.dragCounter--;
+    if (this.dragCounter <= 0) {
+      this.dragCounter = 0;
+      this.isExternalDragOver.set(false);
+    }
+  }
+
+  onDrop(event: DragEvent): void {
+    if (this.configService.isReadOnly()) return;
+    event.preventDefault();
+    event.stopPropagation();
+    this.dragCounter = 0;
+    this.isExternalDragOver.set(false);
+
+    const url =
+      event.dataTransfer?.getData('text/uri-list') ||
+      event.dataTransfer?.getData('text/plain') ||
+      '';
+    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+      this.externalSiteDropped.emit({ url, group_id: this.group().id });
+    }
   }
 }

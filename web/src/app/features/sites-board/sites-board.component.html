@@ -82,7 +82,7 @@
         @if (row.type === 'group') {
         <app-group-container class="block" [group]="row.group" [sites]="row.sites"
           [allSiteDropListIds]="allSiteDropListIds()" [fetchingSiteIds]="fetchingSiteIds()"
-          (addSite)="addSiteInGroup.emit($event)" (siteDropped)="onSiteDrop($event)" (siteDragStarted)="closeAllMenus()" (editGroup)="editGroup.emit($event)"
+          (addSite)="addSiteInGroup.emit($event)" (externalSiteDropped)="externalSiteDropped.emit($event)" (siteDropped)="onSiteDrop($event)" (siteDragStarted)="closeAllMenus()" (editGroup)="editGroup.emit($event)"
           (deleteGroup)="deleteGroup.emit($event)" (editSite)="editSite.emit($event)"
           (deleteSite)="deleteSite.emit($event)" />
         }
