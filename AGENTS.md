@@ -84,6 +84,12 @@ pnpm start
 
 # Build for production
 pnpm build
+
+# Run targeted unit tests for modified spec file(s)
+pnpm ng test --no-watch --include src/app/features/site-form/site-form.component.spec.ts
+
+# Run full test suite
+pnpm ng test --no-watch
 ```
 
 ## API Contract
@@ -143,4 +149,7 @@ pnpm build
 - **Icons**: Import from `@lucide/angular`, use as SVG directive: `<svg lucidePencil class="w-4 h-4">`
 - **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
 - **No auth**: Single-user local tool, no authentication needed
-- **Testing**: Ensure that test coverage is updated synchronously whenever features are added, modified, or adjusted across both Python backend (`server/tests/`) and Angular frontend (`web/` via `ng test --no-watch`). All tests must be kept green.
+- **Testing**:
+  - Keep tests green across Python backend (`server/tests/`) and Angular frontend (`web/`).
+  - Frontend Angular test coverage should prioritize **business logic and functional workflows** (e.g., state transformations, service interactions, event handling). Purely presentational details (e.g., specific CSS styling classes or static UI prompt messages) do not require exhaustive test assertions.
+  - When making targeted code changes, pass the `--include` flag to `ng test` (e.g., `pnpm ng test --no-watch --include src/app/path/to/file.spec.ts`) to run unit tests specifically for the modified/added components or services. Only run the full test suite (`pnpm ng test --no-watch`) when changes impact widespread files across the codebase.
