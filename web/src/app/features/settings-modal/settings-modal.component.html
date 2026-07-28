@@ -4,7 +4,7 @@
   aria-modal="true"
   aria-label="System Settings"
 >
-  <div class="modal-box max-w-md p-0 overflow-hidden flex flex-col max-h-[90vh]">
+  <div class="modal-box max-w-md p-0 overflow-visible flex flex-col max-h-[90vh]">
     <!-- Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-base-200 shrink-0">
       <div class="flex items-center gap-2">
@@ -42,7 +42,7 @@
     </div>
 
     <!-- Settings Form Content -->
-    <form (ngSubmit)="onSubmit()" class="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-6">
+    <form (ngSubmit)="onSubmit()" class="flex-1 overflow-visible px-6 py-5 flex flex-col gap-6">
       <!-- Global Error Banner -->
       @if (errorMessage()) {
         <div class="alert alert-error text-xs py-2.5 px-3.5 rounded-lg flex items-start gap-2">
