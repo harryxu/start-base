@@ -1,0 +1,83 @@
+<div class="min-h-screen bg-base-200 flex items-center justify-center p-4">
+  <div class="card w-full max-w-sm bg-base-100 shadow-xl">
+    <div class="card-body gap-5">
+      <!-- Header -->
+      <div class="text-center">
+        <h1 class="text-2xl font-bold text-base-content">Welcome back</h1>
+        <p class="text-sm text-base-content/60 mt-1">Sign in to your dashboard</p>
+      </div>
+
+      <!-- Error alert -->
+      @if (errorMessage()) {
+        <div role="alert" class="alert alert-error py-2 text-sm">
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <!-- Login form -->
+      <form class="flex flex-col gap-4" (ngSubmit)="onSubmit()">
+        <!-- Username -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Username</legend>
+          <input
+            id="login-username"
+            type="text"
+            class="input w-full"
+            placeholder="Enter your username"
+            autocomplete="username"
+            [value]="username()"
+            (input)="username.set($any($event.target).value)"
+            [disabled]="loading()"
+            required
+          />
+        </fieldset>
+
+        <!-- Password -->
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Password</legend>
+          <div class="join w-full">
+            <input
+              id="login-password"
+              [type]="showPassword() ? 'text' : 'password'"
+              class="input join-item flex-1 min-w-0"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              [value]="password()"
+              (input)="password.set($any($event.target).value)"
+              [disabled]="loading()"
+              required
+            />
+            <button
+              type="button"
+              class="btn btn-ghost join-item border border-base-300"
+              (click)="showPassword.set(!showPassword())"
+              [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+            >
+              @if (showPassword()) {
+                <svg lucideEyeOff class="w-4 h-4"></svg>
+              } @else {
+                <svg lucideEye class="w-4 h-4"></svg>
+              }
+            </button>
+          </div>
+        </fieldset>
+
+        <!-- Submit -->
+        <button
+          id="login-submit"
+          type="submit"
+          class="btn btn-primary w-full mt-1"
+          [disabled]="loading() || !username().trim() || !password()"
+        >
+          @if (loading()) {
+            <span class="loading loading-spinner loading-sm"></span>
+            Signing in…
+          } @else {
+            <svg lucideLogIn class="w-4 h-4"></svg>
+            Sign in
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

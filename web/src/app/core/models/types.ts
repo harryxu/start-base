@@ -72,3 +72,15 @@ export type LayoutRow =
  */
 export type SystemConfigMap = Record<string, any>;
 
+/** Auth: login request payload. */
+export interface UserLogin {
+  username: string;
+  password: string;
+}
+
+/** Auth: public user info returned after login. */
+export interface UserPublic {
+  id: number;
+  username: string;
+}
+
