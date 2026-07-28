@@ -24,6 +24,9 @@ export class ConfigService {
   bgUrl = signal<string | null>(null);
   accessMode = signal<string>('none_guard');
 
+  /** In-flight Promise deduplication for concurrent loadConfig calls. */
+  private inFlightLoadPromise: Promise<void> | null = null;
+
   /**
    * True when write operations should be hidden/disabled.
    * In guarded modes (write_guard / full_guard), only authenticated users can write.
@@ -58,23 +61,35 @@ export class ConfigService {
     });
   }
 
-  async loadConfig(): Promise<void> {
-    const config = await firstValueFrom(this.api.getConfig());
-    if (config['page_title']) {
-      this.pageTitle.set(config['page_title']);
-    }
-    if (config['theme']) {
-      this.theme.set(config['theme']);
-    } else {
-      this.theme.set('emerald');
+  async loadConfig(force = false): Promise<void> {
+    if (this.inFlightLoadPromise && !force) {
+      return this.inFlightLoadPromise;
     }
 
-    if (config['access_mode']) {
-      this.accessMode.set(config['access_mode']);
-    }
+    this.inFlightLoadPromise = (async () => {
+      const config = await firstValueFrom(this.api.getConfig());
+      if (config['page_title']) {
+        this.pageTitle.set(config['page_title']);
+      }
+      if (config['theme']) {
+        this.theme.set(config['theme']);
+      } else {
+        this.theme.set('emerald');
+      }
 
-    if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
-      this.bgUrl.set((config['bg_url'] || '').trim() || null);
+      if (config['access_mode']) {
+        this.accessMode.set(config['access_mode']);
+      }
+
+      if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
+        this.bgUrl.set((config['bg_url'] || '').trim() || null);
+      }
+    })();
+
+    try {
+      await this.inFlightLoadPromise;
+    } finally {
+      this.inFlightLoadPromise = null;
     }
   }
 

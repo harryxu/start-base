@@ -45,6 +45,6 @@ export class AuthService {
 
   private async refreshConfig(): Promise<void> {
     const configService = this.injector.get(ConfigService);
-    await configService.loadConfig();
+    await configService.loadConfig(true);
   }
 }
