@@ -1,4 +1,4 @@
-import { Component, input, output, signal, ViewChild, inject } from '@angular/core';
+import { Component, input, output, signal, computed, ViewChild, inject } from '@angular/core';
 import { LucideEllipsis, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
@@ -7,6 +7,7 @@ import type { Group, Site } from '../../core/models/types';
 import { SiteCardComponent } from '../site-card/site-card.component';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { ConfigService } from '../../core/services/config.service';
+import { GroupCollapseService } from '../../core/services/group-collapse.service';
 
 @Component({
   selector: 'app-group-container',
@@ -190,10 +191,12 @@ export class GroupContainerComponent {
     this.triggerMenu?.close();
   }
 
-  collapsed = signal(false);
+  private groupCollapseService = inject(GroupCollapseService);
+
+  collapsed = computed(() => this.groupCollapseService.isCollapsed(this.group().id));
 
   toggleCollapse(): void {
-    this.collapsed.update((v) => !v);
+    this.groupCollapseService.toggleCollapsed(this.group().id);
   }
 
   isSiteFetching(siteId: number): boolean {

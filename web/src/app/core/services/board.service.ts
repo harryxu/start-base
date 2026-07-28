@@ -3,6 +3,7 @@ import { injectMutation, injectQuery, QueryClient } from '@tanstack/angular-quer
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from '../api/api.service';
+import { GroupCollapseService } from './group-collapse.service';
 import type {
   Group,
   ReorderItem,
@@ -14,6 +15,7 @@ import type {
 export class BoardService {
   private api = inject(ApiService);
   private queryClient = inject(QueryClient);
+  private groupCollapseService = inject(GroupCollapseService);
 
   fetchingSiteIds = signal<Set<number>>(new Set());
 
@@ -81,7 +83,8 @@ export class BoardService {
 
   deleteGroupMutation = injectMutation(() => ({
     mutationFn: (id: number) => firstValueFrom(this.api.deleteGroup(id)),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
+      this.groupCollapseService.removeGroup(id);
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
