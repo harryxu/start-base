@@ -92,21 +92,13 @@
             <!-- Preview Box -->
             @if (previewUrl()) {
               <div
-                class="relative w-20 h-14 rounded-lg border border-base-300 overflow-hidden shrink-0 group"
+                class="w-20 h-14 rounded-lg border border-base-300 overflow-hidden shrink-0 bg-base-200"
               >
                 <img
                   [src]="previewUrl()"
                   alt="Background Preview"
                   class="w-full h-full object-cover"
                 />
-                <button
-                  type="button"
-                  (click)="removeBackground()"
-                  class="absolute inset-0 bg-black/60 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                  title="Remove Background"
-                >
-                  <svg lucideTrash2 class="w-4 h-4"></svg>
-                </button>
               </div>
             } @else {
               <div
@@ -119,9 +111,12 @@
             <!-- File Controls & Status -->
             <div class="flex flex-col gap-1.5 flex-1 min-w-0">
               <div class="flex items-center gap-2">
-                <label class="btn btn-xs btn-outline gap-1 cursor-pointer">
-                  <svg lucideUpload class="w-3.5 h-3.5"></svg>
-                  <span>{{ selectedFile ? 'Change Image' : 'Choose Image' }}</span>
+                <label
+                  class="btn btn-sm btn-square btn-outline cursor-pointer"
+                  [title]="selectedFile ? 'Change background image' : 'Upload background image'"
+                  aria-label="Upload background image"
+                >
+                  <svg lucideUpload class="w-4 h-4"></svg>
                   <input
                     type="file"
                     accept="image/*"
@@ -133,10 +128,11 @@
                   <button
                     type="button"
                     (click)="removeBackground()"
-                    class="btn btn-xs btn-ghost text-error"
-                    title="Clear background image"
+                    class="btn btn-sm btn-square btn-ghost text-error hover:bg-error/15"
+                    title="Remove background image"
+                    aria-label="Remove background image"
                   >
-                    Remove
+                    <svg lucideTrash2 class="w-4 h-4"></svg>
                   </button>
                 }
               </div>
