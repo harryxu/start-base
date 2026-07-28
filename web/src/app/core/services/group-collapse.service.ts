@@ -1,9 +1,9 @@
-import { Injectable, signal } from '@angular/core';
+import { Service, signal } from '@angular/core';
 
 const COOKIE_NAME = 'sb_collapsed_groups';
 const COOKIE_MAX_AGE_DAYS = 365;
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class GroupCollapseService {
   /** Signal containing Set of collapsed group IDs */
   collapsedGroupIds = signal<Set<number>>(this.loadFromCookie());

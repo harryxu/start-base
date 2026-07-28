@@ -1,11 +1,11 @@
-import { Injectable, Injector, inject, signal } from '@angular/core';
+import { Injector, Service, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import { ConfigService } from './config.service';
 import type { UserLogin, UserPublic } from '../models/types';
+import { ConfigService } from './config.service';
 
-@Injectable({ providedIn: 'root' })
+@Service()
 export class AuthService {
   private api = inject(ApiService);
   private router = inject(Router);
