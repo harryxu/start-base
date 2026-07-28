@@ -1,11 +1,13 @@
-import { Directive, output, HostListener, inject } from '@angular/core';
+import { Directive, input, output, HostListener, inject } from '@angular/core';
 import { GlobalMenuService } from '../core/services/global-menu.service';
 
 @Directive({
   selector: '[appLongPress]',
-  standalone: true
+  standalone: true,
 })
 export class LongPressDirective {
+  disabled = input<boolean>(false);
+
   // Emits the pointer event on successful long press
   longPress = output<PointerEvent>();
 
@@ -17,6 +19,8 @@ export class LongPressDirective {
 
   @HostListener('pointerdown', ['$event'])
   onPointerDown(event: PointerEvent): void {
+    if (this.disabled()) return;
+
     // Only trigger for primary pointer button (left-click/touch)
     if (event.button !== 0 && event.pointerType === 'mouse') return;
 
@@ -54,7 +58,7 @@ export class LongPressDirective {
 
   @HostListener('pointermove', ['$event'])
   onPointerMove(event: PointerEvent): void {
-    if (!this.timeoutId) return;
+    if (this.disabled() || !this.timeoutId) return;
 
     const diffX = Math.abs(event.clientX - this.startX);
     const diffY = Math.abs(event.clientY - this.startY);

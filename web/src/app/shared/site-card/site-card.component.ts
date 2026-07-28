@@ -23,23 +23,28 @@ import { ConfigService } from '../../core/services/config.service';
   template: `
     <div
       class="site-card min-w-2"
-      [class.is-floating]="isMenuOpen()"
+      [class.is-floating]="!configService.isReadOnly() && isMenuOpen()"
       [class.app-with-bgimg]="configService.bgUrl()"
       [class.app-without-bgimg]="!configService.bgUrl()"
       [class.grouped]="!!site().group_id"
       [class.ungrouped]="!site().group_id"
       [cdkContextMenuTriggerFor]="configService.isReadOnly() ? null : menu"
+      [cdkContextMenuDisabled]="configService.isReadOnly()"
       #trigger="cdkContextMenuTriggerFor"
       (cdkContextMenuOpened)="onContextMenuOpened()"
       (cdkContextMenuClosed)="onContextMenuClosed()"
       appLongPress
+      [disabled]="configService.isReadOnly()"
       (longPress)="openContextMenu($event)"
     >
       <a
         [href]="site().url"
         target="_blank"
         rel="noopener noreferrer"
-        class="site-link flex flex-col items-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer select-none [-webkit-touch-callout:none] [-webkit-user-drag:none] py-3 hover:bg-base-200"
+        class="site-link flex flex-col items-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
+        [class.select-none]="!configService.isReadOnly()"
+        [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
+        [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
         [title]="site().title || displayTitle()"
       >
         @if (showSkeleton()) {
@@ -124,7 +129,6 @@ export class SiteCardComponent {
   configService = inject(ConfigService);
   site = input.required<Site>();
   isFetching = input<boolean>(false);
-  isReadOnly = input<boolean>(false);
 
   editSite = output<Site>();
   deleteSite = output<Site>();
@@ -136,12 +140,13 @@ export class SiteCardComponent {
   private globalMenuService = inject(GlobalMenuService);
 
   openContextMenu(event: PointerEvent): void {
-    if (this.isReadOnly()) return;
+    if (this.configService.isReadOnly()) return;
     this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
     this.triggerMenu?.open({ x: event.clientX, y: event.clientY });
   }
 
   onContextMenuOpened(): void {
+    if (this.configService.isReadOnly()) return;
     this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
     this.isMenuOpen.set(true);
   }

@@ -22,7 +22,7 @@
   <!-- Empty state -->
   @else if (layoutRows().length === 0) {
   <div class="flex flex-col items-center justify-center py-24 text-center">
-    @if (!isReadOnly()) {
+    @if (!configService.isReadOnly()) {
       <div class="w-14 h-14 rounded-2xl bg-base-200 flex items-center justify-center mb-4 cursor-pointer"
         (click)="addSite.emit()">
         <svg lucidePlus class="w-6 h-6 text-base-content"></svg>
@@ -49,11 +49,11 @@
       class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 min-h-20 p-2 rounded-xl border border-transparent">
       @for (site of localUngroupedSites(); track site.id) {
       <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
-        [cdkDragDisabled]="isReadOnly()"
+        [cdkDragDisabled]="configService.isReadOnly()"
         (cdkDragStarted)="closeAllMenus()">
         <div *cdkDragPlaceholder
           class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
-        <app-site-card [site]="site" [isFetching]="isSiteFetching(site.id)" [isReadOnly]="isReadOnly()"
+        <app-site-card [site]="site" [isFetching]="isSiteFetching(site.id)"
           (editSite)="editSite.emit($event)"
           (deleteSite)="deleteSite.emit($event)" />
       </div>
@@ -64,13 +64,13 @@
     <div cdkDropList cdkDropListOrientation="vertical" [cdkDropListData]="localGroupRows()"
       (cdkDropListDropped)="onRowDrop($event)" class="space-y-4 min-h-24">
       @for (row of localGroupRows(); track row.id) {
-      <div cdkDrag [cdkDragData]="row" [cdkDragDisabled]="isReadOnly()"
+      <div cdkDrag [cdkDragData]="row" [cdkDragDisabled]="configService.isReadOnly()"
         (cdkDragStarted)="closeAllMenus()" class="relative group">
         <!-- Drag placeholder shown while the row is being dragged -->
         <div *cdkDragPlaceholder class="h-16 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5"></div>
 
         <!-- Drag handle (hidden in read-only mode) -->
-        @if (!isReadOnly()) {
+        @if (!configService.isReadOnly()) {
           <div cdkDragHandle
             class="drag-handle absolute top-3 left-2 z-10 cursor-grab text-base-content/30 hover:text-base-content/60 p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
             title="Drag to reorder group">
@@ -82,7 +82,6 @@
         @if (row.type === 'group') {
         <app-group-container class="block" [group]="row.group" [sites]="row.sites"
           [allSiteDropListIds]="allSiteDropListIds()" [fetchingSiteIds]="fetchingSiteIds()"
-          [isReadOnly]="isReadOnly()"
           (siteDropped)="onSiteDrop($event)" (siteDragStarted)="closeAllMenus()" (editGroup)="editGroup.emit($event)"
           (deleteGroup)="deleteGroup.emit($event)" (editSite)="editSite.emit($event)"
           (deleteSite)="deleteSite.emit($event)" />

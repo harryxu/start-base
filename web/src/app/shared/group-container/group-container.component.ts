@@ -59,8 +59,8 @@ import { ConfigService } from '../../core/services/config.service';
           {{ group().name }}
         </span>
 
-              <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
-        @if (!isReadOnly()) {
+        <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
+        @if (!configService.isReadOnly()) {
           <button
             [cdkMenuTriggerFor]="groupMenu"
             (cdkMenuOpened)="onGroupMenuOpened()"
@@ -94,7 +94,7 @@ import { ConfigService } from '../../core/services/config.service';
               cdkDrag
               [cdkDragData]="site"
               [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
-              [cdkDragDisabled]="isReadOnly()"
+              [cdkDragDisabled]="configService.isReadOnly()"
               (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
             >
               <div
@@ -150,7 +150,6 @@ export class GroupContainerComponent {
   sites = input<Site[]>([]);
   allSiteDropListIds = input<string[]>([]);
   fetchingSiteIds = input<Set<number>>(new Set());
-  isReadOnly = input<boolean>(false);
 
   editGroup = output<Group>();
   deleteGroup = output<Group>();

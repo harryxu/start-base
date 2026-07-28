@@ -8,7 +8,7 @@
   <app-sites-board [sites]="boardService.sitesQuery.data() ?? []" [groups]="boardService.groupsQuery.data() ?? []"
     [isLoading]="boardService.sitesQuery.isLoading() || boardService.groupsQuery.isLoading()"
     [isError]="boardService.sitesQuery.isError() || boardService.groupsQuery.isError()"
-    [fetchingSiteIds]="boardService.fetchingSiteIds()" [isReadOnly]="configService.isReadOnly()"
+    [fetchingSiteIds]="boardService.fetchingSiteIds()"
     (addSite)="openAddSiteForm()"
     (editSite)="openEditSiteForm($event)" (deleteSite)="onDeleteSite($event)" (editGroup)="onEditGroup($event)"
     (deleteGroup)="onDeleteGroup($event)" (reorderGroups)="boardService.reorderGroups($event)"
