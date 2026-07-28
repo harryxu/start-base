@@ -1,4 +1,4 @@
-import { Component, signal, output } from '@angular/core';
+import { Component, signal, output, OnInit, OnDestroy } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 
 @Component({
@@ -31,10 +31,9 @@ import { LucidePlus } from '@lucide/angular';
     '(window:dragenter)': 'onDragEnter($event)',
     '(window:dragleave)': 'onDragLeave($event)',
     '(window:dragover)': 'onDragOverPage($event)',
-    '(window:drop)': 'onPageDrop($event)',
   },
 })
-export class ExternalDropZoneComponent {
+export class ExternalDropZoneComponent implements OnInit, OnDestroy {
   // Output event when a URL is dropped
   droppedUrl = output<string>();
 
@@ -43,12 +42,33 @@ export class ExternalDropZoneComponent {
   showDropZone = signal(false);
   isOverDropZone = signal(false);
 
+  ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('drop', this.resetState, true);
+      window.addEventListener('dragend', this.resetState, true);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('drop', this.resetState, true);
+      window.removeEventListener('dragend', this.resetState, true);
+    }
+  }
+
+  private resetState = (): void => {
+    this.dragCounter = 0;
+    this.showDropZone.set(false);
+    this.isOverDropZone.set(false);
+  };
+
   onLocalDragStart(event: DragEvent): void {
     this.isLocalDrag = true;
   }
 
   onLocalDragEnd(event: DragEvent): void {
     this.isLocalDrag = false;
+    this.resetState();
   }
 
   onDragEnter(event: DragEvent): void {
@@ -73,9 +93,7 @@ export class ExternalDropZoneComponent {
 
     this.dragCounter--;
     if (this.dragCounter <= 0) {
-      this.dragCounter = 0;
-      this.showDropZone.set(false);
-      this.isOverDropZone.set(false);
+      this.resetState();
     }
   }
 
@@ -102,19 +120,10 @@ export class ExternalDropZoneComponent {
     this.isOverDropZone.set(false);
   }
 
-  onPageDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.dragCounter = 0;
-    this.showDropZone.set(false);
-    this.isOverDropZone.set(false);
-  }
-
   onDropZoneDrop(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
-    this.dragCounter = 0;
-    this.showDropZone.set(false);
-    this.isOverDropZone.set(false);
+    this.resetState();
 
     const url =
       event.dataTransfer?.getData('text/uri-list') ||
