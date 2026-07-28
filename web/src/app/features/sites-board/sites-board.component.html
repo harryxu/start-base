@@ -1,5 +1,7 @@
 <main class="max-w-5xl mx-auto px-2 py-6 relative">
-  <app-external-drop-zone (droppedUrl)="externalSiteDropped.emit($event)" />
+  @if (!configService.isReadOnly()) {
+    <app-external-drop-zone (droppedUrl)="externalSiteDropped.emit($event)" />
+  }
 
   <!-- Loading state -->
   @if (isLoading()) {
