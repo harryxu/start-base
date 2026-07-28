@@ -1,4 +1,5 @@
 import { signal, computed } from '@angular/core';
+import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-experimental';
 import { ConfigService } from '../core/services/config.service';
 import { AuthService } from '../core/services/auth.service';
 
@@ -29,6 +30,7 @@ export const mockAuthService = {
 };
 
 export const COMMON_TEST_PROVIDERS = [
+  provideTanStackQuery(new QueryClient()),
   { provide: ConfigService, useValue: mockConfigService },
   { provide: AuthService, useValue: mockAuthService },
 ];

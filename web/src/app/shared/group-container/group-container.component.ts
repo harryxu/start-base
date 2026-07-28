@@ -1,5 +1,5 @@
 import { Component, input, output, signal, computed, ViewChild, inject } from '@angular/core';
-import { LucideEllipsis, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
+import { LucideEllipsis, LucideFolder, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
 
@@ -8,6 +8,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { ConfigService } from '../../core/services/config.service';
 import { GroupCollapseService } from '../../core/services/group-collapse.service';
+import { API_BASE } from '../../core/api/api.service';
 
 @Component({
   selector: 'app-group-container',
@@ -21,6 +22,7 @@ import { GroupCollapseService } from '../../core/services/group-collapse.service
     CdkDrag,
     CdkDragPlaceholder,
     LucideEllipsis,
+    LucideFolder,
     LucidePlus,
     LucidePencil,
     LucideTrash2,
@@ -63,9 +65,21 @@ import { GroupCollapseService } from '../../core/services/group-collapse.service
         [class.backdrop-blur-sm]="configService.bgUrl()"
         (click)="toggleCollapse()"
       >
-        <span class="text-sm font-semibold text-base-content flex-1">
-          {{ group().name }}
-        </span>
+        <div class="flex items-center gap-2 flex-1 min-w-0">
+          @if (group().icon_url && !iconFailed()) {
+            <img
+              [src]="fullIconUrl()"
+              alt="Group icon"
+              class="w-4 h-4 rounded object-contain shrink-0"
+              (error)="onIconError()"
+            />
+          } @else {
+            <svg lucideFolder class="w-4 h-4 text-primary shrink-0 opacity-80"></svg>
+          }
+          <span class="text-sm font-semibold text-base-content truncate">
+            {{ group().name }}
+          </span>
+        </div>
 
         <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
         @if (!configService.isReadOnly()) {
@@ -189,6 +203,18 @@ export class GroupContainerComponent {
 
   closeMenu(): void {
     this.triggerMenu?.close();
+  }
+
+  iconFailed = signal(false);
+
+  fullIconUrl = computed(() => {
+    const url = this.group().icon_url;
+    if (!url) return '';
+    return url.startsWith('/') ? `${API_BASE}${url}` : url;
+  });
+
+  onIconError(): void {
+    this.iconFailed.set(true);
   }
 
   private groupCollapseService = inject(GroupCollapseService);

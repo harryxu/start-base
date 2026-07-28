@@ -6,6 +6,7 @@
 export interface Group {
   id: number;
   name: string;
+  icon_url?: string | null;
   sort_order: number;
 }
 

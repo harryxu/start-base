@@ -120,14 +120,19 @@ export class BoardService {
     this.deleteSiteMutation.mutate(id);
   }
 
-  saveNewGroup(name: string): void {
+  saveNewGroup(data: Partial<Group> | string): void {
     const groups = this.groupsQuery.data() ?? [];
     const maxOrder = groups.length > 0 ? Math.max(...groups.map((g) => g.sort_order)) : 0;
-    this.createGroupMutation.mutate({ name, sort_order: maxOrder + 100 });
+    const payload: Partial<Group> =
+      typeof data === 'string'
+        ? { name: data, sort_order: maxOrder + 100 }
+        : { ...data, sort_order: data.sort_order ?? maxOrder + 100 };
+    this.createGroupMutation.mutate(payload);
   }
 
-  updateGroup(id: number, name: string): void {
-    this.updateGroupMutation.mutate({ id, data: { name } });
+  updateGroup(id: number, data: Partial<Group> | string): void {
+    const payload = typeof data === 'string' ? { name: data } : data;
+    this.updateGroupMutation.mutate({ id, data: payload });
   }
 
   deleteGroup(id: number): void {

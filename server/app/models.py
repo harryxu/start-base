@@ -30,6 +30,7 @@ class Group(SQLModel, table=True):
 
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(min_length=1, max_length=200)
+    icon_url: Optional[str] = Field(default=None)
     sort_order: float = Field(default=0.0)
 
 
@@ -99,17 +100,20 @@ class SystemConfigUpdate(SQLModel):
 
 class GroupCreate(SQLModel):
     name: str
+    icon_url: Optional[str] = None
     sort_order: float = 0.0
 
 
 class GroupUpdate(SQLModel):
     name: Optional[str] = None
+    icon_url: Optional[str] = None
     sort_order: Optional[float] = None
 
 
 class GroupRead(SQLModel):
     id: int
     name: str
+    icon_url: Optional[str] = None
     sort_order: float
 
 
