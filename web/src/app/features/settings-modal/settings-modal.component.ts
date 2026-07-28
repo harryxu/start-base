@@ -8,6 +8,7 @@ import {
   LucideImage,
   LucideShield,
   LucideAlertCircle,
+  LucideExternalLink,
 } from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
 
@@ -28,6 +29,7 @@ import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switch
     LucideImage,
     LucideShield,
     LucideAlertCircle,
+    LucideExternalLink,
     ThemeSwitcherComponent,
   ],
   templateUrl: './settings-modal.component.html',
