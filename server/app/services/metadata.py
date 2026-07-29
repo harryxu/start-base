@@ -1,4 +1,5 @@
 """Service for fetching website metadata (title and favicon)."""
+
 from urllib.parse import urljoin, urlparse
 
 import httpx
@@ -35,7 +36,12 @@ async def fetch_site_metadata(url: str) -> dict:
             if title_tag and title_tag.string:
                 title_str = title_tag.string.strip()[:200]
                 # Filter out Cloudflare / CDN anti-bot challenge titles
-                if title_str.lower() not in {"just a moment...", "attention required!", "403 forbidden", "access denied"}:
+                if title_str.lower() not in {
+                    "just a moment...",
+                    "attention required!",
+                    "403 forbidden",
+                    "access denied",
+                }:
                     result["title"] = title_str
 
             if not result["title"]:
@@ -47,8 +53,9 @@ async def fetch_site_metadata(url: str) -> dict:
             for rel_value in ["icon", "shortcut icon", "apple-touch-icon"]:
                 link = soup.find(
                     "link",
-                    rel=lambda r, rv=rel_value: r
-                    and (rv in r if isinstance(r, list) else rv == r),
+                    rel=lambda r, rv=rel_value: (
+                        r and (rv in r if isinstance(r, list) else rv == r)
+                    ),
                 )
                 if link and link.get("href"):
                     icon_url = urljoin(str(response.url), link["href"])
@@ -87,9 +94,10 @@ async def fetch_site_metadata(url: str) -> dict:
 
     return result
 
-import os
+
 import mimetypes
-from urllib.parse import urlparse
+import os
+
 
 async def download_icon(icon_url: str, site_id: int) -> str | None:
     """Download the icon and save it locally, returning the local URL."""

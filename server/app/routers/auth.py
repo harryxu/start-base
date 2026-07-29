@@ -1,6 +1,7 @@
 """Authentication API router using Starlette SessionMiddleware."""
-from datetime import datetime, timezone
-from typing import Any, Dict
+
+from datetime import UTC, datetime
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session, select
@@ -36,14 +37,14 @@ def login(
 
 
 @router.post("/logout")
-def logout(request: Request) -> Dict[str, str]:
+def logout(request: Request) -> dict[str, str]:
     """Log out current user by clearing request.session."""
     request.session.clear()
     return {"status": "ok"}
 
 
 @router.get("/me")
-def get_me(request: Request, session: Session = Depends(get_session)) -> Dict[str, Any]:
+def get_me(request: Request, session: Session = Depends(get_session)) -> dict[str, Any]:
     """Get currently authenticated user information and system access_mode."""
     user = get_current_user_from_session(request, session)
 
@@ -101,7 +102,7 @@ def update_credentials(
                 )
             current_user.username = new_username
 
-    current_user.updated_at = datetime.now(timezone.utc)
+    current_user.updated_at = datetime.now(UTC)
     session.add(current_user)
     session.commit()
     session.refresh(current_user)

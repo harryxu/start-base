@@ -1,9 +1,8 @@
 """SQLModel database models and API schemas for Start Base."""
-from datetime import datetime, timezone
-from typing import Optional
+
+from datetime import UTC, datetime
 
 from sqlmodel import Field, SQLModel
-
 
 # ---- Database Models ----
 
@@ -19,39 +18,39 @@ class User(UserBase, table=True):
 
     __tablename__ = "users"
 
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     hashed_password: str = Field(nullable=False)
-    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
-    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
 class Group(SQLModel, table=True):
     """Group for organizing sites on the dashboard."""
 
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     name: str = Field(min_length=1, max_length=200)
-    icon_url: Optional[str] = Field(default=None)
+    icon_url: str | None = Field(default=None)
     sort_order: float = Field(default=0.0)
 
 
 class Site(SQLModel, table=True):
     """A bookmarked website displayed on the dashboard."""
 
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     url: str
-    title: Optional[str] = None
-    icon_url: Optional[str] = None
-    description: Optional[str] = None
+    title: str | None = None
+    icon_url: str | None = None
+    description: str | None = None
     sort_order: float = Field(default=0.0)
-    group_id: Optional[int] = Field(default=None, foreign_key="group.id")
+    group_id: int | None = Field(default=None, foreign_key="group.id")
 
 
 class SystemConfig(SQLModel, table=True):
     """Generic key-value system configuration entry."""
 
     key: str = Field(primary_key=True, max_length=100)
-    value: Optional[str] = Field(default=None)
-    description: Optional[str] = Field(default=None, max_length=255)
+    value: str | None = Field(default=None)
+    description: str | None = Field(default=None, max_length=255)
 
 
 # ---- API Schemas ----
@@ -74,75 +73,75 @@ class UserLogin(SQLModel):
 class UpdateCredentials(SQLModel):
     """Request payload for updating username and/or password."""
 
-    username: Optional[str] = None
-    current_password: Optional[str] = None
-    new_password: Optional[str] = None
+    username: str | None = None
+    current_password: str | None = None
+    new_password: str | None = None
 
 
 class AccessModeUpdate(SQLModel):
     """Request payload for updating system access_mode."""
 
     access_mode: str  # none_guard | write_guard | full_guard
-    username: Optional[str] = None
-    password: Optional[str] = None
+    username: str | None = None
+    password: str | None = None
 
 
 class SystemConfigRead(SQLModel):
     key: str
-    value: Optional[str] = None
-    description: Optional[str] = None
+    value: str | None = None
+    description: str | None = None
 
 
 class SystemConfigUpdate(SQLModel):
-    value: Optional[str] = None
-    description: Optional[str] = None
+    value: str | None = None
+    description: str | None = None
 
 
 class GroupCreate(SQLModel):
     name: str
-    icon_url: Optional[str] = None
+    icon_url: str | None = None
     sort_order: float = 0.0
 
 
 class GroupUpdate(SQLModel):
-    name: Optional[str] = None
-    icon_url: Optional[str] = None
-    sort_order: Optional[float] = None
+    name: str | None = None
+    icon_url: str | None = None
+    sort_order: float | None = None
 
 
 class GroupRead(SQLModel):
     id: int
     name: str
-    icon_url: Optional[str] = None
+    icon_url: str | None = None
     sort_order: float
 
 
 class SiteCreate(SQLModel):
     url: str
-    title: Optional[str] = None
-    icon_url: Optional[str] = None
-    description: Optional[str] = None
+    title: str | None = None
+    icon_url: str | None = None
+    description: str | None = None
     sort_order: float = 0.0
-    group_id: Optional[int] = None
+    group_id: int | None = None
 
 
 class SiteUpdate(SQLModel):
-    url: Optional[str] = None
-    title: Optional[str] = None
-    icon_url: Optional[str] = None
-    description: Optional[str] = None
-    sort_order: Optional[float] = None
-    group_id: Optional[int] = None
+    url: str | None = None
+    title: str | None = None
+    icon_url: str | None = None
+    description: str | None = None
+    sort_order: float | None = None
+    group_id: int | None = None
 
 
 class SiteRead(SQLModel):
     id: int
     url: str
-    title: Optional[str]
-    icon_url: Optional[str]
-    description: Optional[str]
+    title: str | None
+    icon_url: str | None
+    description: str | None
     sort_order: float
-    group_id: Optional[int]
+    group_id: int | None
 
 
 class ReorderItem(SQLModel):
@@ -157,4 +156,4 @@ class SiteReorderItem(SQLModel):
 
     id: int
     sort_order: float
-    group_id: Optional[int] = None
+    group_id: int | None = None

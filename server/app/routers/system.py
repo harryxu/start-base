@@ -8,7 +8,7 @@ from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 router = APIRouter(prefix="/api/system", tags=["system"])
 
-ALLOWED_IMAGE_EXTENSIONS = {
+ALLOWED_IMAGE_EXTENSIONS: set[str] = {
     ".png",
     ".jpg",
     ".jpeg",

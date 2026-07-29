@@ -1,5 +1,4 @@
 """Group CRUD API endpoints."""
-from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
@@ -10,8 +9,8 @@ from app.models import Group, GroupCreate, GroupRead, GroupUpdate, ReorderItem, 
 router = APIRouter(prefix="/api/groups", tags=["groups"])
 
 
-@router.get("/", response_model=List[GroupRead])
-def list_groups(session: Session = Depends(get_session)) -> List[Group]:
+@router.get("/", response_model=list[GroupRead])
+def list_groups(session: Session = Depends(get_session)) -> list[Group]:
     """Return all groups ordered by sort_order."""
     return list(session.exec(select(Group).order_by(Group.sort_order)).all())
 
@@ -50,9 +49,7 @@ def update_group(
 
 
 @router.delete("/{group_id}", status_code=204)
-def delete_group(
-    group_id: int, session: Session = Depends(get_session)
-) -> None:
+def delete_group(group_id: int, session: Session = Depends(get_session)) -> None:
     """Delete a group. Its sites become ungrouped (group_id → null)."""
     group = session.get(Group, group_id)
     if not group:
@@ -70,7 +67,7 @@ def delete_group(
 
 @router.post("/reorder", status_code=204)
 def reorder_groups(
-    items: List[ReorderItem], session: Session = Depends(get_session)
+    items: list[ReorderItem], session: Session = Depends(get_session)
 ) -> None:
     """Bulk-update sort_order for multiple groups."""
     for item in items:

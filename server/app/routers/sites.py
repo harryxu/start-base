@@ -1,11 +1,9 @@
-from typing import List
-
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
 
 from app.database import engine, get_session
 from app.models import Site, SiteCreate, SiteRead, SiteReorderItem, SiteUpdate
-from app.services.metadata import fetch_site_metadata, download_icon
+from app.services.metadata import download_icon, fetch_site_metadata
 
 router = APIRouter(prefix="/api/sites", tags=["sites"])
 
@@ -26,8 +24,8 @@ async def _update_site_metadata(site_id: int, url: str) -> None:
             session.commit()
 
 
-@router.get("/", response_model=List[SiteRead])
-def list_sites(session: Session = Depends(get_session)) -> List[Site]:
+@router.get("/", response_model=list[SiteRead])
+def list_sites(session: Session = Depends(get_session)) -> list[Site]:
     """Return all sites ordered by sort_order."""
     return list(session.exec(select(Site).order_by(Site.sort_order)).all())
 
@@ -72,9 +70,7 @@ def update_site(
 
 
 @router.delete("/{site_id}", status_code=204)
-def delete_site(
-    site_id: int, session: Session = Depends(get_session)
-) -> None:
+def delete_site(site_id: int, session: Session = Depends(get_session)) -> None:
     """Delete a site."""
     site = session.get(Site, site_id)
     if not site:
@@ -85,7 +81,7 @@ def delete_site(
 
 @router.post("/reorder", status_code=204)
 def reorder_sites(
-    items: List[SiteReorderItem], session: Session = Depends(get_session)
+    items: list[SiteReorderItem], session: Session = Depends(get_session)
 ) -> None:
     """Bulk-update sort_order and group_id for sites."""
     for item in items:
