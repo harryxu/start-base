@@ -4,6 +4,7 @@ import mimetypes
 import os
 import uuid
 
+import anyio
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 router = APIRouter(prefix="/api/system", tags=["system"])
@@ -68,8 +69,7 @@ async def upload_image(
     filepath = os.path.join(dest_dir, saved_filename)
 
     contents = await file.read()
-    with open(filepath, "wb") as f:
-        f.write(contents)
+    await anyio.Path(filepath).write_bytes(contents)
 
     rel_path = os.path.relpath(filepath, base_dir).replace("\\", "/")
     url = f"/static/{rel_path}"

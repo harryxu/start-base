@@ -25,3 +25,8 @@ dev = [
 filterwarnings = [
     "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
 ]
+
+[tool.ruff.lint]
+ignore = [
+    "B008",  # Function call in default argument (standard FastAPI Depends/File pattern)
+]

@@ -37,10 +37,8 @@ def check_access_permission(
 
     # Whitelist endpoints always accessible without authentication
     if (
-        path == "/api/auth/login"
-        or path == "/api/health"
-        or path.startswith("/docs")
-        or path.startswith("/openapi.json")
+        path in ("/api/auth/login", "/api/health")
+        or path.startswith(("/docs", "/openapi.json"))
     ):
         return None
 
@@ -69,13 +67,10 @@ def check_access_permission(
         return user
 
     # write_guard: Non-GET/HEAD/OPTIONS requests require authenticated user
-    if access_mode == "write_guard":
-        if request.method not in ["GET", "HEAD", "OPTIONS"]:
-            if not user:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Authentication required for write operations",
-                )
-        return user
+    if access_mode == "write_guard" and request.method not in ["GET", "HEAD", "OPTIONS"] and not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authentication required for write operations",
+        )
 
     return user

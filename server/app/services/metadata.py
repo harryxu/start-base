@@ -1,14 +1,17 @@
 """Service for fetching website metadata (title and favicon)."""
 
+import contextlib
+import mimetypes
+import os
 from urllib.parse import urljoin, urlparse
 
+import anyio
 import httpx
 from bs4 import BeautifulSoup
 
 
 async def fetch_site_metadata(url: str) -> dict:
-    """
-    Fetch the page title and favicon URL for a website.
+    """Fetch the page title and favicon URL for a website.
 
     Returns a dict with keys 'title' and 'icon_url'; either may be None.
     Falls back to domain name and Google Favicons API if HTML parsing fails or site blocks bot requests.
@@ -65,12 +68,10 @@ async def fetch_site_metadata(url: str) -> dict:
             if not icon_url:
                 parsed = urlparse(url)
                 favicon_url = f"{parsed.scheme}://{parsed.netloc}/favicon.ico"
-                try:
+                with contextlib.suppress(Exception):
                     fav_resp = await client.head(favicon_url)
                     if fav_resp.status_code == 200:
                         icon_url = favicon_url
-                except Exception:
-                    pass
 
             # Final fallback: Google Favicons API
             if not icon_url:
@@ -81,22 +82,16 @@ async def fetch_site_metadata(url: str) -> dict:
 
             result["icon_url"] = icon_url
 
-    except Exception:
+    except Exception:  # noqa: BLE001
         # On any failure (e.g. Cloudflare 403 / network timeout), fallback title to domain and icon to Google Favicons
-        try:
+        with contextlib.suppress(Exception):
             parsed = urlparse(url)
             result["title"] = parsed.netloc.split(":")[0].replace("www.", "")
             result["icon_url"] = (
                 f"https://www.google.com/s2/favicons?domain={parsed.netloc}&sz=64"
             )
-        except Exception:
-            pass
 
     return result
-
-
-import mimetypes
-import os
 
 
 async def download_icon(icon_url: str, site_id: int) -> str | None:
@@ -121,9 +116,8 @@ async def download_icon(icon_url: str, site_id: int) -> str | None:
             os.makedirs("data/files/icons", exist_ok=True)
             filename = f"{site_id}{ext}"
             filepath = os.path.join("data/files/icons", filename)
-            with open(filepath, "wb") as f:
-                f.write(response.content)
+            await anyio.Path(filepath).write_bytes(response.content)
 
             return f"/static/icons/{filename}"
-    except Exception:
+    except Exception:  # noqa: BLE001
         return None
