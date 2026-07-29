@@ -166,16 +166,14 @@ def test_update_site_metadata_task(session: Session) -> None:
         "app.routers.sites.fetch_site_metadata",
         AsyncMock(return_value=mock_metadata),
     ), patch(
-        "app.services.metadata.download_icon",
+        "app.routers.sites.download_icon",
         AsyncMock(return_value="/static/icons/1.png"),
     ), patch(
-        "sqlmodel.create_engine"
-    ) as mock_create_engine:
-        # Override the database engine created inside the function to use our test database connection
-        mock_create_engine.return_value = session.bind
-
+        "app.routers.sites.engine",
+        session.bind,
+    ):
         # Run the async background task synchronously in our test thread
-        asyncio.run(_update_site_metadata(s.id, s.url, "dummy_db_url"))
+        asyncio.run(_update_site_metadata(s.id, s.url))
 
         # Invalidate session cache to read fresh state from DB
         session.expire_all()

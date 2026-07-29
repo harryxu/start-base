@@ -1,7 +1,8 @@
+from app import settings
 import os
 from sqlmodel import Session, create_engine
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/db/start_base.db")
+db_url = settings.DATABASE_URL
 
 
 def ensure_db_directory(url: str) -> None:
@@ -14,10 +15,10 @@ def ensure_db_directory(url: str) -> None:
                 os.makedirs(dir_path, exist_ok=True)
 
 
-ensure_db_directory(DATABASE_URL)
+ensure_db_directory(db_url)
 
 engine = create_engine(
-    DATABASE_URL,
+    db_url,
     connect_args={"check_same_thread": False},
     echo=False,
 )

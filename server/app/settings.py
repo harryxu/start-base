@@ -1,5 +1,7 @@
 import os
 
+DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./data/db/start_base.db")
+
 # Security & Session Settings
 SESSION_SECRET_KEY: str = os.environ.get(
     "SESSION_SECRET_KEY", "start-base-secret-session-key-change-in-production"

@@ -3,23 +3,18 @@ from typing import List
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.database import DATABASE_URL, get_session
+from app.database import engine, get_session
 from app.models import Site, SiteCreate, SiteRead, SiteReorderItem, SiteUpdate
-from app.services.metadata import fetch_site_metadata
+from app.services.metadata import fetch_site_metadata, download_icon
 
 router = APIRouter(prefix="/api/sites", tags=["sites"])
 
 
-async def _update_site_metadata(site_id: int, url: str, db_url: str) -> None:
+async def _update_site_metadata(site_id: int, url: str) -> None:
     """Background task: fetch missing metadata and persist it."""
-    from sqlmodel import Session as _Session
-    from sqlmodel import create_engine
-    from app.services.metadata import download_icon
-
     metadata = await fetch_site_metadata(url)
 
-    _engine = create_engine(db_url, connect_args={"check_same_thread": False})
-    with _Session(_engine) as session:
+    with Session(engine) as session:
         site = session.get(Site, site_id)
         if site:
             if metadata.get("title") and not site.title:
@@ -50,9 +45,7 @@ async def create_site(
     session.refresh(site)
 
     if not site.title or not site.icon_url:
-        background_tasks.add_task(
-            _update_site_metadata, site.id, site.url, DATABASE_URL
-        )
+        background_tasks.add_task(_update_site_metadata, site.id, site.url)
 
     return site
 
@@ -86,7 +79,6 @@ def delete_site(
     site = session.get(Site, site_id)
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
-
     session.delete(site)
     session.commit()
 
@@ -95,11 +87,11 @@ def delete_site(
 def reorder_sites(
     items: List[SiteReorderItem], session: Session = Depends(get_session)
 ) -> None:
-    """Bulk-update sort_order and group_id for multiple sites."""
+    """Bulk-update sort_order and group_id for sites."""
     for item in items:
         site = session.get(Site, item.id)
         if site:
             site.sort_order = item.sort_order
-            site.group_id = item.group_id  # None = ungrouped
+            site.group_id = item.group_id
             session.add(site)
     session.commit()
