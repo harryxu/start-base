@@ -11,8 +11,7 @@ import type {
   UserPublic,
 } from '../models/types';
 
-
-export const API_BASE = isDevMode() ? 'http://localhost:5600' : '';
+export const API_BASE = '';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

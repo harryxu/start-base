@@ -1,5 +1,11 @@
 import { Component, input, output, signal, computed, ViewChild, inject } from '@angular/core';
-import { LucideEllipsis, LucideFolder, LucidePencil, LucidePlus, LucideTrash2 } from '@lucide/angular';
+import {
+  LucideEllipsis,
+  LucideFolder,
+  LucidePencil,
+  LucidePlus,
+  LucideTrash2,
+} from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
 
@@ -109,7 +115,7 @@ import { API_BASE } from '../../core/api/api.service';
           [cdkDropListData]="sites()"
           [cdkDropListConnectedTo]="allSiteDropListIds()"
           (cdkDropListDropped)="siteDropped.emit($event)"
-          class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 p-3 min-h-20"
+          class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 px-2 py-3 min-h-20"
         >
           @for (site of sites(); track site.id) {
             <div

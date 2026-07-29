@@ -22,7 +22,7 @@ import { ConfigService } from '../../core/services/config.service';
   ],
   template: `
     <div
-      class="site-card min-w-2"
+      class="site-card min-w-2 relative shrink-0"
       [class.is-floating]="!configService.isReadOnly() && isMenuOpen()"
       [class.app-with-bgimg]="configService.bgUrl()"
       [class.app-without-bgimg]="!configService.bgUrl()"
@@ -53,18 +53,18 @@ import { ConfigService } from '../../core/services/config.service';
           <img
             [src]="iconUrl()"
             [alt]="displayTitle()"
-            class="site-icon w-8 h-8 rounded-[7px] object-contain shrink-0"
+            class="site-icon w-12 object-contain shrink-0"
             (error)="onIconError()"
           />
         } @else {
           <div
-            class="w-8 h-8 rounded-[7px] bg-base-200 flex items-center justify-center text-base-content/60 shrink-0"
+            class="w-12  bg-base-200 flex items-center justify-center text-base-content/60 shrink-0"
           >
             <svg lucideGlobe class="w-5 h-5"></svg>
           </div>
         }
         <span
-          class="site-title text-xs sm:text-sm leading-[1.3] text-base-content max-w-full truncate px-1"
+          class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full truncate px-1"
           >{{ displayTitle() }}</span
         >
       </a>
@@ -98,9 +98,6 @@ import { ConfigService } from '../../core/services/config.service';
   styles: [
     `
       .site-card {
-        position: relative;
-        flex-shrink: 0;
-
         &.is-floating {
           border-radius: 8px;
           box-shadow:
@@ -116,8 +113,9 @@ import { ConfigService } from '../../core/services/config.service';
           .site-link {
             .site-title {
               text-shadow:
-                0 0 3px color-mix(in oklab, var(--color-base-100) 60%, transparent),
-                0 0 8px color-mix(in oklab, var(--color-base-100) 50%, transparent);
+                -1px -1px 5px color-mix(in oklab, var(--color-base-100) 50%, transparent),
+                1px 1px 5px color-mix(in oklab, var(--color-base-100) 50%, transparent),
+                0 0 10px color-mix(in oklab, var(--color-base-100) 90%, transparent);
             }
           }
         }
