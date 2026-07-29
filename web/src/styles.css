@@ -2,10 +2,10 @@
 @plugin "daisyui" {
   themes:
     light,
-    cupcake,
+    autumn,
     emerald --default,
     corporate,
-    pastel,
+    garden,
     fantasy,
     business,
     coffee,
@@ -21,11 +21,6 @@
 }
 
 @plugin "daisyui/theme" {
-  name: 'cupcake';
-  --color-error-content: #ffffff;
-}
-
-@plugin "daisyui/theme" {
   name: 'emerald';
   --color-error-content: #ffffff;
 }
@@ -36,8 +31,8 @@
 }
 
 @plugin "daisyui/theme" {
-  name: 'pastel';
-  --color-error-content: #8e0000;
+  name: 'garden';
+  --color-error-content: #ffffff;
 }
 
 @plugin "daisyui/theme" {

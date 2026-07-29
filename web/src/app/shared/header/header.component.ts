@@ -32,7 +32,7 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
     <header
       class="navbar sticky top-0 z-30 shadow-sm transition-all duration-200 min-h-0"
       [class.bg-base-100]="!configService.bgUrl()"
-      [class.bg-base-100/35]="configService.bgUrl()"
+      [class.bg-base-100/60]="configService.bgUrl()"
       [class.backdrop-blur-md]="configService.bgUrl()"
     >
       <div class="max-w-5xl mx-auto w-full px-2 flex justify-between items-center">

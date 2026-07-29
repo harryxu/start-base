@@ -4,10 +4,10 @@ import { ConfigService } from '../../core/services/config.service';
 
 export const SUPPORTED_THEMES = [
   'light',
-  'cupcake',
+  'autumn',
   'emerald',
   'corporate',
-  'pastel',
+  'garden',
   'fantasy',
   'coffee',
   'business',
