@@ -47,22 +47,20 @@ import { ConfigService } from '../../core/services/config.service';
         [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
         [title]="site().title || displayTitle()"
       >
-        @if (showSkeleton()) {
-          <div class="skeleton w-8 h-8 rounded-[7px] shrink-0"></div>
-        } @else if (hasIcon()) {
-          <img
-            [src]="iconUrl()"
-            [alt]="displayTitle()"
-            class="site-icon w-12 object-contain shrink-0"
-            (error)="onIconError()"
-          />
-        } @else {
-          <div
-            class="w-12  bg-base-200 flex items-center justify-center text-base-content/60 shrink-0"
-          >
-            <svg lucideGlobe class="w-5 h-5"></svg>
-          </div>
-        }
+        <div class="w-12 h-12 flex items-center justify-center">
+          @if (showSkeleton()) {
+            <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
+          } @else if (hasIcon()) {
+            <img
+              [src]="iconUrl()"
+              [alt]="displayTitle()"
+              class="site-icon w-12 object-contain shrink-0"
+              (error)="onIconError()"
+            />
+          } @else {
+            <svg lucideGlobe class="w-12 h-12 text-base-content/60 "></svg>
+          }
+        </div>
         <span
           class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full truncate px-1"
           >{{ displayTitle() }}</span
