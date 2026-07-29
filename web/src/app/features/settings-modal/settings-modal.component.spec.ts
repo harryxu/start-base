@@ -4,6 +4,7 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { describe, beforeEach, afterEach, it, expect } from 'vitest';
 
 import { SettingsModalComponent } from './settings-modal.component';
+import { API_BASE } from '../../core/api/api.service';
 
 describe('SettingsModalComponent', () => {
   let httpMock: HttpTestingController;
@@ -26,7 +27,7 @@ describe('SettingsModalComponent', () => {
 
   it('should create the component and handle initial config request', () => {
     const fixture = TestBed.createComponent(SettingsModalComponent);
-    const req = httpMock.expectOne('http://localhost:5600/api/config/');
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
     req.flush({ page_title: 'Start Base', theme: 'emerald' });
 
     const component = fixture.componentInstance;

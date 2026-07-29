@@ -4,6 +4,7 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { describe, beforeEach, afterEach, it, expect } from 'vitest';
 
 import { ConfigService } from './config.service';
+import { API_BASE } from '../api/api.service';
 
 describe('ConfigService', () => {
   let service: ConfigService;
@@ -22,7 +23,7 @@ describe('ConfigService', () => {
     httpMock = TestBed.inject(HttpTestingController);
 
     // Respond to initial loadConfig request
-    const req = httpMock.expectOne('http://localhost:5600/api/config/');
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
     req.flush({ page_title: 'Test Base', theme: 'dark' });
   });
 
@@ -38,7 +39,7 @@ describe('ConfigService', () => {
   it('should update configuration via updateConfig()', async () => {
     const updatePromise = service.updateConfig({ page_title: 'New Base', theme: 'light' });
 
-    const req = httpMock.expectOne('http://localhost:5600/api/config/');
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
     expect(req.request.method).toBe('PATCH');
     req.flush({ page_title: 'New Base', theme: 'light' });
 

@@ -4,6 +4,7 @@ import { provideHttpClientTesting, HttpTestingController } from '@angular/common
 import { describe, beforeEach, afterEach, it, expect } from 'vitest';
 
 import { ThemeSwitcherComponent } from './theme-switcher.component';
+import { API_BASE } from '../../core/api/api.service';
 
 describe('ThemeSwitcherComponent', () => {
   let httpMock: HttpTestingController;
@@ -26,7 +27,7 @@ describe('ThemeSwitcherComponent', () => {
 
   it('should create component and render theme options', () => {
     const fixture = TestBed.createComponent(ThemeSwitcherComponent);
-    const req = httpMock.expectOne('http://localhost:5600/api/config/');
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
     req.flush({ page_title: 'Start Base', theme: 'emerald' });
 
     const component = fixture.componentInstance;

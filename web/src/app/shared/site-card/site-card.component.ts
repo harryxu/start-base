@@ -62,7 +62,7 @@ import { ConfigService } from '../../core/services/config.service';
           }
         </div>
         <span
-          class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full truncate px-1"
+          class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full line-clamp-2 break-all px-1 text-center leading-tight"
           >{{ displayTitle() }}</span
         >
       </a>
