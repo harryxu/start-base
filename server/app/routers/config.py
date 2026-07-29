@@ -1,7 +1,7 @@
 """System configuration API endpoints."""
 
 import json
-from typing import Any, Dict, Optional
+from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session, select
@@ -16,7 +16,7 @@ from app.models import AccessModeUpdate, SystemConfig, User
 router = APIRouter(prefix="/api/config", tags=["config"])
 
 # Known default system configurations
-DEFAULT_CONFIGS: Dict[str, Any] = {
+DEFAULT_CONFIGS: dict[str, Any] = {
     "page_title": "Start Base",
     "theme": "emerald",
     "bg_url": "",
@@ -24,7 +24,7 @@ DEFAULT_CONFIGS: Dict[str, Any] = {
 }
 
 
-def _parse_value(raw: Optional[str]) -> Any:
+def _parse_value(raw: str | None) -> Any:
     """Parse JSON string value if possible, otherwise return string or None."""
     if raw is None:
         return None
@@ -34,7 +34,7 @@ def _parse_value(raw: Optional[str]) -> Any:
         return raw
 
 
-def _serialize_value(val: Any) -> Optional[str]:
+def _serialize_value(val: Any) -> str | None:
     """Serialize input Python value to string stored in DB."""
     if val is None:
         return None
@@ -43,8 +43,8 @@ def _serialize_value(val: Any) -> Optional[str]:
     return json.dumps(val)
 
 
-@router.get("/", response_model=Dict[str, Any])
-def get_all_configs(session: Session = Depends(get_session)) -> Dict[str, Any]:
+@router.get("/", response_model=dict[str, Any])
+def get_all_configs(session: Session = Depends(get_session)) -> dict[str, Any]:
     """Get dictionary of all system configurations with defaults merged."""
     configs = session.exec(select(SystemConfig)).all()
     db_map = {item.key: _parse_value(item.value) for item in configs}
@@ -54,10 +54,10 @@ def get_all_configs(session: Session = Depends(get_session)) -> Dict[str, Any]:
     return res
 
 
-@router.get("/{key}", response_model=Dict[str, Any])
+@router.get("/{key}", response_model=dict[str, Any])
 def get_config_by_key(
     key: str, session: Session = Depends(get_session)
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Get a single config item by key."""
     item = session.get(SystemConfig, key)
     if not item:
@@ -67,12 +67,12 @@ def get_config_by_key(
     return {"key": item.key, "value": _parse_value(item.value)}
 
 
-@router.patch("/access-mode", response_model=Dict[str, Any])
+@router.patch("/access-mode", response_model=dict[str, Any])
 def update_access_mode(
     payload: AccessModeUpdate,
     request: Request,
     session: Session = Depends(get_session),
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Update system access_mode configuration with permission and initial user checks."""
     valid_modes = {"none_guard", "write_guard", "full_guard"}
     target_mode = payload.access_mode.strip() if payload.access_mode else ""
@@ -84,7 +84,9 @@ def update_access_mode(
 
     # 1. Permission check: if current access_mode is not none_guard, require authentication
     current_item = session.get(SystemConfig, "access_mode")
-    current_mode = (current_item.value or "none_guard").strip() if current_item else "none_guard"
+    current_mode = (
+        (current_item.value or "none_guard").strip() if current_item else "none_guard"
+    )
 
     if current_mode != "none_guard":
         user = get_current_user_from_session(request, session)
@@ -98,7 +100,11 @@ def update_access_mode(
     if target_mode != "none_guard":
         users_count = len(session.exec(select(User)).all())
         if users_count == 0:
-            if not payload.username or not payload.username.strip() or not payload.password:
+            if (
+                not payload.username
+                or not payload.username.strip()
+                or not payload.password
+            ):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
                     detail="Username and password are required to create initial admin user when enabling guard mode",
@@ -121,10 +127,10 @@ def update_access_mode(
     return get_all_configs(session)
 
 
-@router.patch("/", response_model=Dict[str, Any])
+@router.patch("/", response_model=dict[str, Any])
 def batch_update_configs(
-    payload: Dict[str, Any], session: Session = Depends(get_session)
-) -> Dict[str, Any]:
+    payload: dict[str, Any], session: Session = Depends(get_session)
+) -> dict[str, Any]:
     """Batch update or insert system configurations."""
     for key, val in payload.items():
         str_val = _serialize_value(val)
@@ -140,10 +146,10 @@ def batch_update_configs(
     return get_all_configs(session)
 
 
-@router.put("/{key}", response_model=Dict[str, Any])
+@router.put("/{key}", response_model=dict[str, Any])
 def update_config_by_key(
-    key: str, payload: Dict[str, Any], session: Session = Depends(get_session)
-) -> Dict[str, Any]:
+    key: str, payload: dict[str, Any], session: Session = Depends(get_session)
+) -> dict[str, Any]:
     """Update or insert a single config item."""
     val = payload.get("value")
     str_val = _serialize_value(val)

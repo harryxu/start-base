@@ -1,6 +1,8 @@
-from app import settings
 import os
+
 from sqlmodel import Session, create_engine
+
+from app import settings
 
 db_url = settings.DATABASE_URL
 

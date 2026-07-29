@@ -1,11 +1,9 @@
 """Security, password hashing, Starlette SessionMiddleware integration, and global access control dependencies."""
-from typing import Optional
 
 from fastapi import Depends, HTTPException, Request, status
 from pwdlib import PasswordHash
 from sqlmodel import Session, select
 
-from app import settings
 from app.database import get_session
 from app.models import SystemConfig, User
 
@@ -20,9 +18,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return password_hash.verify(plain_password, hashed_password)
 
 
-def get_current_user_from_session(
-    request: Request, session: Session
-) -> Optional[User]:
+def get_current_user_from_session(request: Request, session: Session) -> User | None:
     """Retrieve current authenticated user from Starlette request.session."""
     user_id = request.session.get("user_id")
     if not user_id:
@@ -32,7 +28,7 @@ def get_current_user_from_session(
 
 def check_access_permission(
     request: Request, session: Session = Depends(get_session)
-) -> Optional[User]:
+) -> User | None:
     """Global access control dependency attached to FastAPI app.
 
     Evaluates current access_mode and request method against user session.
