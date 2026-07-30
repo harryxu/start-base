@@ -1,4 +1,13 @@
-import { Component, inject, output } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import {
@@ -30,10 +39,11 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
   ],
   template: `
     <header
-      class="navbar sticky top-0 z-30 shadow-sm transition-all duration-200 min-h-0"
+      class="navbar sticky top-0 z-30 shadow-sm transition-transform duration-300 ease-in-out min-h-0"
       [class.bg-base-100]="!configService.bgUrl()"
       [class.bg-base-100/60]="configService.bgUrl()"
       [class.backdrop-blur-md]="configService.bgUrl()"
+      [class.-translate-y-full]="isHeaderHidden()"
     >
       <div class="max-w-5xl mx-auto w-full px-2 flex justify-between items-center">
         <!-- Logo Section -->
@@ -143,6 +153,60 @@ export class HeaderComponent {
   configService = inject(ConfigService);
   authService = inject(AuthService);
   private router = inject(Router);
+
+  /** Toggle whether page scroll auto-hides the header */
+  enableScrollHide = input<boolean>(true);
+
+  /** Threshold in pixels to trigger hiding header when scrolling down */
+  hideThreshold = input<number>(50);
+
+  /** Threshold in pixels to trigger showing header when scrolling up */
+  showThreshold = input<number>(20);
+
+  /** Internal state tracking if header is hidden */
+  isHeaderHidden = signal<boolean>(false);
+
+  private lastScrollY = 0;
+
+  constructor() {
+    effect(() => {
+      // Ensure header is shown if scroll-hide feature gets disabled
+      if (!this.enableScrollHide()) {
+        this.isHeaderHidden.set(false);
+      }
+    });
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (!this.enableScrollHide()) {
+      if (this.isHeaderHidden()) {
+        this.isHeaderHidden.set(false);
+      }
+      return;
+    }
+
+    const currentScrollY = window.scrollY || document.documentElement?.scrollTop || 0;
+
+    // Always keep header visible when near the top of the page
+    if (currentScrollY <= this.showThreshold()) {
+      this.isHeaderHidden.set(false);
+      this.lastScrollY = currentScrollY;
+      return;
+    }
+
+    const delta = currentScrollY - this.lastScrollY;
+
+    if (delta > 0 && delta >= this.hideThreshold()) {
+      // Scrolling down (page sliding up): hide header
+      this.isHeaderHidden.set(true);
+      this.lastScrollY = currentScrollY;
+    } else if (delta < 0 && Math.abs(delta) >= this.showThreshold()) {
+      // Scrolling up (page sliding down): show header
+      this.isHeaderHidden.set(false);
+      this.lastScrollY = currentScrollY;
+    }
+  }
 
   addSite = output<void>();
   addGroup = output<void>();
