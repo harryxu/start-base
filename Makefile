@@ -2,7 +2,7 @@ IMAGE_NAME ?= harryxu/startbase
 TAG ?= latest
 PLATFORM ?= linux/amd64,linux/arm64
 
-.PHONY: docker docker-push
+.PHONY: docker docker-amd64 docker-arm64 docker-push docker-amd64-push docker-arm64-push
 
 # Require docker and docker buildx to be installed and enabled.
 docker:
@@ -23,6 +23,12 @@ docker:
 	@echo "   # or: make docker-push TAG=$(TAG)"
 	@echo "========================================================"
 
+docker-amd64:
+	@$(MAKE) docker PLATFORM=linux/amd64
+
+docker-arm64:
+	@$(MAKE) docker PLATFORM=linux/arm64
+
 docker-push:
 	@docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use
 	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) -t $(IMAGE_NAME):latest --push . || { \
@@ -33,3 +39,11 @@ docker-push:
 		echo "========================================================"; \
 		exit 1; \
 	}
+
+docker-amd64-push:
+	@$(MAKE) docker-push PLATFORM=linux/amd64
+
+docker-arm64-push:
+	@$(MAKE) docker-push PLATFORM=linux/arm64
+
+
