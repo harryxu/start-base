@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import Generator
+from collections.abc import Generator
 
 import pytest
 from fastapi.testclient import TestClient
@@ -15,7 +15,7 @@ from main import app as fastapi_app
 
 
 @pytest.fixture(name="session")
-def session_fixture() -> Generator[Session, None, None]:
+def session_fixture() -> Generator[Session]:
     """
     Fixture to set up an in-memory SQLite database for each test.
     Overrides the database engine inside app.database to ensure the
@@ -33,8 +33,17 @@ def session_fixture() -> Generator[Session, None, None]:
     # Set the app's database engine to the in-memory testing engine
     db_mod.engine = engine
 
-    # Ensure tables are created in the test database
-    SQLModel.metadata.create_all(engine)
+    # Ensure tables are created in the test database via Alembic migrations
+    from alembic.config import Config
+
+    from alembic import command
+
+    alembic_cfg = Config(os.path.join(os.path.dirname(__file__), "..", "alembic.ini"))
+    alembic_cfg.set_main_option(
+        "script_location", os.path.join(os.path.dirname(__file__), "..", "alembic")
+    )
+    alembic_cfg.attributes["connection"] = engine.connect()
+    command.upgrade(alembic_cfg, "head")
 
     with Session(engine) as session:
         yield session
@@ -46,11 +55,12 @@ def session_fixture() -> Generator[Session, None, None]:
 
 
 @pytest.fixture(name="client")
-def client_fixture(session: Session) -> Generator[TestClient, None, None]:
+def client_fixture(session: Session) -> Generator[TestClient]:
     """
     Fixture to set up the FastAPI TestClient with dependency overrides.
     """
-    def get_session_override() -> Generator[Session, None, None]:
+
+    def get_session_override() -> Generator[Session]:
         yield session
 
     # Override get_session dependency
