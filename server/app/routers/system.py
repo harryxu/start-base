@@ -19,6 +19,8 @@ ALLOWED_IMAGE_EXTENSIONS: set[str] = {
     ".ico",
     ".bmp",
     ".avif",
+    ".heic",
+    ".heif",
 }
 
 
@@ -37,17 +39,23 @@ async def upload_image(
         if guessed:
             ext = guessed.lower()
 
+    if ext == ".jpe":
+        ext = ".jpeg"
+
     is_image_mime = content_type.startswith("image/") or content_type in (
         "application/octet-stream",
         "",
     )
-    is_allowed_ext = ext in ALLOWED_IMAGE_EXTENSIONS
+    is_allowed_ext = ext in ALLOWED_IMAGE_EXTENSIONS or (not ext and is_image_mime)
 
-    if not (is_allowed_ext and is_image_mime):
+    if not is_allowed_ext:
         raise HTTPException(
             status_code=400,
             detail="Invalid file type. Only image or icon files are allowed.",
         )
+
+    if not ext:
+        ext = ".jpg"
 
     # Determine target subpath relative to data/files
     target_folder = (folder or "").strip()

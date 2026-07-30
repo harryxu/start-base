@@ -67,7 +67,9 @@ export class ApiService {
 
   uploadImage(file: File, folder: string = ''): Observable<{ url: string }> {
     const formData = new FormData();
-    formData.append('file', file);
+    // Explicitly pass filename (3rd param) for iOS WebKit FormData compatibility
+    const filename = file.name || 'image.jpg';
+    formData.append('file', file, filename);
     if (folder) {
       formData.append('folder', folder);
     }
