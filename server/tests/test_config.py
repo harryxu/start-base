@@ -10,6 +10,7 @@ def test_get_default_configs(client: TestClient) -> None:
     data = res.json()
     assert data["page_title"] == "Start Base"
     assert data["theme"] == "emerald"
+    assert data["site_view_mode"] == "full"
 
 
 def test_batch_update_configs(client: TestClient) -> None:

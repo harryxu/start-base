@@ -3,6 +3,8 @@ import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-exper
 import { ConfigService } from '../core/services/config.service';
 import { AuthService } from '../core/services/auth.service';
 
+import type { SiteViewMode } from '../core/models/types';
+
 const mockAccessMode = signal('none_guard');
 const mockCurrentUser = signal<{ id: number; username: string } | null>(null);
 
@@ -12,6 +14,7 @@ export const mockConfigService = {
   bgUrl: signal<string | null>(null),
   fullBgUrl: computed(() => ''),
   accessMode: mockAccessMode,
+  siteViewMode: signal<SiteViewMode>('full'),
   isReadOnly: computed(() => mockAccessMode() !== 'none_guard' && mockCurrentUser() === null),
   loadConfig: async () => {},
 };

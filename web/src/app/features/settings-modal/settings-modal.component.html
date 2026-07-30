@@ -54,6 +54,37 @@
         <app-theme-switcher [showLabel]="true" position="dropdown-bottom dropdown-end" />
       </div>
 
+      <!-- Site View Mode Selection -->
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-medium text-base-content/70">Display Mode</label>
+        <div class="grid grid-cols-3 gap-2">
+          <label
+            class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+            [class.border-primary]="formSiteViewMode() === 'full'"
+            [class.bg-primary/10]="formSiteViewMode() === 'full'">
+            <input type="radio" name="siteViewMode" value="full" [checked]="formSiteViewMode() === 'full'"
+              (change)="formSiteViewMode.set('full')" class="sr-only" />
+            <span class="text-xs font-medium text-base-content">Icon & Text</span>
+          </label>
+          <label
+            class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+            [class.border-primary]="formSiteViewMode() === 'icon'"
+            [class.bg-primary/10]="formSiteViewMode() === 'icon'">
+            <input type="radio" name="siteViewMode" value="icon" [checked]="formSiteViewMode() === 'icon'"
+              (change)="formSiteViewMode.set('icon')" class="sr-only" />
+            <span class="text-xs font-medium text-base-content">Icon Only</span>
+          </label>
+          <label
+            class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+            [class.border-primary]="formSiteViewMode() === 'text'"
+            [class.bg-primary/10]="formSiteViewMode() === 'text'">
+            <input type="radio" name="siteViewMode" value="text" [checked]="formSiteViewMode() === 'text'"
+              (change)="formSiteViewMode.set('text')" class="sr-only" />
+            <span class="text-xs font-medium text-base-content">Text Only</span>
+          </label>
+        </div>
+      </div>
+
       <!-- Background Image Card Container -->
       <div class="flex flex-col gap-2">
         <div class="flex items-center justify-between">

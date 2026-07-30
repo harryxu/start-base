@@ -15,6 +15,7 @@ import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '../../core/services/config.service';
 import { ApiService, API_BASE } from '../../core/api/api.service';
 import { AuthService } from '../../core/services/auth.service';
+import type { SiteViewMode } from '../../core/models/types';
 import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switcher.component';
 
 @Component({
@@ -45,6 +46,7 @@ export class SettingsModalComponent {
 
   formTitle = this.configService.pageTitle();
   formAccessMode = signal<string>(this.configService.accessMode());
+  formSiteViewMode = signal<SiteViewMode>(this.configService.siteViewMode());
   formUsername = this.authService.currentUser()?.username || '';
   formPassword = '';
 
@@ -82,6 +84,10 @@ export class SettingsModalComponent {
 
       if (trimmedTitle !== this.configService.pageTitle()) {
         updates['page_title'] = trimmedTitle;
+      }
+
+      if (this.formSiteViewMode() !== this.configService.siteViewMode()) {
+        updates['site_view_mode'] = this.formSiteViewMode();
       }
 
       if (this.selectedFile) {

@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE, ApiService } from '../api/api.service';
+import type { SiteViewMode } from '../models/types';
 import { AuthService } from './auth.service';
 
 import {
@@ -23,6 +24,7 @@ export class ConfigService {
   theme = signal<string>('emerald');
   bgUrl = signal<string | null>(null);
   accessMode = signal<string>('none_guard');
+  siteViewMode = signal<SiteViewMode>('full');
 
   /** In-flight Promise deduplication for concurrent loadConfig calls. */
   private inFlightLoadPromise: Promise<void> | null = null;
@@ -81,6 +83,12 @@ export class ConfigService {
         this.accessMode.set(config['access_mode']);
       }
 
+      if (config['site_view_mode']) {
+        this.siteViewMode.set(config['site_view_mode'] as SiteViewMode);
+      } else {
+        this.siteViewMode.set('full');
+      }
+
       if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
@@ -104,6 +112,9 @@ export class ConfigService {
       }
       if (res['access_mode']) {
         this.accessMode.set(res['access_mode']);
+      }
+      if (res['site_view_mode']) {
+        this.siteViewMode.set(res['site_view_mode'] as SiteViewMode);
       }
       if (res['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((res['bg_url'] || '').trim() || null);

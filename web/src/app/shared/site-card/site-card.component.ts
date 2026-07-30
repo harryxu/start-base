@@ -4,7 +4,7 @@ import { LucideGlobe, LucidePencil, LucideTrash2 } from '@lucide/angular';
 import { LongPressDirective } from '../long-press.directive';
 
 import { API_BASE } from '../../core/api/api.service';
-import type { Site } from '../../core/models/types';
+import type { Site, SiteViewMode } from '../../core/models/types';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { ConfigService } from '../../core/services/config.service';
 
@@ -41,30 +41,34 @@ import { ConfigService } from '../../core/services/config.service';
         [href]="site().url"
         target="_blank"
         rel="noopener noreferrer"
-        class="site-link flex flex-col items-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
+        class="site-link flex flex-col items-center justify-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
         [class.select-none]="!configService.isReadOnly()"
         [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
         [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
         [title]="site().title || displayTitle()"
       >
-        <div class="w-12 h-12 flex items-center justify-center">
-          @if (showSkeleton()) {
-            <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
-          } @else if (hasIcon()) {
-            <img
-              [src]="iconUrl()"
-              [alt]="displayTitle()"
-              class="site-icon w-12 object-contain shrink-0"
-              (error)="onIconError()"
-            />
-          } @else {
-            <svg lucideGlobe class="w-12 h-12 text-base-content/60 "></svg>
-          }
-        </div>
-        <span
-          class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full line-clamp-2 break-all px-1 text-center leading-tight"
-          >{{ displayTitle() }}</span
-        >
+        @if (view_mode() !== 'text') {
+          <div class="w-12 h-12 flex items-center justify-center">
+            @if (showSkeleton()) {
+              <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
+            } @else if (hasIcon()) {
+              <img
+                [src]="iconUrl()"
+                [alt]="displayTitle()"
+                class="site-icon w-12 object-contain shrink-0"
+                (error)="onIconError()"
+              />
+            } @else {
+              <svg lucideGlobe class="w-12 h-12 text-base-content/60 "></svg>
+            }
+          </div>
+        }
+        @if (view_mode() !== 'icon') {
+          <span
+            class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full line-clamp-2 break-all px-1 text-center leading-tight"
+            >{{ displayTitle() }}</span
+          >
+        }
       </a>
 
       <!-- CDK Context Menu Template -->
@@ -125,6 +129,7 @@ export class SiteCardComponent {
   configService = inject(ConfigService);
   site = input.required<Site>();
   isFetching = input<boolean>(false);
+  view_mode = input<SiteViewMode>('full');
 
   editSite = output<Site>();
   deleteSite = output<Site>();

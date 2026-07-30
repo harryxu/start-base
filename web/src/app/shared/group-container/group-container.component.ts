@@ -9,7 +9,7 @@ import {
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
 
-import type { Group, Site } from '../../core/models/types';
+import type { Group, Site, SiteViewMode } from '../../core/models/types';
 import { SiteCardComponent } from '../site-card/site-card.component';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { ConfigService } from '../../core/services/config.service';
@@ -132,6 +132,7 @@ import { API_BASE } from '../../core/api/api.service';
               <app-site-card
                 #siteCard
                 [site]="site"
+                [view_mode]="view_mode()"
                 [isFetching]="isSiteFetching(site.id)"
                 (editSite)="editSite.emit($event)"
                 (deleteSite)="deleteSite.emit($event)"
@@ -184,6 +185,7 @@ export class GroupContainerComponent {
 
   group = input.required<Group>();
   sites = input<Site[]>([]);
+  view_mode = input<SiteViewMode>('full');
   allSiteDropListIds = input<string[]>([]);
   fetchingSiteIds = input<Set<number>>(new Set());
 

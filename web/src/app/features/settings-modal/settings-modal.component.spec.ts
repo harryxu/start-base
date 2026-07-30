@@ -34,4 +34,22 @@ describe('SettingsModalComponent', () => {
     expect(component).toBeTruthy();
     expect(component.formTitle).toBe('Start Base');
   });
+
+  it('should submit site_view_mode update', async () => {
+    const fixture = TestBed.createComponent(SettingsModalComponent);
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
+    req.flush({ page_title: 'Start Base', theme: 'emerald', site_view_mode: 'full' });
+
+    const component = fixture.componentInstance;
+    component.formSiteViewMode.set('icon');
+
+    const submitPromise = component.onSubmit();
+
+    const patchReq = httpMock.expectOne(`${API_BASE}/api/config/`);
+    expect(patchReq.request.method).toBe('PATCH');
+    expect(patchReq.request.body['site_view_mode']).toBe('icon');
+    patchReq.flush({ page_title: 'Start Base', theme: 'emerald', site_view_mode: 'icon' });
+
+    await submitPromise;
+  });
 });

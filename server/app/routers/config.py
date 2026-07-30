@@ -21,6 +21,7 @@ DEFAULT_CONFIGS: dict[str, Any] = {
     "theme": "emerald",
     "bg_url": "",
     "access_mode": "none_guard",
+    "site_view_mode": "full",
 }
 
 

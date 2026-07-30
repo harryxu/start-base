@@ -45,6 +45,11 @@ export type LayoutRow =
  */
 export type SystemConfigMap = Record<string, any>;
 
+/**
+ * Site display view mode options.
+ */
+export type SiteViewMode = 'full' | 'icon' | 'text';
+
 /** Auth: login request payload. */
 export interface UserLogin {
   username: string;

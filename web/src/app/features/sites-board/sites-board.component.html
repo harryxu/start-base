@@ -55,7 +55,7 @@
         (cdkDragStarted)="closeAllMenus()">
         <div *cdkDragPlaceholder
           class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
-        <app-site-card [site]="site" [isFetching]="isSiteFetching(site.id)"
+        <app-site-card [site]="site" [view_mode]="configService.siteViewMode()" [isFetching]="isSiteFetching(site.id)"
           (editSite)="editSite.emit($event)"
           (deleteSite)="deleteSite.emit($event)" />
       </div>
@@ -82,7 +82,7 @@
 
         <!-- GROUP ROW -->
         @if (row.type === 'group') {
-        <app-group-container class="block" [group]="row.group" [sites]="row.sites"
+        <app-group-container class="block" [group]="row.group" [sites]="row.sites" [view_mode]="configService.siteViewMode()"
           [allSiteDropListIds]="allSiteDropListIds()" [fetchingSiteIds]="fetchingSiteIds()"
           (addSite)="addSiteInGroup.emit($event)" (externalSiteDropped)="externalSiteDropped.emit($event)" (siteDropped)="onSiteDrop($event)" (siteDragStarted)="closeAllMenus()" (editGroup)="editGroup.emit($event)"
           (deleteGroup)="deleteGroup.emit($event)" (editSite)="editSite.emit($event)"

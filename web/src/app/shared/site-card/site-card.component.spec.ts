@@ -98,4 +98,34 @@ describe('SiteCardComponent', () => {
     const globeEl = fixture.nativeElement.querySelector('svg[lucideGlobe]');
     expect(globeEl).toBeTruthy();
   });
+
+  it('should render icon and text in full view_mode', () => {
+    fixture.componentRef.setInput('view_mode', 'full');
+    fixture.detectChanges();
+
+    const iconEl = fixture.nativeElement.querySelector('.site-icon');
+    const titleEl = fixture.nativeElement.querySelector('.site-title');
+    expect(iconEl).toBeTruthy();
+    expect(titleEl).toBeTruthy();
+  });
+
+  it('should render icon only in icon view_mode', () => {
+    fixture.componentRef.setInput('view_mode', 'icon');
+    fixture.detectChanges();
+
+    const iconEl = fixture.nativeElement.querySelector('.site-icon');
+    const titleEl = fixture.nativeElement.querySelector('.site-title');
+    expect(iconEl).toBeTruthy();
+    expect(titleEl).toBeFalsy();
+  });
+
+  it('should render text only in text view_mode', () => {
+    fixture.componentRef.setInput('view_mode', 'text');
+    fixture.detectChanges();
+
+    const iconEl = fixture.nativeElement.querySelector('.site-icon');
+    const titleEl = fixture.nativeElement.querySelector('.site-title');
+    expect(iconEl).toBeFalsy();
+    expect(titleEl).toBeTruthy();
+  });
 });
