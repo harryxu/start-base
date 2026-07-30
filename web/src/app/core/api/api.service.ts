@@ -73,7 +73,9 @@ export class ApiService {
     if (folder) {
       formData.append('folder', folder);
     }
-    return this.http.post<{ url: string }>(`${API_BASE}/api/system/upload-image`, formData);
+    return this.http.post<{ url: string }>(`${API_BASE}/api/system/upload-image`, formData, {
+      headers: { 'ngsw-bypass': 'true' },
+    });
   }
 
   // ---- Auth ----
