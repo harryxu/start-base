@@ -7,6 +7,7 @@ export interface Group {
   id: number;
   name: string;
   icon_url?: string | null;
+  site_view_mode?: SiteViewMode | null;
   sort_order: number;
 }
 
@@ -48,7 +49,7 @@ export type SystemConfigMap = Record<string, any>;
 /**
  * Site display view mode options.
  */
-export type SiteViewMode = 'full' | 'icon' | 'text';
+export type SiteViewMode = 'full' | 'icon' | 'text' | '';
 
 /** Auth: login request payload. */
 export interface UserLogin {

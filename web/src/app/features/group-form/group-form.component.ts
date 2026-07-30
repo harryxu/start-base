@@ -4,7 +4,7 @@ import { LucideFolder, LucideUpload, LucideX } from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService, API_BASE } from '../../core/api/api.service';
-import type { Group } from '../../core/models/types';
+import type { Group, SiteViewMode } from '../../core/models/types';
 import { BoardService } from '../../core/services/board.service';
 
 @Component({
@@ -37,9 +37,15 @@ import { BoardService } from '../../core/services/board.service';
         <!-- Form body -->
         <form id="group-form" (ngSubmit)="onSubmit()" class="px-6 py-5 flex flex-col gap-6">
           @if (uploadError()) {
-            <div class="alert alert-error text-xs p-2.5 rounded-lg flex items-center justify-between">
+            <div
+              class="alert alert-error text-xs p-2.5 rounded-lg flex items-center justify-between"
+            >
               <span>{{ uploadError() }}</span>
-              <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="uploadError.set('')">
+              <button
+                type="button"
+                class="btn btn-ghost btn-xs btn-square"
+                (click)="uploadError.set('')"
+              >
                 <svg lucideX class="w-3.5 h-3.5"></svg>
               </button>
             </div>
@@ -118,6 +124,22 @@ import { BoardService } from '../../core/services/board.service';
             </button>
           </div>
 
+          <!-- Site View Mode -->
+          <label class="floating-label w-full text-base-content/60">
+            <select
+              id="group-site-view-mode"
+              [(ngModel)]="formSiteViewMode"
+              name="siteViewMode"
+              class="select select-bordered select-lg w-full text-base-content"
+            >
+              <option value="">Follow Global</option>
+              <option value="full">Icon and Text</option>
+              <option value="icon">Icon Only</option>
+              <option value="text">Text Only</option>
+            </select>
+            <span>Site View Mode</span>
+          </label>
+
           <!-- Footer actions -->
           <div class="modal-action mt-2">
             <button type="button" class="btn btn-ghost btn-sm" (click)="closed.emit()">
@@ -148,6 +170,7 @@ export class GroupFormComponent {
   // Bound form fields
   formName = '';
   formIconUrl = '';
+  formSiteViewMode: SiteViewMode | '' = '';
 
   iconFailed = signal(false);
   selectedIconFile: File | null = null;
@@ -183,9 +206,11 @@ export class GroupFormComponent {
       if (g) {
         this.formName = g.name;
         this.formIconUrl = g.icon_url ?? '';
+        this.formSiteViewMode = g.site_view_mode ?? '';
       } else {
         this.formName = '';
         this.formIconUrl = '';
+        this.formSiteViewMode = '';
       }
     });
   }
@@ -243,6 +268,7 @@ export class GroupFormComponent {
     const payload: Partial<Group> = {
       name: trimmedName,
       icon_url: this.formIconUrl.trim() || null,
+      site_view_mode: this.formSiteViewMode,
     };
 
     const editingGroup = this.group();

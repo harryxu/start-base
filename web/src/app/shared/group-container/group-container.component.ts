@@ -132,7 +132,7 @@ import { API_BASE } from '../../core/api/api.service';
               <app-site-card
                 #siteCard
                 [site]="site"
-                [view_mode]="view_mode()"
+                [view_mode]="effectiveViewMode()"
                 [isFetching]="isSiteFetching(site.id)"
                 (editSite)="editSite.emit($event)"
                 (deleteSite)="deleteSite.emit($event)"
@@ -165,7 +165,7 @@ import { API_BASE } from '../../core/api/api.service';
             class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
           >
             <svg lucidePencil class="w-4 h-4"></svg>
-            <span>Rename</span>
+            <span>Edit</span>
           </button>
           <button
             cdkMenuItem
@@ -188,6 +188,14 @@ export class GroupContainerComponent {
   view_mode = input<SiteViewMode>('full');
   allSiteDropListIds = input<string[]>([]);
   fetchingSiteIds = input<Set<number>>(new Set());
+
+  effectiveViewMode = computed<SiteViewMode>(() => {
+    const groupMode = this.group().site_view_mode?.trim() as SiteViewMode | '';
+    if (groupMode) {
+      return groupMode;
+    }
+    return this.view_mode();
+  });
 
   addSite = output<Partial<Site>>();
   editGroup = output<Group>();
