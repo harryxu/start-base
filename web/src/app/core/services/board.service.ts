@@ -92,6 +92,9 @@ export class BoardService {
 
   reorderGroupsMutation = injectMutation(() => ({
     mutationFn: (groups: ReorderItem[]) => firstValueFrom(this.api.reorderGroups(groups)),
+    onSuccess: () => {
+      this.queryClient.invalidateQueries({ queryKey: ['groups'] });
+    },
     onError: () => {
       this.queryClient.invalidateQueries({ queryKey: ['groups'] });
     },
@@ -99,6 +102,9 @@ export class BoardService {
 
   reorderSitesMutation = injectMutation(() => ({
     mutationFn: (sites: SiteReorderItem[]) => firstValueFrom(this.api.reorderSites(sites)),
+    onSuccess: () => {
+      this.queryClient.invalidateQueries({ queryKey: ['sites'] });
+    },
     onError: () => {
       this.queryClient.invalidateQueries({ queryKey: ['sites'] });
     },
