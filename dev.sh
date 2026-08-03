@@ -6,7 +6,12 @@
 trap 'kill 0' EXIT SIGINT SIGTERM
 
 echo "Starting Backend Server (FastAPI)..."
-(cd server && uv run uvicorn main:app --reload --port 5600) &
+(
+  cd server || exit 1
+  echo "Running database migrations..."
+  uv run alembic upgrade head
+  uv run uvicorn main:app --reload --port 5600
+) &
 
 echo "Starting Frontend Server (Angular)..."
 (
