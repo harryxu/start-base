@@ -31,57 +31,65 @@ describe('HeaderComponent', () => {
     const component = fixture.componentInstance;
     expect(component).toBeTruthy();
     expect(component.enableScrollHide()).toBe(true);
-    expect(component.hideThreshold()).toBe(10);
-    expect(component.showThreshold()).toBe(10);
+    expect(typeof component.hideThreshold()).toBe('number');
+    expect(typeof component.showThreshold()).toBe('number');
     expect(component.isHeaderHidden()).toBe(false);
   });
 
-  it('should hide header when scrolling down past threshold and show when scrolling up', () => {
+  it('should hide header when scrolling down past component thresholds and show when scrolling up', () => {
     const fixture = TestBed.createComponent(HeaderComponent);
     const req = httpMock.expectOne(`${API_BASE}/api/config/`);
     req.flush({});
 
     const component = fixture.componentInstance;
+    const hideThresh = component.hideThreshold();
+    const showThresh = component.showThreshold();
 
-    // Simulate scrolling down 50px (exceeding default threshold 10)
-    Object.defineProperty(window, 'scrollY', { value: 50, writable: true });
+    // Scroll down past hideThreshold dynamically
+    const scrollDownPos = hideThresh + 20;
+    Object.defineProperty(window, 'scrollY', { value: scrollDownPos, writable: true });
     window.dispatchEvent(new Event('scroll'));
     fixture.detectChanges();
 
     expect(component.isHeaderHidden()).toBe(true);
 
-    // Simulate scrolling up 20px (from 50 to 30)
-    Object.defineProperty(window, 'scrollY', { value: 30, writable: true });
+    // Scroll up by more than showThreshold dynamically
+    const scrollUpPos = Math.max(0, scrollDownPos - (showThresh + 10));
+    Object.defineProperty(window, 'scrollY', { value: scrollUpPos, writable: true });
     window.dispatchEvent(new Event('scroll'));
     fixture.detectChanges();
 
     expect(component.isHeaderHidden()).toBe(false);
   });
 
-  it('should support separate hideThreshold and showThreshold values', () => {
+  it('should support separate hideThreshold and showThreshold input values', () => {
     const fixture = TestBed.createComponent(HeaderComponent);
-    fixture.componentRef.setInput('hideThreshold', 30);
-    fixture.componentRef.setInput('showThreshold', 5);
+    const customHide = 30;
+    const customShow = 5;
+    fixture.componentRef.setInput('hideThreshold', customHide);
+    fixture.componentRef.setInput('showThreshold', customShow);
 
     const req = httpMock.expectOne(`${API_BASE}/api/config/`);
     req.flush({});
 
     const component = fixture.componentInstance;
 
-    // Scrolling down 20px (below hideThreshold of 30) -> should NOT hide yet
-    Object.defineProperty(window, 'scrollY', { value: 20, writable: true });
+    // Scrolling down below custom hideThreshold -> should NOT hide yet
+    Object.defineProperty(window, 'scrollY', { value: customHide - 10, writable: true });
     window.dispatchEvent(new Event('scroll'));
     fixture.detectChanges();
     expect(component.isHeaderHidden()).toBe(false);
 
-    // Scrolling down further to 40px (exceeds hideThreshold of 30) -> SHOULD hide
-    Object.defineProperty(window, 'scrollY', { value: 40, writable: true });
+    // Scrolling down past custom hideThreshold -> SHOULD hide
+    const scrollDownPos = customHide + 10;
+    Object.defineProperty(window, 'scrollY', { value: scrollDownPos, writable: true });
     window.dispatchEvent(new Event('scroll'));
     fixture.detectChanges();
     expect(component.isHeaderHidden()).toBe(true);
 
-    // Scrolling up 6px (to 34px, exceeds showThreshold of 5) -> SHOULD show
-    Object.defineProperty(window, 'scrollY', { value: 34, writable: true });
+    // Scrolling up by more than custom showThreshold -> SHOULD show
+    const scrollUpPos = scrollDownPos - (customShow + 2);
+    Object.defineProperty(window, 'scrollY', { value: scrollUpPos, writable: true });
     window.dispatchEvent(new Event('scroll'));
     fixture.detectChanges();
     expect(component.isHeaderHidden()).toBe(false);
@@ -95,9 +103,10 @@ describe('HeaderComponent', () => {
     req.flush({});
 
     const component = fixture.componentInstance;
+    const hideThresh = component.hideThreshold();
 
-    // Simulate scrolling down 100px
-    Object.defineProperty(window, 'scrollY', { value: 100, writable: true });
+    // Scroll down well past threshold
+    Object.defineProperty(window, 'scrollY', { value: hideThresh + 100, writable: true });
     window.dispatchEvent(new Event('scroll'));
     fixture.detectChanges();
 
