@@ -16,22 +16,14 @@ echo "Starting Backend Server (FastAPI)..."
 echo "Starting Frontend Server (Angular)..."
 (
   cd web || exit 1
-  if [ -z "$NVM_DIR" ]; then
-    for dir in "$HOME/.nvmsh" "$HOME/.nvm" "$HOME/.local/share/nvm"; do
-      if [ -d "$dir" ]; then
-        export NVM_DIR="$dir"
-        break
-      fi
-    done
-  fi
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  if command -v nvm &>/dev/null; then
-    nvm use
+  if command -v mise &>/dev/null; then
+    eval "$(mise env -s bash)"
+    if ! command -v pnpm &>/dev/null && command -v corepack &>/dev/null; then
+      corepack enable
+    fi
   fi
   pnpm start
 ) &
-
-echo -e "\nBoth servers are starting. Press Ctrl+C to stop both.\n"
 
 # Wait for all background processes to finish
 wait
