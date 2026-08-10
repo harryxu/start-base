@@ -1,5 +1,5 @@
-<div class="modal modal-open modal-middle" role="dialog" aria-modal="true" aria-label="System Settings">
-  <div class="modal-box max-w-md p-0 overflow-visible flex flex-col max-h-[90vh]">
+<div class="modal modal-open modal-middle p-4" role="dialog" aria-modal="true" aria-label="System Settings">
+  <div class="modal-box max-w-md p-0 flex flex-col max-h-[90vh] my-auto">
     <!-- Header -->
     <div class="flex items-center justify-between px-6 py-4 border-b border-base-200 shrink-0">
       <div class="flex items-center gap-2">
@@ -25,185 +25,188 @@
     </div>
 
     <!-- Settings Form Content -->
-    <form (ngSubmit)="onSubmit()" class="flex-1 overflow-visible px-6 py-5 flex flex-col gap-6">
-      <!-- Global Error Banner -->
-      @if (errorMessage()) {
-      <div class="alert alert-error text-xs py-2.5 px-3.5 rounded-lg flex items-start gap-2">
-        <svg lucideAlertCircle class="w-4 h-4 shrink-0 mt-0.5"></svg>
-        <div class="flex-1 min-w-0">
-          <span class="font-medium block break-words">{{ errorMessage() }}</span>
+    <form (ngSubmit)="onSubmit()" class="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <!-- Scrollable Form Body -->
+      <div class="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-6">
+        <!-- Global Error Banner -->
+        @if (errorMessage()) {
+        <div class="alert alert-error text-xs py-2.5 px-3.5 rounded-lg flex items-start gap-2">
+          <svg lucideAlertCircle class="w-4 h-4 shrink-0 mt-0.5"></svg>
+          <div class="flex-1 min-w-0">
+            <span class="font-medium block break-words">{{ errorMessage() }}</span>
+          </div>
+          <button type="button" class="btn btn-ghost btn-xs btn-square shrink-0 -mr-1" (click)="errorMessage.set(null)">
+            <svg lucideX class="w-3.5 h-3.5"></svg>
+          </button>
         </div>
-        <button type="button" class="btn btn-ghost btn-xs btn-square shrink-0 -mr-1" (click)="errorMessage.set(null)">
-          <svg lucideX class="w-3.5 h-3.5"></svg>
-        </button>
-      </div>
-      }
+        }
 
-      <!-- TAB 1: General -->
-      @if (activeTab() === 'general') {
-      <!-- Page Title -->
-      <label class="floating-label w-full text-base-content/60">
-        <input id="settings-page-title" type="text" [(ngModel)]="formTitle" name="pageTitle" required
-          placeholder="Page Title" class="input input-bordered input-lg w-full text-base-content" autocomplete="off" />
-        <span>Page Title <span class="text-error">*</span></span>
-      </label>
+        <!-- TAB 1: General -->
+        @if (activeTab() === 'general') {
+        <!-- Page Title -->
+        <label class="floating-label w-full text-base-content/60">
+          <input id="settings-page-title" type="text" [(ngModel)]="formTitle" name="pageTitle" required
+            placeholder="Page Title" class="input input-bordered input-lg w-full text-base-content" autocomplete="off" />
+          <span>Page Title <span class="text-error">*</span></span>
+        </label>
 
-      <!-- Theme Selection via ThemeSwitcherComponent -->
-      <div class="flex items-center justify-between">
-        <label class="text-xs font-medium text-base-content/70">System Theme</label>
-        <app-theme-switcher [showLabel]="true" position="dropdown-bottom dropdown-end" />
-      </div>
-
-      <!-- Site View Mode Selection -->
-      <div class="flex flex-col gap-2">
-        <label class="text-xs font-medium text-base-content/70">Display Mode</label>
-        <div class="grid grid-cols-3 gap-2">
-          <label
-            class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
-            [class.border-primary]="formSiteViewMode() === 'full'"
-            [class.bg-primary/10]="formSiteViewMode() === 'full'">
-            <input type="radio" name="siteViewMode" value="full" [checked]="formSiteViewMode() === 'full'"
-              (change)="formSiteViewMode.set('full')" class="sr-only" />
-            <span class="text-xs font-medium text-base-content">Icon & Text</span>
-          </label>
-          <label
-            class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
-            [class.border-primary]="formSiteViewMode() === 'icon'"
-            [class.bg-primary/10]="formSiteViewMode() === 'icon'">
-            <input type="radio" name="siteViewMode" value="icon" [checked]="formSiteViewMode() === 'icon'"
-              (change)="formSiteViewMode.set('icon')" class="sr-only" />
-            <span class="text-xs font-medium text-base-content">Icon Only</span>
-          </label>
-          <label
-            class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
-            [class.border-primary]="formSiteViewMode() === 'text'"
-            [class.bg-primary/10]="formSiteViewMode() === 'text'">
-            <input type="radio" name="siteViewMode" value="text" [checked]="formSiteViewMode() === 'text'"
-              (change)="formSiteViewMode.set('text')" class="sr-only" />
-            <span class="text-xs font-medium text-base-content">Text Only</span>
-          </label>
-        </div>
-      </div>
-
-      <!-- Background Image Card Container -->
-      <div class="flex flex-col gap-2">
+        <!-- Theme Selection via ThemeSwitcherComponent -->
         <div class="flex items-center justify-between">
-          <label class="text-xs font-medium text-base-content/70">Background Image</label>
+          <label class="text-xs font-medium text-base-content/70">System Theme</label>
+          <app-theme-switcher [showLabel]="true" position="dropdown-bottom dropdown-end" />
         </div>
 
-        <!-- Card Content Box -->
-        <div
-          class="border border-base-200 bg-base-200/40 rounded-xl p-3 flex flex-col items-stretch justify-between gap-3 transition-all">
-          <!-- Thumbnail Box -->
-          @if (previewUrl()) {
-          <a [href]="previewUrl()" target="_blank" rel="noopener noreferrer"
-            class="relative group aspect-video h-16 rounded-lg border border-base-300 overflow-hidden shrink-0 bg-base-300 block shadow-xs"
-            title="Click to view full background image in new tab">
-            <img [src]="previewUrl()" alt="Background Preview"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-            <div
-              class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-              <svg lucideExternalLink class="w-4 h-4 drop-shadow"></svg>
-            </div>
-          </a>
-          } @else {
+        <!-- Site View Mode Selection -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-medium text-base-content/70">Display Mode</label>
+          <div class="grid grid-cols-3 gap-2">
+            <label
+              class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+              [class.border-primary]="formSiteViewMode() === 'full'"
+              [class.bg-primary/10]="formSiteViewMode() === 'full'">
+              <input type="radio" name="siteViewMode" value="full" [checked]="formSiteViewMode() === 'full'"
+                (change)="formSiteViewMode.set('full')" class="sr-only" />
+              <span class="text-xs font-medium text-base-content">Icon & Text</span>
+            </label>
+            <label
+              class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+              [class.border-primary]="formSiteViewMode() === 'icon'"
+              [class.bg-primary/10]="formSiteViewMode() === 'icon'">
+              <input type="radio" name="siteViewMode" value="icon" [checked]="formSiteViewMode() === 'icon'"
+                (change)="formSiteViewMode.set('icon')" class="sr-only" />
+              <span class="text-xs font-medium text-base-content">Icon Only</span>
+            </label>
+            <label
+              class="flex flex-col items-center justify-center p-2.5 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+              [class.border-primary]="formSiteViewMode() === 'text'"
+              [class.bg-primary/10]="formSiteViewMode() === 'text'">
+              <input type="radio" name="siteViewMode" value="text" [checked]="formSiteViewMode() === 'text'"
+                (change)="formSiteViewMode.set('text')" class="sr-only" />
+              <span class="text-xs font-medium text-base-content">Text Only</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Background Image Card Container -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-medium text-base-content/70">Background Image</label>
+          </div>
+
+          <!-- Card Content Box -->
           <div
-            class="aspect-video  h-16 rounded-lg border border-dashed border-base-300 flex items-center justify-center bg-base-100 shrink-0 text-base-content/40 gap-1.5">
-            <svg lucideImage class="w-5 h-5 opacity-60"></svg>
-            <span class="text-[10px] text-base-content/40 font-medium">No Image</span>
+            class="border border-base-200 bg-base-200/40 rounded-xl p-3 flex flex-col items-stretch justify-between gap-3 transition-all">
+            <!-- Thumbnail Box -->
+            @if (previewUrl()) {
+            <a [href]="previewUrl()" target="_blank" rel="noopener noreferrer"
+              class="relative group aspect-video h-16 rounded-lg border border-base-300 overflow-hidden shrink-0 bg-base-300 block shadow-xs"
+              title="Click to view full background image in new tab">
+              <img [src]="previewUrl()" alt="Background Preview"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              <div
+                class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                <svg lucideExternalLink class="w-4 h-4 drop-shadow"></svg>
+              </div>
+            </a>
+            } @else {
+            <div
+              class="aspect-video  h-16 rounded-lg border border-dashed border-base-300 flex items-center justify-center bg-base-100 shrink-0 text-base-content/40 gap-1.5">
+              <svg lucideImage class="w-5 h-5 opacity-60"></svg>
+              <span class="text-[10px] text-base-content/40 font-medium">No Image</span>
+            </div>
+            }
+
+            <!-- Solid Action Buttons (Mobile touch friendly) -->
+            <div class="flex items-center gap-2 shrink-0">
+              <label class="btn btn-sm btn-primary text-primary-content gap-1.5 flex-1 cursor-pointer min-h-9 px-4"
+                [title]="selectedFile ? 'Change background image' : 'Upload background image'">
+                <svg lucideUpload class="w-4 h-4"></svg>
+                <span class="text-xs font-medium">{{ selectedFile || previewUrl() ? 'Change' : 'Upload' }}</span>
+                <input type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
+              </label>
+
+              @if (previewUrl()) {
+              <button type="button" (click)="removeBackground()"
+                class="btn btn-sm btn-error text-error-content gap-1.5 flex-1  min-h-9 px-4"
+                title="Remove background image">
+                <svg lucideTrash2 class="w-4 h-4"></svg>
+                <span class="text-xs font-medium">Clear</span>
+              </button>
+              }
+            </div>
+          </div>
+        </div>
+        }
+
+        <!-- TAB 2: Authentication -->
+        @if (activeTab() === 'auth') {
+        <div class="flex flex-col gap-4">
+          <!-- Access Mode Selection -->
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-medium text-base-content/70">Access Mode</label>
+            <div class="flex flex-col gap-2">
+              <label
+                class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+                [class.border-primary]="formAccessMode() === 'none_guard'">
+                <input type="radio" name="accessMode" value="none_guard" [checked]="formAccessMode() === 'none_guard'"
+                  (change)="formAccessMode.set('none_guard')" class="radio radio-xs radio-primary" />
+                <div class="flex flex-col">
+                  <span class="text-xs font-medium">Public</span>
+                  <span class="text-[11px] text-base-content/50">Public access; view and modify without
+                    authentication</span>
+                </div>
+              </label>
+
+              <label
+                class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+                [class.border-primary]="formAccessMode() === 'write_guard'">
+                <input type="radio" name="accessMode" value="write_guard" [checked]="formAccessMode() === 'write_guard'"
+                  (change)="formAccessMode.set('write_guard')" class="radio radio-xs radio-primary" />
+                <div class="flex flex-col">
+                  <span class="text-xs font-medium">Protected Editing</span>
+                  <span class="text-[11px] text-base-content/50">Public view; write operations require
+                    authentication</span>
+                </div>
+              </label>
+
+              <label
+                class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
+                [class.border-primary]="formAccessMode() === 'full_guard'">
+                <input type="radio" name="accessMode" value="full_guard" [checked]="formAccessMode() === 'full_guard'"
+                  (change)="formAccessMode.set('full_guard')" class="radio radio-xs radio-primary" />
+                <div class="flex flex-col">
+                  <span class="text-xs font-medium">Private</span>
+                  <span class="text-[11px] text-base-content/50">Full protection; all pages and APIs require
+                    authentication</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Username & Password inputs (if accessMode !== 'none_guard') -->
+          @if (formAccessMode() !== 'none_guard') {
+          <div class="flex flex-col gap-5 pt-2 border-t border-base-200">
+            <label class="floating-label w-full text-base-content/60">
+              <input id="settings-auth-username" type="text" [(ngModel)]="formUsername" name="authUsername"
+                placeholder="Username" class="input input-bordered input-lg w-full text-base-content"
+                autocomplete="username" />
+              <span>Username</span>
+            </label>
+
+            <label class="floating-label w-full text-base-content/60">
+              <input id="settings-auth-password" type="password" [(ngModel)]="formPassword" name="authPassword"
+                placeholder="Password" class="input input-bordered input-lg w-full text-base-content"
+                autocomplete="new-password" />
+              <span>Password</span>
+            </label>
           </div>
           }
-
-          <!-- Solid Action Buttons (Mobile touch friendly) -->
-          <div class="flex items-center gap-2 shrink-0">
-            <label class="btn btn-sm btn-primary text-primary-content gap-1.5 flex-1 cursor-pointer min-h-9 px-4"
-              [title]="selectedFile ? 'Change background image' : 'Upload background image'">
-              <svg lucideUpload class="w-4 h-4"></svg>
-              <span class="text-xs font-medium">{{ selectedFile || previewUrl() ? 'Change' : 'Upload' }}</span>
-              <input type="file" accept="image/*" class="hidden" (change)="onFileSelected($event)" />
-            </label>
-
-            @if (previewUrl()) {
-            <button type="button" (click)="removeBackground()"
-              class="btn btn-sm btn-error text-error-content gap-1.5 flex-1  min-h-9 px-4"
-              title="Remove background image">
-              <svg lucideTrash2 class="w-4 h-4"></svg>
-              <span class="text-xs font-medium">Clear</span>
-            </button>
-            }
-          </div>
-        </div>
-      </div>
-      }
-
-      <!-- TAB 2: Authentication -->
-      @if (activeTab() === 'auth') {
-      <div class="flex flex-col gap-4">
-        <!-- Access Mode Selection -->
-        <div class="flex flex-col gap-2">
-          <label class="text-xs font-medium text-base-content/70">Access Mode</label>
-          <div class="flex flex-col gap-2">
-            <label
-              class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
-              [class.border-primary]="formAccessMode() === 'none_guard'">
-              <input type="radio" name="accessMode" value="none_guard" [checked]="formAccessMode() === 'none_guard'"
-                (change)="formAccessMode.set('none_guard')" class="radio radio-xs radio-primary" />
-              <div class="flex flex-col">
-                <span class="text-xs font-medium">Public</span>
-                <span class="text-[11px] text-base-content/50">Public access; view and modify without
-                  authentication</span>
-              </div>
-            </label>
-
-            <label
-              class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
-              [class.border-primary]="formAccessMode() === 'write_guard'">
-              <input type="radio" name="accessMode" value="write_guard" [checked]="formAccessMode() === 'write_guard'"
-                (change)="formAccessMode.set('write_guard')" class="radio radio-xs radio-primary" />
-              <div class="flex flex-col">
-                <span class="text-xs font-medium">Protected Editing</span>
-                <span class="text-[11px] text-base-content/50">Public view; write operations require
-                  authentication</span>
-              </div>
-            </label>
-
-            <label
-              class="label justify-start gap-3 border border-base-200 rounded-lg p-3 cursor-pointer hover:bg-base-200/50 transition-colors"
-              [class.border-primary]="formAccessMode() === 'full_guard'">
-              <input type="radio" name="accessMode" value="full_guard" [checked]="formAccessMode() === 'full_guard'"
-                (change)="formAccessMode.set('full_guard')" class="radio radio-xs radio-primary" />
-              <div class="flex flex-col">
-                <span class="text-xs font-medium">Private</span>
-                <span class="text-[11px] text-base-content/50">Full protection; all pages and APIs require
-                  authentication</span>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        <!-- Username & Password inputs (if accessMode !== 'none_guard') -->
-        @if (formAccessMode() !== 'none_guard') {
-        <div class="flex flex-col gap-5 pt-2 border-t border-base-200">
-          <label class="floating-label w-full text-base-content/60">
-            <input id="settings-auth-username" type="text" [(ngModel)]="formUsername" name="authUsername"
-              placeholder="Username" class="input input-bordered input-lg w-full text-base-content"
-              autocomplete="username" />
-            <span>Username</span>
-          </label>
-
-          <label class="floating-label w-full text-base-content/60">
-            <input id="settings-auth-password" type="password" [(ngModel)]="formPassword" name="authPassword"
-              placeholder="Password" class="input input-bordered input-lg w-full text-base-content"
-              autocomplete="new-password" />
-            <span>Password</span>
-          </label>
         </div>
         }
       </div>
-      }
 
       <!-- Footer Actions -->
-      <div class="modal-action mt-4 pt-3 border-t border-base-200 shrink-0">
+      <div class="modal-action px-6 py-3 border-t border-base-200 bg-base-100 shrink-0 mt-0 flex justify-end gap-2">
         <button type="button" class="btn btn-ghost btn-sm" (click)="closed.emit()">
           Cancel
         </button>

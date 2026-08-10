@@ -14,14 +14,14 @@ import { BoardService } from '../../core/services/board.service';
   template: `
     <!-- DaisyUI modal (modal-open keeps it visible while rendered) -->
     <div
-      class="modal modal-open modal-middle"
+      class="modal modal-open modal-middle p-4"
       role="dialog"
       aria-modal="true"
       [attr.aria-label]="site() ? 'Edit Site' : 'Add Site'"
     >
-      <div class="modal-box max-w-md p-0">
+      <div class="modal-box max-w-md p-0 flex flex-col max-h-[90vh] my-auto">
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-base-200">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-base-200 shrink-0">
           <h2 class="text-sm font-semibold">
             {{ site() ? 'Edit Site' : 'Add Site' }}
           </h2>
@@ -35,133 +35,135 @@ import { BoardService } from '../../core/services/board.service';
         </div>
 
         <!-- Form body -->
-        <form id="site-form" (ngSubmit)="onSubmit()" class="px-6 py-5 flex flex-col gap-6">
-          @if (uploadError()) {
-            <div class="alert alert-error text-xs p-2.5 rounded-lg flex items-center justify-between">
-              <span>{{ uploadError() }}</span>
-              <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="uploadError.set('')">
-                <svg lucideX class="w-3.5 h-3.5"></svg>
-              </button>
-            </div>
-          }
+        <form id="site-form" (ngSubmit)="onSubmit()" class="flex-1 flex flex-col min-h-0 overflow-hidden">
+          <div class="flex-1 overflow-y-auto px-6 py-5 flex flex-col gap-6">
+            @if (uploadError()) {
+              <div class="alert alert-error text-xs p-2.5 rounded-lg flex items-center justify-between">
+                <span>{{ uploadError() }}</span>
+                <button type="button" class="btn btn-ghost btn-xs btn-square" (click)="uploadError.set('')">
+                  <svg lucideX class="w-3.5 h-3.5"></svg>
+                </button>
+              </div>
+            }
 
-          <!-- URL (required) -->
-          <label class="floating-label w-full text-base-content/60">
-            <input
-              id="site-url"
-              type="url"
-              [(ngModel)]="formUrl"
-              name="url"
-              required
-              placeholder="URL"
-              class="input input-bordered input-lg w-full text-base-content"
-              autocomplete="off"
-            />
-            <span>URL <span class="text-error">*</span></span>
-          </label>
+            <!-- URL (required) -->
+            <label class="floating-label w-full text-base-content/60">
+              <input
+                id="site-url"
+                type="url"
+                [(ngModel)]="formUrl"
+                name="url"
+                required
+                placeholder="URL"
+                class="input input-bordered input-lg w-full text-base-content"
+                autocomplete="off"
+              />
+              <span>URL <span class="text-error">*</span></span>
+            </label>
 
-          <!-- Title -->
-          <label class="floating-label w-full text-base-content/60">
-            <input
-              id="site-title"
-              type="text"
-              [(ngModel)]="formTitle"
-              name="title"
-              placeholder="Title"
-              class="input input-bordered input-lg w-full text-base-content"
-              autocomplete="off"
-            />
-            <span>Title</span>
-          </label>
+            <!-- Title -->
+            <label class="floating-label w-full text-base-content/60">
+              <input
+                id="site-title"
+                type="text"
+                [(ngModel)]="formTitle"
+                name="title"
+                placeholder="Title"
+                class="input input-bordered input-lg w-full text-base-content"
+                autocomplete="off"
+              />
+              <span>Title</span>
+            </label>
 
-          <!-- Icon URL -->
-          <div class="join w-full flex items-stretch">
-            <label
-              class="floating-label input input-bordered input-lg join-item flex-1 flex items-center gap-2 text-base-content/60"
-            >
-              @if (previewUrl()) {
-                <img
-                  [src]="previewUrl()"
-                  alt="Site icon"
-                  class="w-5 h-5 rounded object-contain shrink-0"
-                  (error)="onIconError()"
-                />
-              } @else if (site()) {
-                @if (hasDbIcon() && !iconFailed()) {
+            <!-- Icon URL -->
+            <div class="join w-full flex items-stretch">
+              <label
+                class="floating-label input input-bordered input-lg join-item flex-1 flex items-center gap-2 text-base-content/60"
+              >
+                @if (previewUrl()) {
                   <img
-                    [src]="dbIconUrl()"
+                    [src]="previewUrl()"
                     alt="Site icon"
                     class="w-5 h-5 rounded object-contain shrink-0"
                     (error)="onIconError()"
                   />
-                } @else {
-                  <svg lucideGlobe class="w-5 h-5 opacity-70 shrink-0"></svg>
+                } @else if (site()) {
+                  @if (hasDbIcon() && !iconFailed()) {
+                    <img
+                      [src]="dbIconUrl()"
+                      alt="Site icon"
+                      class="w-5 h-5 rounded object-contain shrink-0"
+                      (error)="onIconError()"
+                    />
+                  } @else {
+                    <svg lucideGlobe class="w-5 h-5 opacity-70 shrink-0"></svg>
+                  }
                 }
-              }
+                <input
+                  id="site-icon"
+                  type="url"
+                  [(ngModel)]="formIconUrl"
+                  name="iconUrl"
+                  placeholder="Icon URL"
+                  class="grow text-base-content"
+                />
+                <span>Icon URL</span>
+              </label>
+
               <input
-                id="site-icon"
-                type="url"
-                [(ngModel)]="formIconUrl"
-                name="iconUrl"
-                placeholder="Icon URL"
-                class="grow text-base-content"
+                #fileInput
+                type="file"
+                accept="image/*"
+                class="hidden"
+                (change)="onFileSelected($event)"
               />
-              <span>Icon URL</span>
+              <button
+                type="button"
+                class="btn btn-lg join-item shrink-0 self-stretch flex items-center justify-center px-4 min-h-0 h-auto"
+                (click)="fileInput.click()"
+                [title]="selectedFileName() ? selectedFileName() : 'Upload icon'"
+                aria-label="Upload icon"
+              >
+                @if (isUploading()) {
+                  <span class="loading loading-spinner loading-xs"></span>
+                } @else {
+                  <svg lucideUpload class="w-5 h-5"></svg>
+                }
+              </button>
+            </div>
+
+            <!-- Description -->
+            <label class="floating-label w-full text-base-content/60">
+              <input
+                id="site-desc"
+                type="text"
+                [(ngModel)]="formDescription"
+                name="description"
+                placeholder="Description"
+                class="input input-bordered input-lg w-full text-base-content"
+              />
+              <span>Description</span>
             </label>
 
-            <input
-              #fileInput
-              type="file"
-              accept="image/*"
-              class="hidden"
-              (change)="onFileSelected($event)"
-            />
-            <button
-              type="button"
-              class="btn btn-lg join-item shrink-0 self-stretch flex items-center justify-center px-4 min-h-0 h-auto"
-              (click)="fileInput.click()"
-              [title]="selectedFileName() ? selectedFileName() : 'Upload icon'"
-              aria-label="Upload icon"
-            >
-              @if (isUploading()) {
-                <span class="loading loading-spinner loading-xs"></span>
-              } @else {
-                <svg lucideUpload class="w-5 h-5"></svg>
-              }
-            </button>
+            <!-- Group select -->
+            <label class="floating-label w-full text-base-content/60">
+              <select
+                id="site-group"
+                [(ngModel)]="formGroupId"
+                name="group"
+                class="select select-bordered select-lg w-full text-base-content"
+              >
+                <option [ngValue]="null">No group</option>
+                @for (g of groups(); track g.id) {
+                  <option [ngValue]="g.id">{{ g.name }}</option>
+                }
+              </select>
+              <span>Group</span>
+            </label>
           </div>
 
-          <!-- Description -->
-          <label class="floating-label w-full text-base-content/60">
-            <input
-              id="site-desc"
-              type="text"
-              [(ngModel)]="formDescription"
-              name="description"
-              placeholder="Description"
-              class="input input-bordered input-lg w-full text-base-content"
-            />
-            <span>Description</span>
-          </label>
-
-          <!-- Group select -->
-          <label class="floating-label w-full text-base-content/60">
-            <select
-              id="site-group"
-              [(ngModel)]="formGroupId"
-              name="group"
-              class="select select-bordered select-lg w-full text-base-content"
-            >
-              <option [ngValue]="null">No group</option>
-              @for (g of groups(); track g.id) {
-                <option [ngValue]="g.id">{{ g.name }}</option>
-              }
-            </select>
-            <span>Group</span>
-          </label>
-
           <!-- Footer actions -->
-          <div class="modal-action mt-2">
+          <div class="modal-action px-6 py-3 border-t border-base-200 bg-base-100 shrink-0 mt-0 flex justify-end gap-2">
             <button type="button" class="btn btn-ghost btn-sm" (click)="closed.emit()">
               Cancel
             </button>
