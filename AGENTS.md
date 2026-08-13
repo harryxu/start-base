@@ -6,30 +6,16 @@
 
 ```
 start-base/
-├── AGENTS.md          ← You are here
 ├── server/            ← Python FastAPI backend
-│   ├── main.py        ← FastAPI app entry point
-│   ├── app/
-│   │   ├── models.py      ← SQLModel DB models + Pydantic schemas
-│   │   ├── database.py    ← SQLite engine + session factory
-│   │   ├── routers/
-│   │   │   ├── sites.py   ← Site CRUD + reorder endpoints
-│   │   │   └── groups.py  ← Group CRUD + reorder endpoints
-│   │   └── services/
-│   │       └── metadata.py ← Fetch page title & favicon from URL
-│   ├── alembic/       ← DB migrations (Alembic)
+│   ├── app/           ← Core application logic (models, database, routers, services)
+│   ├── alembic/       ← Database migrations
 │   ├── tests/         ← API tests (pytest)
-│   └── data/          ← Data directory (db/start_base.db, files/icons)
-└── web/               ← Angular v22 frontend (pnpm)
+│   └── data/          ← Local data storage (SQLite DB, uploaded files/icons)
+└── web/               ← Angular v22 frontend
     └── src/app/
-        ├── core/
-        │   ├── models/types.ts     ← TypeScript interfaces
-        │   └── api/api.service.ts  ← HTTP service wrapper
-        ├── features/home/          ← Main page component
-        └── shared/
-            ├── site-card/          ← Single site card component
-            ├── group-container/    ← Group container component
-            └── site-form/          ← Add/edit site modal
+        ├── core/      ← Core services, models/types, interceptors
+        ├── features/  ← Feature components and views
+        └── shared/    ← Reusable UI components, directives, dialogs
 ```
 
 ## Tech Stack
@@ -116,9 +102,9 @@ pnpm ng test --no-watch
 | `POST`   | `/api/groups/reorder` | Bulk update `sort_order`                  |
 
 ### System
-| Method   | Path                       | Description                                                                     |
-| -------- | -------------------------- | ------------------------------------------------------------------------------- |
-| `POST`   | `/api/system/upload-image` | Upload image file (supports optional `folder` relative to `server/data/files`) |
+| Method | Path                       | Description                                                                    |
+| ------ | -------------------------- | ------------------------------------------------------------------------------ |
+| `POST` | `/api/system/upload-image` | Upload image file (supports optional `folder` relative to `server/data/files`) |
 
 ### Data Models
 
@@ -148,7 +134,6 @@ pnpm ng test --no-watch
 - **HTTP**: Use `firstValueFrom(observable)` to convert RxJS → Promise for TanStack Query
 - **Icons**: Import from `@lucide/angular`, use as SVG directive: `<svg lucidePencil class="w-4 h-4">`
 - **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
-- **No auth**: Single-user local tool, no authentication needed
 - **Testing**:
   - Keep tests green across Python backend (`server/tests/`) and Angular frontend (`web/`).
   - Frontend Angular test coverage should prioritize **business logic and functional workflows** (e.g., state transformations, service interactions, event handling). Purely presentational details (e.g., specific CSS styling classes or static UI prompt messages) do not require exhaustive test assertions.
