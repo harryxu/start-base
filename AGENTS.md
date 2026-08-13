@@ -78,33 +78,11 @@ pnpm ng test --no-watch --include src/app/features/site-form/site-form.component
 pnpm ng test --no-watch
 ```
 
-## API Contract
+## API Documentation
 
-### Base URL
-`http://localhost:8000`
-
-### Sites
-| Method   | Path                 | Description                                           |
-| -------- | -------------------- | ----------------------------------------------------- |
-| `GET`    | `/api/sites/`        | List all sites (ordered by `sort_order`)              |
-| `POST`   | `/api/sites/`        | Create site; missing title/icon fetched in background |
-| `PATCH`  | `/api/sites/{id}`    | Update site fields                                    |
-| `DELETE` | `/api/sites/{id}`    | Delete site                                           |
-| `POST`   | `/api/sites/reorder` | Bulk update `sort_order` + `group_id`                 |
-
-### Groups
-| Method   | Path                  | Description                               |
-| -------- | --------------------- | ----------------------------------------- |
-| `GET`    | `/api/groups/`        | List all groups (ordered by `sort_order`) |
-| `POST`   | `/api/groups/`        | Create group                              |
-| `PATCH`  | `/api/groups/{id}`    | Update group name/sort_order              |
-| `DELETE` | `/api/groups/{id}`    | Delete group (sites become ungrouped)     |
-| `POST`   | `/api/groups/reorder` | Bulk update `sort_order`                  |
-
-### System
-| Method | Path                       | Description                                                                    |
-| ------ | -------------------------- | ------------------------------------------------------------------------------ |
-| `POST` | `/api/system/upload-image` | Upload image file (supports optional `folder` relative to `server/data/files`) |
+When backend API specifications and schemas are needed, fetch the OpenAPI schema directly from:
+- **OpenAPI Schema**: `http://localhost:5600/openapi.json`
+- **Interactive Docs**: `http://localhost:5600/docs`
 
 
 ## Frontend Architecture
