@@ -36,6 +36,14 @@ import { API_BASE } from '../../core/api/api.service';
   styles: [
     `
       .site-group {
+        .group-header {
+          position: relative;
+          z-index: 1;
+          box-shadow:
+            0 1px 3px color-mix(in oklab, var(--color-base-content) 6%, transparent),
+            0 1px 2px color-mix(in oklab, var(--color-base-content) 4%, transparent);
+        }
+
         &.app-without-bgimg {
           .group-content {
             background-color: color-mix(
