@@ -45,7 +45,7 @@ import { ConfigService } from '../../core/services/config.service';
         [class.select-none]="!configService.isReadOnly()"
         [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
         [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
-        [title]="site().title || displayTitle()"
+        [title]="tooltip()"
       >
         @if (view_mode() !== 'text') {
           <div class="w-12 h-12 flex items-center justify-center">
@@ -189,6 +189,12 @@ export class SiteCardComponent {
     } catch {
       return this.site().url;
     }
+  });
+
+  tooltip = computed(() => {
+    const title = this.displayTitle();
+    const desc = this.site().description?.trim();
+    return desc ? `${title}\n${desc}` : title;
   });
 
   onIconError(): void {

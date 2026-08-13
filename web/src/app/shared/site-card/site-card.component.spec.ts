@@ -31,12 +31,24 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should render site title and link correctly', () => {
+  it('should render site title and link correctly and include title attribute with description', () => {
     const titleEl = fixture.nativeElement.querySelector('.site-title');
     const linkEl = fixture.nativeElement.querySelector('.site-link');
 
     expect(titleEl.textContent).toContain('Example Site');
     expect(linkEl.getAttribute('href')).toBe('https://example.com');
+    expect(linkEl.getAttribute('title')).toBe('Example Site\nTest description');
+  });
+
+  it('should render title attribute with only title if description is absent', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      description: null,
+    });
+    fixture.detectChanges();
+
+    const linkEl = fixture.nativeElement.querySelector('.site-link');
+    expect(linkEl.getAttribute('title')).toBe('Example Site');
   });
 
   it('should open CDK context menu on right-click (contextmenu event)', () => {
