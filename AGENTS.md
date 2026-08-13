@@ -106,17 +106,6 @@ pnpm ng test --no-watch
 | ------ | -------------------------- | ------------------------------------------------------------------------------ |
 | `POST` | `/api/system/upload-image` | Upload image file (supports optional `folder` relative to `server/data/files`) |
 
-### Data Models
-
-```typescript
-// Site
-{ id, url, title, icon_url, description, sort_order, group_id }
-
-// Group
-{ id, name, sort_order }
-```
-
-**`sort_order`**: Float used globally. Ungrouped sites and groups share the same sort_order space to determine interleaved layout. Within-group site order is local to the group.
 
 ## Frontend Architecture
 

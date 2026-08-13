@@ -1,8 +1,8 @@
 """Start Base — FastAPI application entry point."""
 
-from contextlib import asynccontextmanager
 import mimetypes
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -73,7 +73,7 @@ def health_check() -> dict:
 
 # Mount Angular built frontend files if they exist (production)
 if os.path.exists("web-dist"):
-    app.mount("/", StaticFiles(directory="web-dist", html=True), name="static")
+    app.frontend("/", directory="web-dist", fallback="index.html")
 
 
 if __name__ == "__main__":
