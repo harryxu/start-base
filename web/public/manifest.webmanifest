@@ -3,8 +3,6 @@
   "name": "Start Base",
   "short_name": "Start Base",
   "description": "Your personal homepage dashboard — organize and access your favorite websites in one place.",
-  "theme_color": "#0F766E",
-  "background_color": "#F9FAFB",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
