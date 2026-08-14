@@ -7,6 +7,7 @@ import {
   LucideTrash2,
 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
+import { ConnectedPosition } from '@angular/cdk/overlay';
 import { CdkDropList, CdkDrag, CdkDragPlaceholder, CdkDragDrop } from '@angular/cdk/drag-drop';
 
 import type { Group, Site, SiteViewMode } from '../../core/models/types';
@@ -99,6 +100,7 @@ import { API_BASE } from '../../core/api/api.service';
         @if (!configService.isReadOnly()) {
           <button
             [cdkMenuTriggerFor]="groupMenu"
+            [cdkMenuPosition]="groupMenuPositions"
             (cdkMenuOpened)="onGroupMenuOpened()"
             (click)="$event.stopPropagation()"
             class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
@@ -190,6 +192,18 @@ import { API_BASE } from '../../core/api/api.service';
 })
 export class GroupContainerComponent {
   configService = inject(ConfigService);
+
+  /**
+   * Preferred positions for the group header menu: opens upward from the trigger
+   * (with the menu's right edge aligned to the button), falling back below if
+   * there isn't enough room above.
+   */
+  readonly groupMenuPositions: ConnectedPosition[] = [
+    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
+    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+  ];
 
   group = input.required<Group>();
   sites = input<Site[]>([]);
