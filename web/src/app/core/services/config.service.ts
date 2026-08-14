@@ -133,6 +133,49 @@ export class ConfigService {
   private applyTheme(targetTheme: string): void {
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {
       document.documentElement.setAttribute('data-theme', targetTheme || 'emerald');
+      this.updateThemeColorMeta();
+    }
+  }
+
+  private updateThemeColorMeta(): void {
+    if (typeof document === 'undefined') return;
+
+    const applyColor = () => {
+      let meta = document.querySelector('meta[name="theme-color"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'theme-color');
+        document.head.appendChild(meta);
+      }
+
+      const headerEl = document.querySelector('header.navbar') as HTMLElement | null;
+      let color = '';
+      if (headerEl) {
+        const headerBg = getComputedStyle(headerEl).backgroundColor;
+        if (headerBg && headerBg !== 'rgba(0, 0, 0, 0)' && headerBg !== 'transparent') {
+          color = headerBg;
+        }
+      }
+
+      if (!color) {
+        color = getComputedStyle(document.documentElement).getPropertyValue('--color-base-100').trim();
+      }
+
+      if (!color) {
+        const bodyBg = getComputedStyle(document.body).backgroundColor;
+        if (bodyBg && bodyBg !== 'rgba(0, 0, 0, 0)' && bodyBg !== 'transparent') {
+          color = bodyBg;
+        }
+      }
+
+      if (color) {
+        meta.setAttribute('content', color);
+      }
+    };
+
+    applyColor();
+    if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(applyColor);
     }
   }
 }
