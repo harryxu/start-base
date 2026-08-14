@@ -92,6 +92,7 @@ When backend API specifications and schemas are needed, fetch the OpenAPI schema
 - **Layout Computation**: `HomeComponent` computes `LayoutRow[]` from raw sites+groups.
 - **Drag and Drop (Angular CDK)**: Outer `cdkDropList` for group row reordering; inner `cdkDropList` for site reordering (connected between sections). Dragging auto-saves sorting position to backend upon drop.
 - **State Management**: Angular Signals (`signal`, `computed`, `effect`) for local layout synchronization; TanStack Query for server state.
+- **Color System & Theming**: All colors must use DaisyUI semantic color classes and CSS variables.
 
 ## Code Conventions
 
