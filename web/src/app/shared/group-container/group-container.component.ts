@@ -55,6 +55,10 @@ import { API_BASE } from '../../core/api/api.service';
           }
         }
       }
+
+      ::ng-deep .cdk-overlay-pane.menu-opens-above .menu {
+        flex-direction: column-reverse;
+      }
     `,
   ],
   template: `
@@ -194,15 +198,37 @@ export class GroupContainerComponent {
   configService = inject(ConfigService);
 
   /**
-   * Preferred positions for the group header menu: opens upward from the trigger
-   * (with the menu's right edge aligned to the button), falling back below if
-   * there isn't enough room above.
+   * Preferred positions for the group header menu: opens upward from the trigger.
    */
   readonly groupMenuPositions: ConnectedPosition[] = [
-    { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom' },
-    { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom' },
-    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' },
-    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top' },
+    {
+      originX: 'end',
+      originY: 'top',
+      overlayX: 'end',
+      overlayY: 'bottom',
+      panelClass: 'menu-opens-above',
+    },
+    {
+      originX: 'start',
+      originY: 'top',
+      overlayX: 'start',
+      overlayY: 'bottom',
+      panelClass: 'menu-opens-above',
+    },
+    {
+      originX: 'end',
+      originY: 'bottom',
+      overlayX: 'end',
+      overlayY: 'top',
+      panelClass: 'menu-opens-below',
+    },
+    {
+      originX: 'start',
+      originY: 'bottom',
+      overlayX: 'start',
+      overlayY: 'top',
+      panelClass: 'menu-opens-below',
+    },
   ];
 
   group = input.required<Group>();
