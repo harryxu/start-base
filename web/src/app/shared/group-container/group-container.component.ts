@@ -88,7 +88,7 @@ import { API_BASE } from '../../core/api/api.service';
               (error)="onIconError()"
             />
           } @else {
-            <svg lucideFolder class="w-4 h-4 text-primary shrink-0 opacity-80"></svg>
+            <svg lucideFolder class="w-3.5 h-3.5 text-base-content/30 shrink-0"></svg>
           }
           <span class="text-sm font-semibold text-base-content truncate">
             {{ group().name }}
