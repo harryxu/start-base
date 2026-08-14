@@ -1,6 +1,6 @@
 # Start Base
 
-A lightweight personal homepage dashboard to quickly access and organize your favorite websites.
+Lightweight dashboard to quickly access your websites.
 
 ![Screen 1](./assets/screen1.png)
 
@@ -24,5 +24,7 @@ docker run -d \
 
 
 ## Themes
+
+Upload your favorite background image.
 
 ![Screen 2](./assets/screen2.png)
