@@ -128,8 +128,16 @@
 }
 
 @layer utilities {
+  .modal,
+  .modal::backdrop,
+  dialog.modal::backdrop {
+    background-color: color-mix(in oklab, var(--color-neutral) 70%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
   .input {
-    --input-color: color-mix(in oklab, var(--color-base-content) 35%, #0000);
+    --input-color: color-mix(in oklab, var(--color-base-content) 35%, transparent);
   }
 
   .input:focus,
