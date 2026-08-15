@@ -1,23 +1,8 @@
 import { Component, inject, input } from '@angular/core';
 import { LucidePalette, LucideCheck } from '@lucide/angular';
 import { ConfigService } from '../../core/services/config.service';
-
-export const SUPPORTED_THEMES = [
-  'light',
-  'autumn',
-  'emerald',
-  'corporate',
-  'garden',
-  'fantasy',
-  'coffee',
-  'business',
-  'night',
-  'dark',
-  'dim',
-  'dracula',
-] as const;
-
-export type ThemeName = (typeof SUPPORTED_THEMES)[number];
+import { SUPPORTED_THEMES, type ThemeName } from '../../core/models/types';
+export { SUPPORTED_THEMES, type ThemeName };
 
 @Component({
   selector: 'app-theme-switcher',

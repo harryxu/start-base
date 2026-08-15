@@ -62,3 +62,23 @@ export interface UserPublic {
   id: number;
   username: string;
 }
+
+/**
+ * Supported DaisyUI theme names list and type definition.
+ */
+export const SUPPORTED_THEMES = [
+  'light',
+  'autumn',
+  'emerald',
+  'corporate',
+  'garden',
+  'fantasy',
+  'coffee',
+  'business',
+  'night',
+  'dark',
+  'dim',
+  'dracula',
+] as const;
+
+export type ThemeName = (typeof SUPPORTED_THEMES)[number];

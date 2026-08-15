@@ -3,13 +3,12 @@ import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { API_BASE, ApiService } from '../api/api.service';
-import type { SiteViewMode } from '../models/types';
 import { AuthService } from './auth.service';
-
 import {
   SUPPORTED_THEMES,
+  type SiteViewMode,
   type ThemeName,
-} from '../../shared/theme-switcher/theme-switcher.component';
+} from '../models/types';
 export { SUPPORTED_THEMES };
 export type { ThemeName };
 
