@@ -15,30 +15,40 @@
     (externalSiteDropped)="onExternalSiteDropped($event)" />
 
   <!-- ===== SITE FORM MODAL ===== -->
-  @if (showSiteForm()) {
-  <app-site-form [site]="editingSite()" [defaults]="siteFormDefaults()" (closed)="closeSiteForm()" />
+  @defer (when showSiteForm()) {
+    @if (showSiteForm()) {
+      <app-site-form [site]="editingSite()" [defaults]="siteFormDefaults()" (closed)="closeSiteForm()" />
+    }
   }
 
   <!-- ===== GROUP FORM MODAL ===== -->
-  @if (showGroupForm()) {
-  <app-group-form [group]="editingGroup()" (closed)="closeGroupForm()" />
+  @defer (when showGroupForm()) {
+    @if (showGroupForm()) {
+      <app-group-form [group]="editingGroup()" (closed)="closeGroupForm()" />
+    }
   }
 
   <!-- ===== SETTINGS MODAL ===== -->
-  @if (showSettingsForm()) {
-  <app-settings-modal (closed)="closeSettingsModal()" />
+  @defer (when showSettingsForm()) {
+    @if (showSettingsForm()) {
+      <app-settings-modal (closed)="closeSettingsModal()" />
+    }
   }
 
   <!-- ===== DELETE CONFIRMATIONS ===== -->
-  @if (deletingSite()) {
-  <app-confirm-dialog title="Delete Site"
-    [message]="'Are you sure you want to delete \'' + (deletingSite()!.title || deletingSite()!.url) + '\'?'"
-    (confirmed)="confirmDeleteSite()" (cancelled)="cancelDeleteSite()" />
+  @defer (when deletingSite()) {
+    @if (deletingSite()) {
+      <app-confirm-dialog title="Delete Site"
+        [message]="'Are you sure you want to delete \'' + (deletingSite()!.title || deletingSite()!.url) + '\'?'"
+        (confirmed)="confirmDeleteSite()" (cancelled)="cancelDeleteSite()" />
+    }
   }
 
-  @if (deletingGroup()) {
-  <app-confirm-dialog title="Delete Group"
-    [message]="'Delete group \'' + deletingGroup()!.name + '\'?\n\nSites in this group will become ungrouped.'"
-    (confirmed)="confirmDeleteGroup()" (cancelled)="cancelDeleteGroup()" />
+  @defer (when deletingGroup()) {
+    @if (deletingGroup()) {
+      <app-confirm-dialog title="Delete Group"
+        [message]="'Delete group \'' + deletingGroup()!.name + '\'?\n\nSites in this group will become ungrouped.'"
+        (confirmed)="confirmDeleteGroup()" (cancelled)="cancelDeleteGroup()" />
+    }
   }
 </div>
