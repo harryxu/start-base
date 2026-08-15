@@ -43,6 +43,11 @@ import { API_BASE } from '../../core/api/api.service';
           box-shadow:
             0 1px 3px color-mix(in oklab, var(--color-base-content) 6%, transparent),
             0 1px 2px color-mix(in oklab, var(--color-base-content) 4%, transparent);
+
+          &::after {
+            color: color-mix(in oklab, var(--color-base-content) 40%, transparent);
+            opacity: 0.5;
+          }
         }
 
         &.app-without-bgimg {
