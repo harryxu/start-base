@@ -6,7 +6,8 @@ Lightweight dashboard to quickly access your websites.
 
 ## Features
 
-- 📌 **Bookmark Management** — Organize sites into custom groups
+- ✨ **Intuitive UI** — Manage all settings and sites directly in the UI without editing configuration files
+- 📌 **Grouped Sites** — Organize sites into custom groups
 - ⚡ **Drag & Drop** — Reorder sites and groups, long-press to drag sites.
 - 🖼️ **Auto Metadata** — Automatically fetch page titles and favicons
 - 📱 **Responsive Design** — Works seamlessly on desktop and mobile
@@ -16,8 +17,6 @@ Lightweight dashboard to quickly access your websites.
 ```bash
 docker run -p 5600:5600 -v "$(pwd)/data:/app/data" harryxu/startbase:latest
 ```
-
-
 
 ## Themes
 
