@@ -14,13 +14,9 @@ Lightweight dashboard to quickly access your websites.
 ## Quick Start
 
 ```bash
-docker run -d \
-  --name startbase \
-  -p 5600:5600 \
-  -e DATABASE_URL=sqlite:////app/data/db/start_base.db \
-  -v "$(pwd)/data:/app/data" \
-  harryxu/startbase:latest
+docker run -p 5600:5600 -v "$(pwd)/data:/app/data" harryxu/startbase:latest
 ```
+
 
 
 ## Themes

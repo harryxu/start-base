@@ -13,8 +13,12 @@ from alembic import context
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Import all models so Alembic can detect them
+from app.database import ensure_db_directory
 from app.models import Group, Site, SystemConfig  # noqa: F401
 from app.settings import DATABASE_URL
+
+# Ensure SQLite database directory exists before running migrations
+ensure_db_directory(DATABASE_URL)
 
 # this is the Alembic Config object
 config = context.config
