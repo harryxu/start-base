@@ -16,6 +16,7 @@ def test_default_settings() -> None:
     )
     assert settings.session_cookie_name == "start_base_session"
     assert settings.max_age_seconds == 60 * 60 * 24 * 30
+    assert settings.demo_mode is False
 
 
 def test_settings_from_env() -> None:
@@ -27,6 +28,7 @@ def test_settings_from_env() -> None:
             "SESSION_SECRET_KEY": "custom-secret-key-12345",
             "SESSION_COOKIE_NAME": "custom_session_cookie",
             "MAX_AGE_SECONDS": "3600",
+            "DEMO_MODE": "true",
         },
         clear=False,
     ):
@@ -35,6 +37,7 @@ def test_settings_from_env() -> None:
         assert settings.session_secret_key == "custom-secret-key-12345"
         assert settings.session_cookie_name == "custom_session_cookie"
         assert settings.max_age_seconds == 3600
+        assert settings.demo_mode is True
 
 
 def test_get_settings_caching() -> None:

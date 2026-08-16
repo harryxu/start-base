@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     session_cookie_name: str = "start_base_session"
     max_age_seconds: int = 60 * 60 * 24 * 30  # 30 days
 
+    # Demo Mode Setting
+    demo_mode: bool = False
+
     model_config = SettingsConfigDict(
         env_file=ENV_FILE_PATH,
         env_file_encoding="utf-8",

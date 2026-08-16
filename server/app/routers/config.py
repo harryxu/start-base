@@ -12,6 +12,7 @@ from app.core.security import (
 )
 from app.database import get_session
 from app.models import AccessModeUpdate, SystemConfig, User
+from app.settings import settings
 
 router = APIRouter(prefix="/api/config", tags=["config"])
 
@@ -52,6 +53,13 @@ def get_all_configs(session: Session = Depends(get_session)) -> dict[str, Any]:
 
     res = dict(DEFAULT_CONFIGS)
     res.update(db_map)
+
+    if settings.demo_mode:
+        res["demo"] = True
+        res["demo_msg"] = (
+            "You are currently viewing the Start Base Demo. Data will be reset every 3 hours."
+        )
+
     return res
 
 

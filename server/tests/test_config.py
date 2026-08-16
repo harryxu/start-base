@@ -71,3 +71,19 @@ def test_get_nonexistent_key(client: TestClient) -> None:
     """GET /api/config/{key} returns 404 for unknown non-default key."""
     res = client.get("/api/config/unknown_key_xyz")
     assert res.status_code == 404
+
+
+def test_get_configs_demo_mode(client: TestClient) -> None:
+    """GET /api/config/ returns demo: true and demo_msg when DEMO_MODE is true."""
+    from unittest.mock import patch
+
+    # When demo_mode is True
+    with patch("app.routers.config.settings.demo_mode", True):
+        res = client.get("/api/config/")
+        assert res.status_code == 200
+        data = res.json()
+        assert data["demo"] is True
+        assert (
+            data["demo_msg"]
+            == "You are currently viewing the Start Base Demo. Data will be reset every 3 hours."
+        )
