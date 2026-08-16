@@ -52,7 +52,10 @@ COPY --from=frontend-builder /web/dist/start-base/browser ./web-dist
 # Add virtualenv to PATH
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Copy entrypoint script
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 5600
 
-# Run alembic migrations and start FastAPI server on port 5600
-CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 5600"]
+ENTRYPOINT ["/entrypoint.sh"]
