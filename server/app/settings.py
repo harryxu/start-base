@@ -14,6 +14,9 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./data/db/start_base.db"
 
+    # Environment: 'development' or 'production'
+    environment: str = "development"
+
     # Security & Session Settings
     session_secret_key: str = (
         "start-base-secret-session-key-change-in-production"

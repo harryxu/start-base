@@ -25,12 +25,17 @@ async def lifespan(app: FastAPI):
     yield
 
 
+is_production = settings.environment.lower() == "production"
+
 app = FastAPI(
     title="Start Base API",
     description="Backend API for the Start Base homepage dashboard.",
     version="0.1.0",
     lifespan=lifespan,
     dependencies=[Depends(check_access_permission)],
+    openapi_url=None if is_production else "/openapi.json",
+    docs_url=None if is_production else "/docs",
+    redoc_url=None if is_production else "/redoc",
 )
 
 app.add_middleware(

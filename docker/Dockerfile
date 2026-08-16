@@ -29,10 +29,11 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 WORKDIR /app
 
-# Enable bytecode compilation and python optimizations
+# Enable bytecode compilation, python optimizations, and set production environment
 ENV UV_COMPILE_BYTECODE=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV ENVIRONMENT=production
 
 # Copy backend dependency files
 COPY server/pyproject.toml server/uv.lock ./

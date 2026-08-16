@@ -10,6 +10,7 @@ def test_default_settings() -> None:
     """Test default values for application settings without .env overrides."""
     settings = Settings(_env_file=None)
     assert settings.database_url == "sqlite:///./data/db/start_base.db"
+    assert settings.environment == "development"
     assert (
         settings.session_secret_key
         == "start-base-secret-session-key-change-in-production"
