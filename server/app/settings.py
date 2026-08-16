@@ -1,8 +1,12 @@
 """Application settings management using Pydantic Settings."""
 
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+SERVER_ROOT_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE_PATH = SERVER_ROOT_DIR / ".env"
 
 
 class Settings(BaseSettings):
@@ -18,7 +22,7 @@ class Settings(BaseSettings):
     max_age_seconds: int = 60 * 60 * 24 * 30  # 30 days
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ENV_FILE_PATH,
         env_file_encoding="utf-8",
         extra="ignore",
     )

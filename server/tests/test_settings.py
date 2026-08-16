@@ -42,3 +42,12 @@ def test_get_settings_caching() -> None:
     s1 = get_settings()
     s2 = get_settings()
     assert s1 is s2
+
+
+def test_env_file_path_resolution() -> None:
+    """Test that ENV_FILE_PATH points to the server root directory .env file."""
+    from app.settings import ENV_FILE_PATH, SERVER_ROOT_DIR
+
+    assert ENV_FILE_PATH == SERVER_ROOT_DIR / ".env"
+    assert (SERVER_ROOT_DIR / "app").is_dir()
+
