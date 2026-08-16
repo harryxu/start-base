@@ -71,3 +71,29 @@ def test_get_nonexistent_key(client: TestClient) -> None:
     """GET /api/config/{key} returns 404 for unknown non-default key."""
     res = client.get("/api/config/unknown_key_xyz")
     assert res.status_code == 404
+
+
+def test_update_access_mode_in_demo_mode(client: TestClient) -> None:
+    """Modifying access_mode to non-none_guard in demo mode returns 400, while none_guard succeeds."""
+    from unittest.mock import patch
+
+    with patch("app.routers.config.settings.demo_mode", True):
+        # 1. Submitting none_guard in demo mode succeeds
+        ok_res = client.patch("/api/config/access-mode", json={"access_mode": "none_guard"})
+        assert ok_res.status_code == 200
+
+        # 2. PATCH /api/config/access-mode with full_guard fails
+        res = client.patch("/api/config/access-mode", json={"access_mode": "full_guard"})
+        assert res.status_code == 400
+        assert res.json()["detail"] == "Authentication mode cannot be modified in demo mode"
+
+        # 3. PATCH /api/config/ with access_mode write_guard fails
+        batch_res = client.patch("/api/config/", json={"access_mode": "write_guard"})
+        assert batch_res.status_code == 400
+        assert batch_res.json()["detail"] == "Authentication mode cannot be modified in demo mode"
+
+        # 4. PUT /api/config/access_mode with full_guard fails
+        put_res = client.put("/api/config/access_mode", json={"value": "full_guard"})
+        assert put_res.status_code == 400
+        assert put_res.json()["detail"] == "Authentication mode cannot be modified in demo mode"
+

@@ -50,4 +50,20 @@ describe('ConfigService', () => {
     expect(service.theme()).toBe('light');
     expect(service.siteViewMode()).toBe('text');
   });
+
+  it('should parse demo configuration when present', async () => {
+    const loadPromise = service.loadConfig(true);
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
+    req.flush({
+      page_title: 'Demo Base',
+      demo: true,
+      demo_msg: 'You are currently viewing the Start Base Demo. Data will be reset every 3 hours.',
+    });
+    await loadPromise;
+
+    expect(service.isDemo()).toBe(true);
+    expect(service.demoMsg()).toBe(
+      'You are currently viewing the Start Base Demo. Data will be reset every 3 hours.',
+    );
+  });
 });

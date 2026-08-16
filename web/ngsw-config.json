@@ -25,5 +25,15 @@
       }
     }
   ],
-  "navigationUrls": ["/**", "!/**/*.*", "!/api/**", "!/outpost*", "!/outpost*/**"]
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/api/**",
+    "!/docs*",
+    "!/docs*/**",
+    "!/redoc*",
+    "!/redoc*/**",
+    "!/outpost*",
+    "!/outpost*/**"
+  ]
 }

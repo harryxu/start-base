@@ -11,7 +11,17 @@ from sqlmodel.pool import StaticPool
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from app import database as db_mod
+from app.settings import settings
 from main import app as fastapi_app
+
+
+@pytest.fixture(autouse=True)
+def default_test_settings():
+    """Ensure settings.demo_mode defaults to False during test runs unless explicitly overridden in a test."""
+    original_demo_mode = settings.demo_mode
+    settings.demo_mode = False
+    yield
+    settings.demo_mode = original_demo_mode
 
 
 @pytest.fixture(name="session")

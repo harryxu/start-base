@@ -4,6 +4,21 @@
   <!-- ===== HEADER ===== -->
   <app-header (addSite)="openAddSiteForm()" (addGroup)="openAddGroupDialog()" (openSettings)="openSettingsModal()" />
 
+  <!-- ===== DEMO ALERT ===== -->
+  @if (configService.isDemo() && configService.demoMsg() && !dismissDemoAlert()) {
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+      <div role="alert" class="alert alert-warning alert-soft shadow-xs flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <svg lucideInfo class="w-5 h-5 shrink-0 stroke-current text-warning" />
+          <span class="text-sm font-medium">{{ configService.demoMsg() }}</span>
+        </div>
+        <button type="button" class="btn btn-ghost btn-xs btn-circle shrink-0" (click)="dismissDemoAlert.set(true)" aria-label="Close">
+          <svg lucideX class="w-4 h-4 stroke-current" />
+        </button>
+      </div>
+    </div>
+  }
+
   <!-- ===== MAIN BOARD ===== -->
   <app-sites-board [sites]="boardService.sitesQuery.data() ?? []" [groups]="boardService.groupsQuery.data() ?? []"
     [isLoading]="boardService.sitesQuery.isLoading() || boardService.groupsQuery.isLoading()"
