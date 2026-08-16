@@ -1,5 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 
+import { LucideInfo, LucideX } from '@lucide/angular';
 import type { Group, Site } from '../../core/models/types';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { HeaderComponent } from '../../shared/header/header.component';
@@ -21,6 +22,8 @@ import { SettingsModalComponent } from '../settings-modal/settings-modal.compone
     GroupFormComponent,
     ConfirmDialogComponent,
     SettingsModalComponent,
+    LucideInfo,
+    LucideX,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -32,6 +35,7 @@ export class HomeComponent {
 
   // ---- UI state ----
 
+  dismissDemoAlert = signal(false);
   showSiteForm = signal(false);
   editingSite = signal<Site | null>(null);
   siteFormDefaults = signal<Partial<Site> | null>(null);

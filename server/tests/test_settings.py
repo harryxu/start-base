@@ -7,8 +7,8 @@ from app.settings import Settings, get_settings
 
 
 def test_default_settings() -> None:
-    """Test default values for application settings."""
-    settings = Settings()
+    """Test default values for application settings without .env overrides."""
+    settings = Settings(_env_file=None)
     assert settings.database_url == "sqlite:///./data/db/start_base.db"
     assert (
         settings.session_secret_key

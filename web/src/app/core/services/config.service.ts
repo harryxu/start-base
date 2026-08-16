@@ -24,6 +24,8 @@ export class ConfigService {
   bgUrl = signal<string | null>(null);
   accessMode = signal<string>('none_guard');
   siteViewMode = signal<SiteViewMode>('full');
+  isDemo = signal<boolean>(false);
+  demoMsg = signal<string>('');
 
   /** In-flight Promise deduplication for concurrent loadConfig calls. */
   private inFlightLoadPromise: Promise<void> | null = null;
@@ -91,6 +93,17 @@ export class ConfigService {
       if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
+
+      if (config['demo'] !== undefined) {
+        this.isDemo.set(Boolean(config['demo']));
+      } else {
+        this.isDemo.set(false);
+      }
+      if (config['demo_msg']) {
+        this.demoMsg.set(String(config['demo_msg']));
+      } else {
+        this.demoMsg.set('');
+      }
     })();
 
     try {
@@ -117,6 +130,12 @@ export class ConfigService {
       }
       if (res['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((res['bg_url'] || '').trim() || null);
+      }
+      if (res['demo'] !== undefined) {
+        this.isDemo.set(Boolean(res['demo']));
+      }
+      if (res['demo_msg']) {
+        this.demoMsg.set(String(res['demo_msg']));
       }
     } catch (err) {
       console.error('Failed to update system config:', err);
