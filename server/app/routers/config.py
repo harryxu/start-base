@@ -45,6 +45,18 @@ def _serialize_value(val: Any) -> str | None:
     return json.dumps(val)
 
 
+def _check_demo_access_mode_restriction(target_mode: Any) -> None:
+    """Ensure that non-none_guard access modes cannot be set when demo_mode is enabled."""
+    if not settings.demo_mode:
+        return
+    mode_str = str(target_mode).strip() if target_mode is not None else ""
+    if mode_str != "none_guard":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Authentication mode cannot be modified in demo mode",
+        )
+
+
 @router.get("/", response_model=dict[str, Any])
 def get_all_configs(session: Session = Depends(get_session)) -> dict[str, Any]:
     """Get dictionary of all system configurations with defaults merged."""
@@ -90,6 +102,8 @@ def update_access_mode(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid access_mode. Must be one of: {', '.join(valid_modes)}",
         )
+
+    _check_demo_access_mode_restriction(target_mode)
 
     # 1. Permission check: if current access_mode is not none_guard, require authentication
     current_item = session.get(SystemConfig, "access_mode")
@@ -141,6 +155,9 @@ def batch_update_configs(
     payload: dict[str, Any], session: Session = Depends(get_session)
 ) -> dict[str, Any]:
     """Batch update or insert system configurations."""
+    if "access_mode" in payload:
+        _check_demo_access_mode_restriction(payload["access_mode"])
+
     for key, val in payload.items():
         str_val = _serialize_value(val)
         item = session.get(SystemConfig, key)
@@ -160,6 +177,9 @@ def update_config_by_key(
     key: str, payload: dict[str, Any], session: Session = Depends(get_session)
 ) -> dict[str, Any]:
     """Update or insert a single config item."""
+    if key == "access_mode":
+        _check_demo_access_mode_restriction(payload.get("value"))
+
     val = payload.get("value")
     str_val = _serialize_value(val)
 
