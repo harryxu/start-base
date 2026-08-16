@@ -1042,6 +1042,7 @@ dependencies = [
     { name = "httpx" },
     { name = "itsdangerous" },
     { name = "pwdlib", extra = ["argon2"] },
+    { name = "pydantic-settings" },
     { name = "sqlmodel" },
     { name = "uvicorn", extra = ["standard"] },
 ]
@@ -1060,6 +1061,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "itsdangerous", specifier = ">=2.2.0" },
     { name = "pwdlib", extras = ["argon2"], specifier = ">=0.3.0" },
+    { name = "pydantic-settings", specifier = ">=2.8.0" },
     { name = "sqlmodel", specifier = ">=0.0.39" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.51.0" },
 ]

@@ -3,9 +3,9 @@ import os
 from sqlalchemy.engine import make_url
 from sqlmodel import Session, create_engine
 
-from app import settings
+from app.settings import settings
 
-db_url = settings.DATABASE_URL
+db_url = settings.database_url
 
 
 def ensure_db_directory(url: str) -> None:

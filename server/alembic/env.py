@@ -15,16 +15,16 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import all models so Alembic can detect them
 from app.database import ensure_db_directory
 from app.models import Group, Site, SystemConfig  # noqa: F401
-from app.settings import DATABASE_URL
+from app.settings import settings
 
 # Ensure SQLite database directory exists before running migrations
-ensure_db_directory(DATABASE_URL)
+ensure_db_directory(settings.database_url)
 
 # this is the Alembic Config object
 config = context.config
 
 # Override sqlalchemy.url from our app config
-config.set_main_option("sqlalchemy.url", DATABASE_URL)
+config.set_main_option("sqlalchemy.url", settings.database_url)
 
 # Interpret the config file for Python logging
 if config.config_file_name is not None:
