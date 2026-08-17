@@ -1,7 +1,6 @@
 IMAGE_NAME ?= harryxu/startbase
 DEMO_IMAGE_NAME ?= harryxu/startbase-demo
 TAGS ?= latest
-TAG ?= latest
 PLATFORM ?= linux/amd64,linux/arm64
 
 .PHONY: \
@@ -20,7 +19,7 @@ PLATFORM ?= linux/amd64,linux/arm64
 docker:
 	@if echo "$(PLATFORM)" | grep -q ","; then \
 		docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use; \
-		docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) . || { \
+		docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile $(foreach tag,$(TAGS),-t $(IMAGE_NAME):$(tag)) . || { \
 			echo ""; \
 			echo "========================================================"; \
 			echo " Build failed! If buildx failed due to missing binfmt/QEMU support, run:"; \
@@ -29,7 +28,7 @@ docker:
 			exit 1; \
 		}; \
 	else \
-		docker buildx build --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) --load . || { \
+		docker buildx build --platform $(PLATFORM) -f docker/Dockerfile $(foreach tag,$(TAGS),-t $(IMAGE_NAME):$(tag)) --load . || { \
 			echo ""; \
 			echo "========================================================"; \
 			echo " Build failed!"; \
@@ -39,10 +38,10 @@ docker:
 	fi
 
 docker-build-amd64:
-	@$(MAKE) docker PLATFORM=linux/amd64 TAG=amd64
+	@$(MAKE) docker PLATFORM=linux/amd64 TAGS="$(TAGS) amd64"
 
 docker-build-arm64:
-	@$(MAKE) docker PLATFORM=linux/arm64 TAG=arm64
+	@$(MAKE) docker PLATFORM=linux/arm64 TAGS="$(TAGS) arm64"
 
 # =========================
 # Push
@@ -71,7 +70,7 @@ docker-push-manifest:
 # Demo Site Targets
 docker-demo:
 	@docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use
-	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/demo-site.Dockerfile -t $(DEMO_IMAGE_NAME):$(TAG) -t $(DEMO_IMAGE_NAME):latest . || { \
+	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/demo-site.Dockerfile $(foreach tag,$(TAGS),-t $(DEMO_IMAGE_NAME):$(tag)) . || { \
 		echo ""; \
 		echo "========================================================"; \
 		echo " Build failed! If buildx failed due to missing binfmt/QEMU support, run:"; \
@@ -94,7 +93,7 @@ docker-demo-arm64:
 
 docker-demo-push:
 	@docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use
-	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/demo-site.Dockerfile -t $(DEMO_IMAGE_NAME):$(TAG) -t $(DEMO_IMAGE_NAME):latest --push . || { \
+	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/demo-site.Dockerfile $(foreach tag,$(TAGS),-t $(DEMO_IMAGE_NAME):$(tag)) --push . || { \
 		echo ""; \
 		echo "========================================================"; \
 		echo " Push failed! If buildx failed due to missing binfmt/QEMU support, run:"; \
@@ -108,5 +107,6 @@ docker-demo-amd64-push:
 
 docker-demo-arm64-push:
 	@$(MAKE) docker-demo-push PLATFORM=linux/arm64
+
 
 
