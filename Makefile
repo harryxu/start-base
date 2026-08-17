@@ -1,52 +1,72 @@
 IMAGE_NAME ?= harryxu/startbase
 DEMO_IMAGE_NAME ?= harryxu/startbase-demo
+TAGS ?= latest
 TAG ?= latest
 PLATFORM ?= linux/amd64,linux/arm64
 
-.PHONY: docker docker-amd64 docker-arm64 docker-push docker-amd64-push docker-arm64-push \
-        docker-demo docker-demo-amd64 docker-demo-arm64 docker-demo-push docker-demo-amd64-push docker-demo-arm64-push
+.PHONY: \
+	docker \
+	docker-build-amd64 \
+	docker-build-arm64 \
+	docker-push-amd64 \
+	docker-push-arm64 \
+	docker-push-manifest \
+	docker-demo docker-demo-amd64 docker-demo-arm64 docker-demo-push docker-demo-amd64-push docker-demo-arm64-push
 
-# Require docker and docker buildx to be installed and enabled.
+# =========================
+# Build
+# =========================
+
 docker:
-	@docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use
-	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) -t $(IMAGE_NAME):latest . || { \
-		echo ""; \
-		echo "========================================================"; \
-		echo " Build failed! If buildx failed due to missing binfmt/QEMU support, run:"; \
-		echo "   docker run --privileged --rm tonistiigi/binfmt --install all"; \
-		echo "========================================================"; \
-		exit 1; \
-	}
-	@echo ""
-	@echo "========================================================"
-	@echo " Multi-architecture Docker images built successfully ($(PLATFORM))"
-	@echo " To push these images to Docker Hub, run:"
-	@echo "   make docker-push"
-	@echo "   # or: make docker-push TAG=$(TAG)"
-	@echo "========================================================"
+	@if echo "$(PLATFORM)" | grep -q ","; then \
+		docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use; \
+		docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) . || { \
+			echo ""; \
+			echo "========================================================"; \
+			echo " Build failed! If buildx failed due to missing binfmt/QEMU support, run:"; \
+			echo "   docker run --privileged --rm tonistiigi/binfmt --install all"; \
+			echo "========================================================"; \
+			exit 1; \
+		}; \
+	else \
+		docker buildx build --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) --load . || { \
+			echo ""; \
+			echo "========================================================"; \
+			echo " Build failed!"; \
+			echo "========================================================"; \
+			exit 1; \
+		}; \
+	fi
 
-docker-amd64:
-	@$(MAKE) docker PLATFORM=linux/amd64
+docker-build-amd64:
+	@$(MAKE) docker PLATFORM=linux/amd64 TAG=amd64
 
-docker-arm64:
-	@$(MAKE) docker PLATFORM=linux/arm64
+docker-build-arm64:
+	@$(MAKE) docker PLATFORM=linux/arm64 TAG=arm64
 
-docker-push:
-	@docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use
-	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile -t $(IMAGE_NAME):$(TAG) -t $(IMAGE_NAME):latest --push . || { \
-		echo ""; \
-		echo "========================================================"; \
-		echo " Push failed! If buildx failed due to missing binfmt/QEMU support, run:"; \
-		echo "   docker run --privileged --rm tonistiigi/binfmt --install all"; \
-		echo "========================================================"; \
-		exit 1; \
-	}
+# =========================
+# Push
+# =========================
 
-docker-amd64-push:
-	@$(MAKE) docker-push PLATFORM=linux/amd64
+docker-push-amd64:
+	@docker push $(IMAGE_NAME):amd64
 
-docker-arm64-push:
-	@$(MAKE) docker-push PLATFORM=linux/arm64
+docker-push-arm64:
+	@docker push $(IMAGE_NAME):arm64
+
+# =========================
+# Create multi architecture manifest
+# =========================
+
+docker-push-manifest:
+	@for tag in $(TAGS); do \
+		echo "Creating manifest: $(IMAGE_NAME):$$tag"; \
+		docker manifest create $(IMAGE_NAME):$$tag \
+			$(IMAGE_NAME):amd64 \
+			$(IMAGE_NAME):arm64; \
+		docker manifest push $(IMAGE_NAME):$$tag; \
+	done
+
 
 # Demo Site Targets
 docker-demo:
