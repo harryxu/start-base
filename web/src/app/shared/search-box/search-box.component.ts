@@ -51,21 +51,18 @@ import { LucideSearch, LucideX } from '@lucide/angular';
   template: `
     <!-- Search box container -->
     <div
-      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35 transition-all duration-200 cursor-text"
+      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35"
       (mousedown)="onContainerMouseDown($event)"
       (click)="focusInput()"
     >
       <!-- Search Icon -->
-      <svg
-        lucideSearch
-        class="search-icon w-4 h-4 shrink-0 transition-colors duration-200 text-base-content/40"
-      ></svg>
+      <svg lucideSearch class="search-icon w-4 h-4 shrink-0 text-base-content/40"></svg>
 
       <!-- Input Field -->
       <input
         #inputRef
         type="text"
-        class="search-input min-w-0 bg-transparent text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 opacity-0 p-0 sm:w-full sm:opacity-100"
+        class="search-input text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 p-0 sm:w-full"
         [placeholder]="placeholder()"
         [value]="query()"
         (input)="onInput($event)"
