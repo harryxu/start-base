@@ -17,7 +17,11 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       /* Focused state: expand search box across toolbar and increase contrast */
       .search-box-container:has(.search-input:focus) {
         position: absolute;
-        inset: 0;
+        inset-block: 0;
+        right: 0;
+        width: 100%;
+        min-width: 12rem; /* 192px on mobile */
+        max-width: calc(100vw - 3rem);
         z-index: 20;
         justify-content: flex-start;
         padding-inline: 0.625rem; /* 10px / px-2.5 */
@@ -33,6 +37,13 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         .search-input {
           width: 100%;
           opacity: 1;
+        }
+      }
+
+      @media (min-width: 640px) {
+        .search-box-container:has(.search-input:focus) {
+          min-width: 18rem; /* 288px on desktop */
+          max-width: none;
         }
       }
     `,
