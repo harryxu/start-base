@@ -65,7 +65,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       <input
         #inputRef
         type="text"
-        class="search-input min-w-0 bg-transparent text-xs sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 opacity-0 p-0 sm:w-full sm:opacity-100"
+        class="search-input min-w-0 bg-transparent text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 opacity-0 p-0 sm:w-full sm:opacity-100"
         [placeholder]="placeholder()"
         [value]="query()"
         (input)="onInput($event)"
