@@ -15,7 +15,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       }
 
       /* Focused state: expand search box across toolbar and increase contrast */
-      .search-box-container:has(#search-input:focus) {
+      .search-box-container:has(.search-input:focus) {
         position: absolute;
         inset: 0;
         z-index: 20;
@@ -25,15 +25,15 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         border-color: var(--color-primary);
         background-color: var(--color-base-100);
         outline: 2px solid color-mix(in oklab, var(--color-primary) 20%, transparent);
-      }
 
-      .search-box-container:has(#search-input:focus) .search-icon {
-        color: var(--color-primary);
-      }
+        .search-icon {
+          color: var(--color-primary);
+        }
 
-      .search-box-container:has(#search-input:focus) .search-input {
-        width: 100%;
-        opacity: 1;
+        .search-input {
+          width: 100%;
+          opacity: 1;
+        }
       }
     `,
   ],
@@ -53,7 +53,6 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       <input
         #inputRef
         type="text"
-        id="search-input"
         class="search-input min-w-0 bg-transparent text-xs sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 opacity-0 p-0 sm:w-full sm:opacity-100"
         [placeholder]="placeholder()"
         [value]="query()"
