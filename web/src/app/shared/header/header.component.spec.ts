@@ -112,4 +112,14 @@ describe('HeaderComponent', () => {
 
     expect(component.isHeaderHidden()).toBe(false);
   });
+
+  it('should render search box component in header actions toolbar', () => {
+    const fixture = TestBed.createComponent(HeaderComponent);
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
+    req.flush({});
+    fixture.detectChanges();
+
+    const searchBoxEl = fixture.nativeElement.querySelector('app-search-box');
+    expect(searchBoxEl).toBeTruthy();
+  });
 });

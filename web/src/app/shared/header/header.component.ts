@@ -22,6 +22,7 @@ import {
 import { ConfigService } from '../../core/services/config.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.component';
+import { SearchBoxComponent } from '../search-box/search-box.component';
 
 @Component({
   selector: 'app-header',
@@ -36,6 +37,7 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
     LucideLogOut,
     LucideUser,
     ThemeSwitcherComponent,
+    SearchBoxComponent,
   ],
   template: `
     <header
@@ -45,17 +47,20 @@ import { ThemeSwitcherComponent } from '../theme-switcher/theme-switcher.compone
       [class.backdrop-blur-md]="configService.bgUrl()"
       [class.-translate-y-full]="isHeaderHidden()"
     >
-      <div class="max-w-5xl mx-auto w-full px-2 flex justify-between items-center">
+      <div class="max-w-5xl mx-auto w-full px-2 flex justify-between items-center gap-2">
         <!-- Logo Section -->
-        <div class="flex items-center gap-2">
-          <img src="start-base-logo.svg" alt="Start Base Logo" class="w-6 h-6" />
-          <span class="text-lg font-bold tracking-tight text-base-content">{{
+        <div class="flex items-center gap-2 min-w-0 shrink">
+          <img src="start-base-logo.svg" alt="Start Base Logo" class="w-6 h-6 shrink-0" />
+          <span class="text-base sm:text-lg font-bold tracking-tight text-base-content truncate">{{
             configService.pageTitle()
           }}</span>
         </div>
 
         <!-- Actions Toolbar -->
-        <div class="flex items-center gap-2">
+        <div class="relative flex items-center gap-1 sm:gap-2 shrink-0">
+          <!-- Search Box -->
+          <app-search-box />
+
           @if (!configService.isReadOnly()) {
             <!-- Add Site -->
             <button
