@@ -41,6 +41,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
     <!-- Search box container -->
     <div
       class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35 transition-all duration-200 cursor-text"
+      (mousedown)="onContainerMouseDown($event)"
       (click)="focusInput()"
     >
       <!-- Search Icon -->
@@ -87,6 +88,12 @@ export class SearchBoxComponent {
 
   inputRef = viewChild<ElementRef<HTMLInputElement>>('inputRef');
 
+  onContainerMouseDown(event: MouseEvent): void {
+    if (event.target !== this.inputRef()?.nativeElement) {
+      event.preventDefault();
+    }
+  }
+
   focusInput(): void {
     this.inputRef()?.nativeElement.focus();
   }
@@ -106,7 +113,11 @@ export class SearchBoxComponent {
     if (event) {
       event.stopPropagation();
     }
+    const inputEl = this.inputRef()?.nativeElement;
+    const isCurrentlyFocused = inputEl ? document.activeElement === inputEl : false;
     this.query.set('');
-    this.inputRef()?.nativeElement.focus();
+    if (isCurrentlyFocused && inputEl) {
+      inputEl.focus();
+    }
   }
 }
