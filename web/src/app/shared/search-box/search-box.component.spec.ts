@@ -20,19 +20,6 @@ describe('SearchBoxComponent', () => {
     expect(component).toBeTruthy();
     expect(component.placeholder()).toBe('Search...');
     expect(component.query()).toBe('');
-    expect(component.isFocused()).toBe(false);
-  });
-
-  it('should update isFocused state on focus and blur events', () => {
-    const inputEl = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-
-    inputEl.dispatchEvent(new Event('focus'));
-    fixture.detectChanges();
-    expect(component.isFocused()).toBe(true);
-
-    inputEl.dispatchEvent(new Event('blur'));
-    fixture.detectChanges();
-    expect(component.isFocused()).toBe(false);
   });
 
   it('should update query signal on user input', () => {
@@ -57,16 +44,17 @@ describe('SearchBoxComponent', () => {
     expect(component.query()).toBe('');
   });
 
-  it('should blur input and reset focus state when Escape key is pressed', () => {
+  it('should blur input element when Escape key is pressed', () => {
     const inputEl = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-    inputEl.dispatchEvent(new Event('focus'));
-    fixture.detectChanges();
-    expect(component.isFocused()).toBe(true);
+    let blurCalled = false;
+    inputEl.blur = () => {
+      blurCalled = true;
+    };
 
     const escapeEvent = new KeyboardEvent('keydown', { key: 'Escape' });
     inputEl.dispatchEvent(escapeEvent);
     fixture.detectChanges();
 
-    expect(component.isFocused()).toBe(false);
+    expect(blurCalled).toBe(true);
   });
 });

@@ -101,7 +101,7 @@ When backend API specifications and schemas are needed, fetch the OpenAPI schema
 - **Signals**: Prefer `signal()`, `computed()`, `input()`, `output()` over `@Input`/`@Output`
 - **HTTP**: Use `firstValueFrom(observable)` to convert RxJS → Promise for TanStack Query
 - **Icons**: Import from `@lucide/angular`, use as SVG directive: `<svg lucidePencil class="w-4 h-4">`
-- **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors.
+- **CSS**: Prefer DaisyUI classes (e.g. `btn`, `card`, `input`, `modal`, `alert`, etc.) combined with Tailwind utility classes in templates to maintain a consistent component design; use component `styles` for complex selectors. Avoid using `!important` in CSS unless absolutely necessary.
 - **Testing**:
   - Keep tests green across Python backend (`server/tests/`) and Angular frontend (`web/`).
   - Frontend Angular test coverage should prioritize **business logic and functional workflows** (e.g., state transformations, service interactions, event handling). Purely presentational details (e.g., specific CSS styling classes or static UI prompt messages) do not require exhaustive test assertions.
