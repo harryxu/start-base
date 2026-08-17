@@ -30,16 +30,21 @@ describe('SitesBoardComponent', () => {
     { id: 200, name: 'Entertainment', sort_order: 20 },
   ];
 
-  it('should create component and compute layout correctly without search query', () => {
+  it('should create component and compute layout correctly without search query, preserving empty groups', () => {
     const fixture = TestBed.createComponent(SitesBoardComponent);
     const component = fixture.componentInstance;
 
+    const mockGroupsWithEmpty: Group[] = [
+      ...mockGroups,
+      { id: 300, name: 'Empty Group', sort_order: 30 },
+    ];
+
     fixture.componentRef.setInput('sites', mockSites);
-    fixture.componentRef.setInput('groups', mockGroups);
+    fixture.componentRef.setInput('groups', mockGroupsWithEmpty);
     fixture.detectChanges();
 
     expect(component).toBeTruthy();
-    expect(component.layoutRows().length).toBe(3); // 1 ungrouped + 2 groups
+    expect(component.layoutRows().length).toBe(4); // 1 ungrouped + 3 groups (including empty group)
     expect(component.isSearching()).toBe(false);
   });
 

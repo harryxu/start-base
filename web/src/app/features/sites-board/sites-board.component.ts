@@ -106,15 +106,16 @@ export class SitesBoardComponent {
 
   private computeLayout(sites: Site[], groups: Group[], queryStr?: string): LayoutRow[] {
     const query = (queryStr ?? '').trim().toLowerCase();
-    const isMatch = (site: Site) => {
-      if (!query) return true;
-      const titleMatch = site.title ? site.title.toLowerCase().includes(query) : false;
-      const urlMatch = site.url ? site.url.toLowerCase().includes(query) : false;
-      const descMatch = site.description ? site.description.toLowerCase().includes(query) : false;
-      return titleMatch || urlMatch || descMatch;
-    };
 
-    const filteredSites = sites.filter(isMatch);
+    // 1. In non-search state, skip filtering pass and reuse sites directly
+    const filteredSites = query
+      ? sites.filter((site) => {
+          const titleMatch = site.title ? site.title.toLowerCase().includes(query) : false;
+          const urlMatch = site.url ? site.url.toLowerCase().includes(query) : false;
+          const descMatch = site.description ? site.description.toLowerCase().includes(query) : false;
+          return titleMatch || urlMatch || descMatch;
+        })
+      : sites;
 
     const ungrouped = filteredSites
       .filter((s) => s.group_id === null)
@@ -133,8 +134,9 @@ export class SitesBoardComponent {
         .filter((s) => s.group_id === group.id)
         .sort((a, b) => a.sort_order - b.sort_order);
 
-      // Only show group if it has matching sites
-      if (groupSites.length > 0) {
+      // In search mode: hide groups with no matching sites.
+      // In normal mode: always show groups (so newly created empty groups remain visible for site drops).
+      if (!query || groupSites.length > 0) {
         rows.push({
           type: 'group',
           group: group,
