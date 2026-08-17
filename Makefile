@@ -5,6 +5,7 @@ PLATFORM ?= linux/amd64,linux/arm64
 
 .PHONY: \
 	docker \
+	docker-build-push \
 	docker-build-amd64 \
 	docker-build-arm64 \
 	docker-push-amd64 \
@@ -27,6 +28,12 @@ docker:
 			echo "========================================================"; \
 			exit 1; \
 		}; \
+		echo ""; \
+		echo "========================================================"; \
+		echo " Multi-architecture Docker images built successfully ($(PLATFORM))"; \
+		echo " To push these images to Docker Hub, run:"; \
+		echo "   make docker-build-push"; \
+		echo "========================================================"; \
 	else \
 		docker buildx build --platform $(PLATFORM) -f docker/Dockerfile $(foreach tag,$(TAGS),-t $(IMAGE_NAME):$(tag)) --load . || { \
 			echo ""; \
@@ -46,6 +53,23 @@ docker-build-arm64:
 # =========================
 # Push
 # =========================
+
+# Build and push multi-architecture images in a single command
+docker-build-push:
+	@docker buildx inspect multi-builder >/dev/null 2>&1 || docker buildx create --name multi-builder --driver docker-container --use
+	@docker buildx build --builder multi-builder --platform $(PLATFORM) -f docker/Dockerfile $(foreach tag,$(TAGS),-t $(IMAGE_NAME):$(tag)) --push . || { \
+		echo ""; \
+		echo "========================================================"; \
+		echo " Push failed! If buildx failed due to missing binfmt/QEMU support, run:"; \
+		echo "   docker run --privileged --rm tonistiigi/binfmt --install all"; \
+		echo "========================================================"; \
+		exit 1; \
+	}
+	@echo ""
+	@echo "========================================================"
+	@echo " Multi-architecture Docker images built & pushed successfully ($(PLATFORM))"
+	@echo " Tags: $(TAGS)"
+	@echo "========================================================"
 
 docker-push-amd64:
 	@docker push $(IMAGE_NAME):amd64
