@@ -59,7 +59,7 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
         <!-- Actions Toolbar -->
         <div class="relative flex items-center gap-1 sm:gap-2 shrink-0">
           <!-- Search Box -->
-          <app-search-box />
+          <app-search-box (search)="search.emit($event)" />
 
           @if (!configService.isReadOnly()) {
             <!-- Add Site -->
@@ -213,6 +213,7 @@ export class HeaderComponent {
     }
   }
 
+  search = output<string>();
   addSite = output<void>();
   addGroup = output<void>();
   openSettings = output<void>();

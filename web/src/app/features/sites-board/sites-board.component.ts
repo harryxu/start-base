@@ -18,7 +18,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { LucideGripVertical, LucidePlus } from '@lucide/angular';
+import { LucideGripVertical, LucidePlus, LucideSearch } from '@lucide/angular';
 
 import type { Group, LayoutRow, ReorderItem, Site, SiteReorderItem } from '../../core/models/types';
 import { GroupContainerComponent } from '../../shared/group-container/group-container.component';
@@ -39,6 +39,7 @@ import { ConfigService } from '../../core/services/config.service';
     ExternalDropZoneComponent,
     LucidePlus,
     LucideGripVertical,
+    LucideSearch,
   ],
   templateUrl: './sites-board.component.html',
 })
@@ -47,6 +48,7 @@ export class SitesBoardComponent {
 
   sites = input<Site[]>([]);
   groups = input<Group[]>([]);
+  searchQuery = input<string>('');
   isLoading = input<boolean>(false);
   isError = input<boolean>(false);
   fetchingSiteIds = input<Set<number>>(new Set());
@@ -73,6 +75,8 @@ export class SitesBoardComponent {
     return this.fetchingSiteIds().has(siteId);
   }
 
+  isSearching = computed(() => !!this.searchQuery().trim());
+
   /** Mutable copy of the ungrouped sites for drag-and-drop animations. */
   localUngroupedSites = signal<Site[]>([]);
 
@@ -92,16 +96,27 @@ export class SitesBoardComponent {
     });
   }
 
-  /** Computed layout from server data. */
+  /** Computed layout from server data and current search query. */
   layoutRows = computed<LayoutRow[]>(() => {
-    return this.computeLayout(this.sites(), this.groups());
+    return this.computeLayout(this.sites(), this.groups(), this.searchQuery());
   });
 
   /** IDs of all inner site drop lists — used for cdkDropListConnectedTo. */
   allSiteDropListIds = computed(() => ['ungrouped-0', ...this.localGroupRows().map((r) => r.id)]);
 
-  private computeLayout(sites: Site[], groups: Group[]): LayoutRow[] {
-    const ungrouped = sites
+  private computeLayout(sites: Site[], groups: Group[], queryStr?: string): LayoutRow[] {
+    const query = (queryStr ?? '').trim().toLowerCase();
+    const isMatch = (site: Site) => {
+      if (!query) return true;
+      const titleMatch = site.title ? site.title.toLowerCase().includes(query) : false;
+      const urlMatch = site.url ? site.url.toLowerCase().includes(query) : false;
+      const descMatch = site.description ? site.description.toLowerCase().includes(query) : false;
+      return titleMatch || urlMatch || descMatch;
+    };
+
+    const filteredSites = sites.filter(isMatch);
+
+    const ungrouped = filteredSites
       .filter((s) => s.group_id === null)
       .sort((a, b) => a.sort_order - b.sort_order);
 
@@ -114,15 +129,19 @@ export class SitesBoardComponent {
     }
 
     for (const group of sortedGroups) {
-      const groupSites = sites
+      const groupSites = filteredSites
         .filter((s) => s.group_id === group.id)
         .sort((a, b) => a.sort_order - b.sort_order);
-      rows.push({
-        type: 'group',
-        group: group,
-        sites: groupSites,
-        id: `group-${group.id}`,
-      });
+
+      // Only show group if it has matching sites
+      if (groupSites.length > 0) {
+        rows.push({
+          type: 'group',
+          group: group,
+          sites: groupSites,
+          id: `group-${group.id}`,
+        });
+      }
     }
 
     return rows;
@@ -130,6 +149,8 @@ export class SitesBoardComponent {
 
   /** Called when a group row is dropped in a new position (outer list). */
   onRowDrop(event: CdkDragDrop<LayoutRow[]>): void {
+    if (this.isSearching()) return;
+
     const rows = [...this.localGroupRows()];
     moveItemInArray(rows, event.previousIndex, event.currentIndex);
     this.localGroupRows.set(rows);
@@ -146,6 +167,8 @@ export class SitesBoardComponent {
 
   /** Called when a site is dropped (inner site lists). */
   onSiteDrop(event: CdkDragDrop<Site[]>): void {
+    if (this.isSearching()) return;
+
     const isSourceUngrouped = event.previousContainer.id === 'ungrouped-0';
     const isTargetUngrouped = event.container.id === 'ungrouped-0';
 

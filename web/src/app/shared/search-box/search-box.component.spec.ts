@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { describe, beforeEach, it, expect } from 'vitest';
+import { describe, beforeEach, it, expect, vi } from 'vitest';
 import { SearchBoxComponent } from './search-box.component';
 
 describe('SearchBoxComponent', () => {
@@ -22,16 +22,33 @@ describe('SearchBoxComponent', () => {
     expect(component.query()).toBe('');
   });
 
-  it('should update query signal on user input', () => {
+  it('should update query signal on user input and emit search output with debounce', () => {
+    vi.useFakeTimers();
+    let emittedValue = '';
+    component.search.subscribe((val) => {
+      emittedValue = val;
+    });
+
     const inputEl = fixture.nativeElement.querySelector('input') as HTMLInputElement;
     inputEl.value = 'github';
     inputEl.dispatchEvent(new Event('input'));
     fixture.detectChanges();
 
     expect(component.query()).toBe('github');
+    expect(emittedValue).toBe(''); // Not emitted yet before debounce
+
+    vi.advanceTimersByTime(300);
+    expect(emittedValue).toBe('github');
+
+    vi.useRealTimers();
   });
 
-  it('should render clear button when query is present and clear value on click without focusing if unfocused', () => {
+  it('should render clear button when query is present and immediately emit empty search on click', () => {
+    let emittedValue = 'initial';
+    component.search.subscribe((val) => {
+      emittedValue = val;
+    });
+
     component.query.set('test query');
     fixture.detectChanges();
 
@@ -48,6 +65,7 @@ describe('SearchBoxComponent', () => {
     fixture.detectChanges();
 
     expect(component.query()).toBe('');
+    expect(emittedValue).toBe('');
     expect(focusCalled).toBe(false);
   });
 

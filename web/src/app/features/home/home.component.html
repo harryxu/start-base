@@ -2,7 +2,12 @@
   [class.has-bg-image]="configService.bgUrl()"
   [style.background-image]="configService.fullBgUrl() ? 'url(' + configService.fullBgUrl() + ')' : null">
   <!-- ===== HEADER ===== -->
-  <app-header (addSite)="openAddSiteForm()" (addGroup)="openAddGroupDialog()" (openSettings)="openSettingsModal()" />
+  <app-header
+    (search)="searchQuery.set($event)"
+    (addSite)="openAddSiteForm()"
+    (addGroup)="openAddGroupDialog()"
+    (openSettings)="openSettingsModal()"
+  />
 
   <!-- ===== DEMO ALERT ===== -->
   @if (configService.isDemo() && configService.demoMsg() && !dismissDemoAlert()) {
@@ -20,14 +25,23 @@
   }
 
   <!-- ===== MAIN BOARD ===== -->
-  <app-sites-board [sites]="boardService.sitesQuery.data() ?? []" [groups]="boardService.groupsQuery.data() ?? []"
+  <app-sites-board
+    [sites]="boardService.sitesQuery.data() ?? []"
+    [groups]="boardService.groupsQuery.data() ?? []"
+    [searchQuery]="searchQuery()"
     [isLoading]="boardService.sitesQuery.isLoading() || boardService.groupsQuery.isLoading()"
     [isError]="boardService.sitesQuery.isError() || boardService.groupsQuery.isError()"
-    [fetchingSiteIds]="boardService.fetchingSiteIds()" (addSite)="openAddSiteForm()"
-    (addSiteInGroup)="openAddSiteForm($event)" (editSite)="openEditSiteForm($event)" (deleteSite)="onDeleteSite($event)"
-    (editGroup)="onEditGroup($event)" (deleteGroup)="onDeleteGroup($event)"
-    (reorderGroups)="boardService.reorderGroups($event)" (reorderSites)="boardService.reorderSites($event)"
-    (externalSiteDropped)="onExternalSiteDropped($event)" />
+    [fetchingSiteIds]="boardService.fetchingSiteIds()"
+    (addSite)="openAddSiteForm()"
+    (addSiteInGroup)="openAddSiteForm($event)"
+    (editSite)="openEditSiteForm($event)"
+    (deleteSite)="onDeleteSite($event)"
+    (editGroup)="onEditGroup($event)"
+    (deleteGroup)="onDeleteGroup($event)"
+    (reorderGroups)="boardService.reorderGroups($event)"
+    (reorderSites)="boardService.reorderSites($event)"
+    (externalSiteDropped)="onExternalSiteDropped($event)"
+  />
 
   <!-- ===== SITE FORM MODAL ===== -->
   @defer (when showSiteForm()) {

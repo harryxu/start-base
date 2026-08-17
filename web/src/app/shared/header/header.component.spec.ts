@@ -113,13 +113,22 @@ describe('HeaderComponent', () => {
     expect(component.isHeaderHidden()).toBe(false);
   });
 
-  it('should render search box component in header actions toolbar', () => {
+  it('should render search box component and emit search event from header', () => {
     const fixture = TestBed.createComponent(HeaderComponent);
     const req = httpMock.expectOne(`${API_BASE}/api/config/`);
     req.flush({});
     fixture.detectChanges();
 
-    const searchBoxEl = fixture.nativeElement.querySelector('app-search-box');
-    expect(searchBoxEl).toBeTruthy();
+    const component = fixture.componentInstance;
+    let searchEmitted = '';
+    component.search.subscribe((val) => {
+      searchEmitted = val;
+    });
+
+    const searchBoxDebug = fixture.debugElement.nativeElement.querySelector('app-search-box');
+    expect(searchBoxDebug).toBeTruthy();
+
+    component.search.emit('test keyword');
+    expect(searchEmitted).toBe('test keyword');
   });
 });

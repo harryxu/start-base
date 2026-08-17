@@ -92,12 +92,15 @@ import { LucideSearch, LucideX } from '@lucide/angular';
 })
 export class SearchBoxComponent {
   placeholder = input<string>('Search...');
+  debounceMs = input<number>(300);
 
   query = signal<string>('');
 
   search = output<string>();
 
   inputRef = viewChild<ElementRef<HTMLInputElement>>('inputRef');
+
+  private debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
   onContainerMouseDown(event: MouseEvent): void {
     if (event.target !== this.inputRef()?.nativeElement) {
@@ -111,7 +114,16 @@ export class SearchBoxComponent {
 
   onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.query.set(target.value);
+    const value = target.value;
+    this.query.set(value);
+
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
+
+    this.debounceTimer = setTimeout(() => {
+      this.search.emit(value);
+    }, this.debounceMs());
   }
 
   onKeyDown(event: KeyboardEvent): void {
@@ -124,9 +136,13 @@ export class SearchBoxComponent {
     if (event) {
       event.stopPropagation();
     }
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
     const inputEl = this.inputRef()?.nativeElement;
     const isCurrentlyFocused = inputEl ? document.activeElement === inputEl : false;
     this.query.set('');
+    this.search.emit('');
     if (isCurrentlyFocused && inputEl) {
       inputEl.focus();
     }

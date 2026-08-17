@@ -35,6 +35,7 @@ export class HomeComponent {
 
   // ---- UI state ----
 
+  searchQuery = signal<string>('');
   dismissDemoAlert = signal(false);
   showSiteForm = signal(false);
   editingSite = signal<Site | null>(null);
