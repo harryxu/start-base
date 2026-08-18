@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  HostListener,
   input,
   output,
   signal,
@@ -98,6 +99,18 @@ export class SearchBoxComponent {
   inputRef = viewChild<ElementRef<HTMLInputElement>>('inputRef');
 
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+  @HostListener('window:keydown', ['$event'])
+  onWindowKeyDown(event: KeyboardEvent): void {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      const inputEl = this.inputRef()?.nativeElement;
+      if (inputEl) {
+        inputEl.focus();
+        inputEl.select();
+      }
+    }
+  }
 
   onContainerMouseDown(event: MouseEvent): void {
     if (event.target !== this.inputRef()?.nativeElement) {

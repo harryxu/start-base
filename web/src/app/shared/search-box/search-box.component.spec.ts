@@ -118,4 +118,32 @@ describe('SearchBoxComponent', () => {
 
     expect(container.classList.contains('has-query')).toBe(false);
   });
+
+  it('should focus and select search input on Ctrl+K and Cmd+K shortcuts', () => {
+    const inputEl = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    let focusCalled = false;
+    let selectCalled = false;
+
+    inputEl.focus = () => {
+      focusCalled = true;
+    };
+    inputEl.select = () => {
+      selectCalled = true;
+    };
+
+    // Test Ctrl+K
+    const ctrlKEvent = new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, cancelable: true });
+    window.dispatchEvent(ctrlKEvent);
+    expect(focusCalled).toBe(true);
+    expect(selectCalled).toBe(true);
+
+    focusCalled = false;
+    selectCalled = false;
+
+    // Test Cmd+K (metaKey)
+    const cmdKEvent = new KeyboardEvent('keydown', { key: 'K', metaKey: true, cancelable: true });
+    window.dispatchEvent(cmdKEvent);
+    expect(focusCalled).toBe(true);
+    expect(selectCalled).toBe(true);
+  });
 });
