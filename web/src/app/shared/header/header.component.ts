@@ -49,17 +49,24 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
     >
       <div class="max-w-5xl mx-auto w-full px-2 flex justify-between items-center gap-2">
         <!-- Logo Section -->
-        <div class="flex items-center gap-2 min-w-0 shrink">
+        <div class="flex items-center gap-2 min-w-0 shrink-0">
           <img src="start-base-logo.svg" alt="Start Base Logo" class="w-6 h-6 shrink-0" />
-          <span class="text-base sm:text-lg font-bold tracking-tight text-base-content truncate">{{
-            configService.pageTitle()
-          }}</span>
+          <span
+            class="text-base sm:text-lg font-bold tracking-tight text-base-content truncate"
+            [class.hidden]="isSearchActive()"
+            [class.sm:inline-block]="true"
+          >{{ configService.pageTitle() }}</span>
         </div>
 
         <!-- Actions Toolbar -->
-        <div class="relative flex items-center gap-1 sm:gap-2 shrink-0">
+        <div class="flex items-center gap-1 sm:gap-2 shrink min-w-0 justify-end flex-1 sm:flex-initial">
           <!-- Search Box -->
-          <app-search-box (search)="search.emit($event)" />
+          <app-search-box
+            [class.flex-1]="isSearchActive()"
+            [class.w-full]="isSearchActive()"
+            (search)="search.emit($event)"
+            (activeChange)="isSearchActive.set($event)"
+          />
 
           @if (!configService.isReadOnly()) {
             <!-- Add Site -->
@@ -213,6 +220,7 @@ export class HeaderComponent {
     }
   }
 
+  isSearchActive = signal<boolean>(false);
   search = output<string>();
   addSite = output<void>();
   addGroup = output<void>();

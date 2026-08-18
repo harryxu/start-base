@@ -1,4 +1,11 @@
-import { Component, ElementRef, input, output, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { LucideSearch, LucideX } from '@lucide/angular';
 
 @Component({
@@ -14,18 +21,8 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         display: block;
       }
 
-      /* Focused state: expand search box across toolbar and increase contrast */
-      .search-box-container:has(.search-input:focus) {
-        position: absolute;
-        inset-block: 0;
-        right: 0;
-        width: 100%;
-        min-width: 12rem; /* 192px on mobile */
-        max-width: calc(100vw - 3rem);
-        z-index: 20;
-        justify-content: flex-start;
-        padding-inline: 0.625rem; /* 10px / px-2.5 */
-        gap: 0.5rem; /* 8px / gap-2 */
+      /* Active & focused styling */
+      .search-box-container:is(:has(.search-input:focus), .has-query) {
         border-color: var(--color-primary);
         background-color: var(--color-base-100);
         outline: 2px solid color-mix(in oklab, var(--color-primary) 20%, transparent);
@@ -39,32 +36,33 @@ import { LucideSearch, LucideX } from '@lucide/angular';
           opacity: 1;
         }
       }
-
-      @media (min-width: 640px) {
-        .search-box-container:has(.search-input:focus) {
-          min-width: 18rem; /* 288px on desktop */
-          max-width: none;
-        }
-      }
     `,
   ],
   template: `
     <!-- Search box container -->
     <div
-      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35"
+      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35 transition-colors duration-200 cursor-text"
+      [class.has-query]="query().length > 0"
+      [class.px-2]="isFocused() || query().length > 0"
+      [class.gap-1.5]="isFocused() || query().length > 0"
       (mousedown)="onContainerMouseDown($event)"
       (click)="focusInput()"
     >
       <!-- Search Icon -->
-      <svg lucideSearch class="search-icon w-4 h-4 shrink-0 text-base-content/40"></svg>
+      <svg
+        lucideSearch
+        class="search-icon w-4 h-4 shrink-0 transition-colors duration-200 text-base-content/40"
+      ></svg>
 
       <!-- Input Field -->
       <input
         #inputRef
         type="text"
-        class="search-input text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 p-0 sm:w-full"
+        class="search-input min-w-0 bg-transparent text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 opacity-0 p-0 sm:w-full sm:opacity-100"
         [placeholder]="placeholder()"
         [value]="query()"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
         (input)="onInput($event)"
         (keydown)="onKeyDown($event)"
         aria-label="Search"
@@ -92,8 +90,10 @@ export class SearchBoxComponent {
   debounceMs = input<number>(300);
 
   query = signal<string>('');
+  isFocused = signal<boolean>(false);
 
   search = output<string>();
+  activeChange = output<boolean>();
 
   inputRef = viewChild<ElementRef<HTMLInputElement>>('inputRef');
 
@@ -109,10 +109,21 @@ export class SearchBoxComponent {
     this.inputRef()?.nativeElement.focus();
   }
 
+  onFocus(): void {
+    this.isFocused.set(true);
+    this.activeChange.emit(true);
+  }
+
+  onBlur(): void {
+    this.isFocused.set(false);
+    this.activeChange.emit(this.query().length > 0);
+  }
+
   onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
     const value = target.value;
     this.query.set(value);
+    this.activeChange.emit(this.isFocused() || value.length > 0);
 
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
@@ -140,6 +151,7 @@ export class SearchBoxComponent {
     const isCurrentlyFocused = inputEl ? document.activeElement === inputEl : false;
     this.query.set('');
     this.search.emit('');
+    this.activeChange.emit(isCurrentlyFocused);
     if (isCurrentlyFocused && inputEl) {
       inputEl.focus();
     }

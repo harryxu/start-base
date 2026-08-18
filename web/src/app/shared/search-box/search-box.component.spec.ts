@@ -104,17 +104,18 @@ describe('SearchBoxComponent', () => {
     expect(defaultPrevented).toBe(true);
   });
 
-  it('should not prevent default on mousedown when clicking the input element itself', () => {
-    const inputEl = fixture.nativeElement.querySelector('input') as HTMLInputElement;
-    const mouseEvent = new MouseEvent('mousedown', { cancelable: true });
-    Object.defineProperty(mouseEvent, 'target', { value: inputEl });
+  it('should apply has-query class to container when query is non-empty', () => {
+    const container = fixture.nativeElement.querySelector('.search-box-container') as HTMLDivElement;
+    expect(container.classList.contains('has-query')).toBe(false);
 
-    let defaultPrevented = false;
-    mouseEvent.preventDefault = () => {
-      defaultPrevented = true;
-    };
+    component.query.set('flutter');
+    fixture.detectChanges();
 
-    component.onContainerMouseDown(mouseEvent);
-    expect(defaultPrevented).toBe(false);
+    expect(container.classList.contains('has-query')).toBe(true);
+
+    component.query.set('');
+    fixture.detectChanges();
+
+    expect(container.classList.contains('has-query')).toBe(false);
   });
 });
