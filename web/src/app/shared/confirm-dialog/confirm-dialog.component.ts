@@ -1,13 +1,14 @@
 import { Component, input, output } from '@angular/core';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { LucideAlertTriangle } from '@lucide/angular';
 
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [LucideAlertTriangle],
+  imports: [CdkTrapFocus, LucideAlertTriangle],
   template: `
     <!-- DaisyUI modal (modal-open keeps it visible while rendered) -->
-    <div class="modal modal-open modal-middle" role="dialog" aria-modal="true">
+    <div class="modal modal-open modal-middle" role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
       <div class="modal-box max-w-sm">
         <div class="flex items-start gap-4">
           <!-- Warning icon -->

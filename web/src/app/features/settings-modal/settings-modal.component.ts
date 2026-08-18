@@ -1,5 +1,6 @@
 import { Component, inject, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import {
   LucideX,
   LucideSettings,
@@ -23,6 +24,7 @@ import { ThemeSwitcherComponent } from '../../shared/theme-switcher/theme-switch
   standalone: true,
   imports: [
     FormsModule,
+    CdkTrapFocus,
     LucideX,
     LucideSettings,
     LucideUpload,

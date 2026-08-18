@@ -17,7 +17,7 @@
           <svg lucideInfo class="w-5 h-5 shrink-0 stroke-current text-warning" />
           <span class="text-sm font-medium">{{ configService.demoMsg() }}</span>
         </div>
-        <button type="button" class="btn btn-ghost btn-xs btn-circle shrink-0" (click)="dismissDemoAlert.set(true)" aria-label="Close">
+        <button type="button" class="btn btn-ghost btn-xs btn-circle shrink-0" tabindex="-1" (click)="dismissDemoAlert.set(true)" aria-label="Close">
           <svg lucideX class="w-4 h-4 stroke-current" />
         </button>
       </div>

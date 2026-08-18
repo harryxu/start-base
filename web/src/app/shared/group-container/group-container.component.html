@@ -39,6 +39,7 @@
     <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
     @if (!configService.isReadOnly()) {
       <button
+        tabindex="-1"
         [cdkMenuTriggerFor]="groupMenu"
         [cdkMenuPosition]="groupMenuPositions"
         (cdkMenuOpened)="onGroupMenuOpened()"

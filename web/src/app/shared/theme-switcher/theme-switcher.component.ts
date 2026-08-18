@@ -25,7 +25,7 @@ export { SUPPORTED_THEMES, type ThemeName };
     <!-- Theme Switcher Dropdown (DaisyUI Method 3: CSS focus) -->
     <div class="dropdown" [class]="position()">
       <div
-        tabindex="0"
+        [tabIndex]="tabIndex()"
         role="button"
         id="btn-theme-dropdown"
         class="btn btn-sm btn-ghost gap-2 capitalize"
@@ -38,7 +38,7 @@ export { SUPPORTED_THEMES, type ThemeName };
         }
       </div>
       <ul
-        tabindex="0"
+        [tabIndex]="tabIndex()"
         class="dropdown-content menu menu-vertical flex flex-col flex-nowrap bg-base-100 rounded-box z-50 w-44 p-2 shadow-2xl border border-base-200 gap-1 max-h-72 overflow-y-auto overflow-x-hidden"
       >
         @for (t of themes; track t) {
@@ -77,6 +77,7 @@ export class ThemeSwitcherComponent {
 
   showLabel = input<boolean>(false);
   position = input<string>('dropdown-end');
+  tabIndex = input<number>(0);
 
   selectTheme(theme: string): void {
     this.configService.selectTheme(theme);

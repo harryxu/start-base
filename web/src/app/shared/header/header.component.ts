@@ -64,6 +64,7 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
           <app-search-box
             [class.flex-1]="isSearchActive()"
             [class.w-full]="isSearchActive()"
+            [tabIndex]="-1"
             (search)="search.emit($event)"
             (activeChange)="isSearchActive.set($event)"
           />
@@ -72,6 +73,7 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
             <!-- Add Site -->
             <button
               id="btn-add-site"
+              tabindex="-1"
               (click)="addSite.emit()"
               class="btn btn-sm btn-ghost btn-square"
               title="Add Site"
@@ -82,6 +84,7 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
             <!-- Add Group -->
             <button
               id="btn-add-group"
+              tabindex="-1"
               (click)="addGroup.emit()"
               class="btn btn-sm btn-ghost btn-square"
               title="Add Group"
@@ -93,11 +96,12 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
             <div class="h-4 w-px bg-base-content/20 shrink-0 mx-0.5"></div>
 
             <!-- Theme Switcher: only for users with write access -->
-            <app-theme-switcher />
+            <app-theme-switcher [tabIndex]="-1" />
 
             <!-- Settings: only for users with write access -->
             <button
               id="btn-settings"
+              tabindex="-1"
               (click)="openSettings.emit()"
               class="btn btn-sm btn-ghost btn-square"
               title="System Settings"
@@ -117,6 +121,7 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
               <!-- Logged-in: show username + dropdown -->
               <button
                 id="btn-user-menu"
+                tabindex="-1"
                 [cdkMenuTriggerFor]="userMenu"
                 class="btn btn-sm btn-ghost gap-1.5 px-2"
                 [attr.aria-label]="'User menu for ' + authService.currentUser()!.username"
@@ -147,6 +152,7 @@ import { SearchBoxComponent } from '../search-box/search-box.component';
               <!-- Not logged in: show Login button -->
               <button
                 id="btn-login"
+                tabindex="-1"
                 (click)="navigateToLogin()"
                 class="btn btn-sm btn-ghost gap-1.5 px-2"
                 title="Login"

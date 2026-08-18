@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { LucideFolder, LucideUpload, LucideX } from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
 
@@ -10,13 +11,15 @@ import { BoardService } from '../../core/services/board.service';
 @Component({
   selector: 'app-group-form',
   standalone: true,
-  imports: [FormsModule, LucideX, LucideFolder, LucideUpload],
+  imports: [FormsModule, CdkTrapFocus, LucideX, LucideFolder, LucideUpload],
   template: `
     <!-- DaisyUI modal (modal-open keeps it visible while rendered) -->
     <div
       class="modal modal-open modal-middle p-4"
       role="dialog"
       aria-modal="true"
+      cdkTrapFocus
+      [cdkTrapFocusAutoCapture]="true"
       [attr.aria-label]="group() ? 'Edit Group' : 'Add Group'"
     >
       <div class="modal-box max-w-md p-0 flex flex-col max-h-[90vh] my-auto">

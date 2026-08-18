@@ -55,6 +55,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         class="search-input min-w-0 bg-transparent text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none w-0 opacity-0 sm:w-full sm:opacity-100"
         [placeholder]="placeholder()"
         [value]="query()"
+        [tabIndex]="tabIndex()"
         (focus)="onFocus()"
         (blur)="onBlur()"
         (input)="onInput($event)"
@@ -67,6 +68,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         <button
           type="button"
           id="btn-clear-search"
+          tabindex="-1"
           (mousedown)="$event.preventDefault()"
           (click)="clear($event)"
           class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-base-content"
@@ -92,6 +94,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
 export class SearchBoxComponent {
   placeholder = input<string>('Search...');
   debounceMs = input<number>(300);
+  tabIndex = input<number>(-1);
 
   query = signal<string>('');
   isFocused = signal<boolean>(false);
