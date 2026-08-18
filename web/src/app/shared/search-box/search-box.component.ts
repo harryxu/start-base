@@ -69,7 +69,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         aria-label="Search"
       />
 
-      <!-- Clear Button -->
+      <!-- Clear Button (when has query) or Shortcut Hint (desktop when empty and unfocused) -->
       @if (query()) {
         <button
           type="button"
@@ -82,6 +82,17 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         >
           <svg lucideX class="w-3.5 h-3.5"></svg>
         </button>
+      } @else if (!isFocused()) {
+        <!-- macOS Shortcut Hint -->
+        <kbd
+          class="hidden in-[.os-macos]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-[10px] font-mono leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
+          >⌘K</kbd
+        >
+        <!-- Windows / Linux Shortcut Hint -->
+        <kbd
+          class="hidden not-[.os-macos_&]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-[10px] font-mono leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
+          >⌃K</kbd
+        >
       }
     </div>
   `,

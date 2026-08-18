@@ -146,4 +146,27 @@ describe('SearchBoxComponent', () => {
     expect(focusCalled).toBe(true);
     expect(selectCalled).toBe(true);
   });
+
+  it('should render shortcut badge kbd elements when query is empty and unfocused, and hide on focus or query', () => {
+    const kbdEls = fixture.nativeElement.querySelectorAll('kbd');
+    expect(kbdEls.length).toBe(2);
+    expect(kbdEls[0].textContent?.trim()).toBe('⌘K');
+    expect(kbdEls[1].textContent?.trim()).toBe('⌃K');
+
+    // Hide when focused
+    component.onFocus();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('kbd').length).toBe(0);
+
+    // Show when blurred without query
+    component.onBlur();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('kbd').length).toBe(2);
+
+    // Hide when query is set
+    component.query.set('testing');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelectorAll('kbd').length).toBe(0);
+    expect(fixture.nativeElement.querySelector('#btn-clear-search')).toBeTruthy();
+  });
 });

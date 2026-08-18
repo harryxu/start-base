@@ -3,6 +3,20 @@
 
 <head>
   <meta charset="utf-8" />
+  <script>
+    (function () {
+      if (typeof navigator !== 'undefined') {
+        var platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || '';
+        if (/mac|iphone|ipad|ipod/i.test(platform)) {
+          document.documentElement.classList.add('os-macos');
+        } else if (/win/i.test(platform)) {
+          document.documentElement.classList.add('os-windows');
+        } else if (/linux/i.test(platform)) {
+          document.documentElement.classList.add('os-linux');
+        }
+      }
+    })();
+  </script>
   <title>Start Base</title>
   <meta name="description"
     content="Your personal homepage dashboard — organize and access your favorite websites in one place." />
