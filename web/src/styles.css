@@ -81,6 +81,7 @@
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-base-100);
   }
 
   body {
@@ -92,7 +93,7 @@
       sans-serif;
     font-size: 16px;
     color: var(--color-base-content);
-    background: var(--color-neutral-content);
+    background-color: var(--color-base-100);
     margin: 0;
   }
 
@@ -128,6 +129,16 @@
 }
 
 @layer utilities {
+  .pb-safe-bottom {
+    padding-bottom: max(6rem, calc(4rem + env(safe-area-inset-bottom, 0px)));
+  }
+
+  @media (min-width: 640px) {
+    .pb-safe-bottom {
+      padding-bottom: max(3rem, calc(2rem + env(safe-area-inset-bottom, 0px)));
+    }
+  }
+
   .modal,
   .modal::backdrop,
   dialog.modal::backdrop {

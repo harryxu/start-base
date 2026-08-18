@@ -1,4 +1,4 @@
-<main class="max-w-5xl mx-auto px-2 py-6 relative">
+<main class="max-w-5xl mx-auto px-2 pt-6 pb-safe-bottom relative">
   @if (!configService.isReadOnly()) {
     <app-external-drop-zone (droppedUrl)="externalSiteDropped.emit($event)" />
   }
