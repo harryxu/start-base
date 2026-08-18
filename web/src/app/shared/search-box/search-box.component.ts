@@ -42,7 +42,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
   template: `
     <!-- Search box container -->
     <div
-      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35 transition-colors duration-200 cursor-text"
+      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35"
       [class.has-query]="query().length > 0"
       [class.px-2]="isFocused() || query().length > 0"
       [class.gap-1.5]="isFocused() || query().length > 0"
@@ -85,12 +85,12 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       } @else if (!isFocused()) {
         <!-- macOS Shortcut Hint -->
         <kbd
-          class="hidden in-[.os-macos]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-[10px] font-mono leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
+          class="hidden in-[.os-macos]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-xs font-sans font-medium leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
           >⌘K</kbd
         >
         <!-- Windows / Linux Shortcut Hint -->
         <kbd
-          class="hidden not-[.os-macos_&]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-[10px] font-mono leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
+          class="hidden not-[.os-macos_&]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-xs font-sans font-medium leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
           >⌃K</kbd
         >
       }
