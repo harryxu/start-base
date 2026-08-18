@@ -18,10 +18,6 @@ import { LucideSearch, LucideX } from '@lucide/angular';
   },
   styles: [
     `
-      :host {
-        display: block;
-      }
-
       /* Active & focused styling */
       .search-box-container:is(:has(.search-input:focus), .has-query) {
         border-color: var(--color-primary);
@@ -50,16 +46,13 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       (click)="focusInput()"
     >
       <!-- Search Icon -->
-      <svg
-        lucideSearch
-        class="search-icon w-4 h-4 shrink-0 text-base-content/40"
-      ></svg>
+      <svg lucideSearch class="search-icon w-4 h-4 shrink-0 text-base-content/40"></svg>
 
       <!-- Input Field -->
       <input
         #inputRef
         type="text"
-        class="search-input min-w-0 bg-transparent text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none leading-none w-0 opacity-0 p-0 sm:w-full sm:opacity-100"
+        class="search-input min-w-0 bg-transparent text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none w-0 opacity-0 sm:w-full sm:opacity-100"
         [placeholder]="placeholder()"
         [value]="query()"
         (focus)="onFocus()"
@@ -84,9 +77,14 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         </button>
       } @else if (!isFocused()) {
         <!-- macOS Shortcut Hint -->
-        <kbd class="hidden in-[.os-macos]:sm:inline-flex kbd kbd-xs font-sans text-base-content/50">⌘K</kbd>
+        <kbd class="hidden in-[.os-macos]:sm:inline-flex kbd kbd-xs font-sans text-base-content/50"
+          >⌘K</kbd
+        >
         <!-- Windows / Linux Shortcut Hint -->
-        <kbd class="hidden not-[.os-macos_&]:sm:inline-flex kbd kbd-xs font-sans text-base-content/50">⌃K</kbd>
+        <kbd
+          class="hidden not-[.os-macos_&]:sm:inline-flex kbd kbd-xs font-sans text-base-content/50"
+          >⌃K</kbd
+        >
       }
     </div>
   `,
