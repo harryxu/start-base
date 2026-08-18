@@ -52,7 +52,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       <!-- Search Icon -->
       <svg
         lucideSearch
-        class="search-icon w-4 h-4 shrink-0 transition-colors duration-200 text-base-content/40"
+        class="search-icon w-4 h-4 shrink-0 text-base-content/40"
       ></svg>
 
       <!-- Input Field -->
@@ -76,7 +76,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
           id="btn-clear-search"
           (mousedown)="$event.preventDefault()"
           (click)="clear($event)"
-          class="btn btn-ghost btn-xs btn-circle shrink-0 text-base-content/50 hover:text-base-content"
+          class="btn btn-ghost btn-xs btn-circle text-base-content/50 hover:text-base-content"
           title="Clear search"
           aria-label="Clear search"
         >
@@ -84,15 +84,9 @@ import { LucideSearch, LucideX } from '@lucide/angular';
         </button>
       } @else if (!isFocused()) {
         <!-- macOS Shortcut Hint -->
-        <kbd
-          class="hidden in-[.os-macos]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-xs font-sans font-medium leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
-          >⌘K</kbd
-        >
+        <kbd class="hidden in-[.os-macos]:sm:inline-flex kbd kbd-xs font-sans text-base-content/50">⌘K</kbd>
         <!-- Windows / Linux Shortcut Hint -->
-        <kbd
-          class="hidden not-[.os-macos_&]:sm:inline-flex kbd kbd-xs py-0 px-1.5 min-h-0 h-4.5 text-xs font-sans font-medium leading-none bg-base-200/70 border-base-content/15 text-base-content/50 select-none pointer-events-none shrink-0"
-          >⌃K</kbd
-        >
+        <kbd class="hidden not-[.os-macos_&]:sm:inline-flex kbd kbd-xs font-sans text-base-content/50">⌃K</kbd>
       }
     </div>
   `,
