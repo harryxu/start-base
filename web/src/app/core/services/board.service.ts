@@ -4,13 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { ApiService } from '../api/api.service';
 import { GroupCollapseService } from './group-collapse.service';
-import type {
-  BoardData,
-  Group,
-  ReorderItem,
-  Site,
-  SiteReorderItem,
-} from '../models/types';
+import type { BoardData, Group, ReorderItem, Site, SiteReorderItem } from '../models/types';
 
 @Service()
 export class BoardService {
@@ -111,7 +105,7 @@ export class BoardService {
     const board = this.boardQuery.data();
     const allSites = [
       ...(board?.ungrouped_sites ?? []),
-      ...(board?.groups.flatMap((g) => g.sites) ?? []),
+      ...(board?.groups?.flatMap((g) => g.sites) ?? []),
     ];
     const maxOrder = allSites.length > 0 ? Math.max(...allSites.map((s) => s.sort_order)) : 0;
     this.createSiteMutation.mutate({ ...data, sort_order: data.sort_order ?? maxOrder + 100 });

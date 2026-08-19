@@ -20,7 +20,14 @@ import {
 } from '@angular/cdk/drag-drop';
 import { LucideGripVertical, LucidePlus, LucideSearch } from '@lucide/angular';
 
-import type { BoardData, Group, LayoutRow, ReorderItem, Site, SiteReorderItem } from '../../core/models/types';
+import type {
+  BoardData,
+  Group,
+  LayoutRow,
+  ReorderItem,
+  Site,
+  SiteReorderItem,
+} from '../../core/models/types';
 import { GroupContainerComponent } from '../../shared/group-container/group-container.component';
 import { SiteCardComponent } from '../../shared/site-card/site-card.component';
 import { ExternalDropZoneComponent } from '../../shared/external-drop-zone/external-drop-zone.component';
@@ -105,33 +112,8 @@ export class SitesBoardComponent {
 
   private computeLayout(data: BoardData | null, queryStr?: string): LayoutRow[] {
     if (!data) return [];
+
     const query = (queryStr ?? '').trim().toLowerCase();
-
-    // 1. In non-search state, directly reuse pre-sorted groups and sites from backend
-    if (!query) {
-      const rows: LayoutRow[] = [];
-
-      if (data.ungrouped_sites && data.ungrouped_sites.length > 0) {
-        rows.push({
-          type: 'ungrouped',
-          sites: data.ungrouped_sites,
-          id: 'ungrouped-0',
-        });
-      }
-
-      for (const group of data.groups ?? []) {
-        rows.push({
-          type: 'group',
-          group: group,
-          sites: group.sites ?? [],
-          id: `group-${group.id}`,
-        });
-      }
-
-      return rows;
-    }
-
-    // 2. In search state, filter matching sites
     const matchesSite = (site: Site) => {
       const titleMatch = site.title ? site.title.toLowerCase().includes(query) : false;
       const urlMatch = site.url ? site.url.toLowerCase().includes(query) : false;
@@ -140,23 +122,27 @@ export class SitesBoardComponent {
     };
 
     const rows: LayoutRow[] = [];
-    const filteredUngrouped = (data.ungrouped_sites ?? []).filter(matchesSite);
-    if (filteredUngrouped.length > 0) {
+
+    // 1. Ungrouped sites row
+    const ungroupedSites = query ? data.ungrouped_sites?.filter(matchesSite) : data.ungrouped_sites;
+
+    if (ungroupedSites?.length) {
       rows.push({
         type: 'ungrouped',
-        sites: filteredUngrouped,
+        sites: ungroupedSites,
         id: 'ungrouped-0',
       });
     }
 
+    // 2. Group rows (hide empty matching groups during search, keep all during normal mode)
     for (const group of data.groups ?? []) {
-      const filteredSites = (group.sites ?? []).filter(matchesSite);
-      // In search mode: hide groups with no matching sites
-      if (filteredSites.length > 0) {
+      const groupSites = query ? (group.sites ?? []).filter(matchesSite) : (group.sites ?? []);
+
+      if (!query || groupSites.length > 0) {
         rows.push({
           type: 'group',
-          group: group,
-          sites: filteredSites,
+          group,
+          sites: groupSites,
           id: `group-${group.id}`,
         });
       }

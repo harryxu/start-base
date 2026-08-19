@@ -37,10 +37,9 @@ export interface GroupWithSites extends Group {
 }
 
 export interface BoardData {
-  ungrouped_sites: Site[];
-  groups: GroupWithSites[];
+  ungrouped_sites?: Site[];
+  groups?: GroupWithSites[];
 }
-
 
 /**
  * A computed layout row for the home page.

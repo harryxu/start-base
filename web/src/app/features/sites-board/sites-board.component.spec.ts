@@ -12,17 +12,21 @@ describe('SitesBoardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [SitesBoardComponent],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        ...COMMON_TEST_PROVIDERS,
-      ],
+      providers: [provideHttpClient(), provideHttpClientTesting(), ...COMMON_TEST_PROVIDERS],
     }).compileComponents();
   });
 
   const mockBoardData: BoardData = {
     ungrouped_sites: [
-      { id: 1, url: 'https://github.com', title: 'GitHub', icon_url: '', description: 'Code hosting platform', sort_order: 10, group_id: null },
+      {
+        id: 1,
+        url: 'https://github.com',
+        title: 'GitHub',
+        icon_url: '',
+        description: 'Code hosting platform',
+        sort_order: 10,
+        group_id: null,
+      },
     ],
     groups: [
       {
@@ -30,7 +34,15 @@ describe('SitesBoardComponent', () => {
         name: 'Search Tools',
         sort_order: 10,
         sites: [
-          { id: 2, url: 'https://google.com', title: 'Google', icon_url: '', description: 'Search engine', sort_order: 20, group_id: 100 },
+          {
+            id: 2,
+            url: 'https://google.com',
+            title: 'Google',
+            icon_url: '',
+            description: 'Search engine',
+            sort_order: 20,
+            group_id: 100,
+          },
         ],
       },
       {
@@ -38,7 +50,15 @@ describe('SitesBoardComponent', () => {
         name: 'Entertainment',
         sort_order: 20,
         sites: [
-          { id: 3, url: 'https://youtube.com', title: 'YouTube', icon_url: '', description: 'Video streaming', sort_order: 30, group_id: 200 },
+          {
+            id: 3,
+            url: 'https://youtube.com',
+            title: 'YouTube',
+            icon_url: '',
+            description: 'Video streaming',
+            sort_order: 30,
+            group_id: 200,
+          },
         ],
       },
     ],
@@ -51,7 +71,7 @@ describe('SitesBoardComponent', () => {
     const mockBoardWithEmpty: BoardData = {
       ...mockBoardData,
       groups: [
-        ...mockBoardData.groups,
+        ...(mockBoardData.groups ?? []),
         { id: 300, name: 'Empty Group', sort_order: 30, sites: [] },
       ],
     };
