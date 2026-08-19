@@ -38,7 +38,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
   template: `
     <!-- Search box container -->
     <div
-      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-base-content/20 bg-base-100/50 hover:border-base-content/35"
+      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start px-0 sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-transparent sm:border-base-content/20 bg-transparent sm:bg-base-100/50 sm:hover:border-base-content/35"
       [class.has-query]="query().length > 0"
       [class.px-2]="isFocused() || query().length > 0"
       [class.gap-1.5]="isFocused() || query().length > 0"
