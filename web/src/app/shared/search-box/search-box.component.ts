@@ -38,7 +38,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
   template: `
     <!-- Search box container using DaisyUI label.input -->
     <label
-      class="search-box-container input input-sm w-full justify-center  border-transparent bg-transparent sm:justify-start sm:border-base-content/20 sm:bg-base-100/30"
+      class="search-box-container input input-sm w-full justify-center border-transparent bg-transparent sm:border-base-content/20 sm:bg-base-100/30"
       [class.has-query]="query().length > 0"
       [class.bg-base-100]="isFocused() || query().length > 0"
       [class.px-3]="isFocused() || query().length > 0"
@@ -53,7 +53,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       <input
         #inputRef
         type="text"
-        class="search-input grow min-w-0 text-base sm:text-sm w-0 opacity-0 sm:w-full sm:opacity-100"
+        class="search-input min-w-0 text-base sm:text-sm w-0 opacity-0 sm:w-full sm:opacity-100"
         [placeholder]="placeholder()"
         [value]="query()"
         [tabIndex]="tabIndex()"
