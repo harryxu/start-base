@@ -20,9 +20,8 @@ describe('BoardService', () => {
     service = TestBed.inject(BoardService);
   });
 
-  it('should be created and initialize queries', () => {
+  it('should be created and initialize boardQuery', () => {
     expect(service).toBeTruthy();
-    expect(service.sitesQuery).toBeTruthy();
-    expect(service.groupsQuery).toBeTruthy();
+    expect(service.boardQuery).toBeTruthy();
   });
 });

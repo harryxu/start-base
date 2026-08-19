@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import type {
+  BoardData,
   Group,
   ReorderItem,
   Site,
@@ -17,7 +18,14 @@ export const API_BASE = '';
 export class ApiService {
   private http = inject(HttpClient);
 
+  // ---- Board ----
+
+  getBoard(): Observable<BoardData> {
+    return this.http.get<BoardData>(`${API_BASE}/api/board/`);
+  }
+
   // ---- Groups ----
+
 
   getGroups(): Observable<Group[]> {
     return this.http.get<Group[]>(`${API_BASE}/api/groups/`);

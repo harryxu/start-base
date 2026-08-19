@@ -26,11 +26,10 @@
 
   <!-- ===== MAIN BOARD ===== -->
   <app-sites-board
-    [sites]="boardService.sitesQuery.data() ?? []"
-    [groups]="boardService.groupsQuery.data() ?? []"
+    [boardData]="boardService.boardQuery.data() ?? null"
     [searchQuery]="searchQuery()"
-    [isLoading]="boardService.sitesQuery.isLoading() || boardService.groupsQuery.isLoading()"
-    [isError]="boardService.sitesQuery.isError() || boardService.groupsQuery.isError()"
+    [isLoading]="boardService.boardQuery.isLoading()"
+    [isError]="boardService.boardQuery.isError()"
     [fetchingSiteIds]="boardService.fetchingSiteIds()"
     (addSite)="openAddSiteForm()"
     (addSiteInGroup)="openAddSiteForm($event)"

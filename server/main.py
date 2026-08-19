@@ -12,7 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.security import check_access_permission
 from app.database import engine
-from app.routers import auth, config, groups, sites, system
+from app.routers import auth, board, config, groups, sites, system
 from app.settings import settings
 
 mimetypes.add_type("application/manifest+json", ".webmanifest")
@@ -60,6 +60,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(board.router)
 app.include_router(config.router)
 app.include_router(groups.router)
 app.include_router(sites.router)

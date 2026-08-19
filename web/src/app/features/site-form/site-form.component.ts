@@ -191,7 +191,7 @@ export class SiteFormComponent {
   site = input<Site | null>(null);
   defaults = input<Partial<Site> | null>(null);
 
-  groups = computed(() => this.boardService.groupsQuery.data() ?? []);
+  groups = computed(() => this.boardService.boardQuery.data()?.groups ?? []);
 
   closed = output<void>();
   cancelled = this.closed;

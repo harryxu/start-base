@@ -32,6 +32,16 @@ export interface SiteReorderItem {
   group_id: number | null;
 }
 
+export interface GroupWithSites extends Group {
+  sites: Site[];
+}
+
+export interface BoardData {
+  ungrouped_sites: Site[];
+  groups: GroupWithSites[];
+}
+
+
 /**
  * A computed layout row for the home page.
  * - 'ungrouped': consecutive ungrouped sites merged into one row

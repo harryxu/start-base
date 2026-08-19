@@ -4,7 +4,7 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { describe, beforeEach, it, expect } from 'vitest';
 
 import { SitesBoardComponent } from './sites-board.component';
-import type { Group, Site } from '../../core/models/types';
+import type { BoardData } from '../../core/models/types';
 
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
 
@@ -20,27 +20,43 @@ describe('SitesBoardComponent', () => {
     }).compileComponents();
   });
 
-  const mockSites: Site[] = [
-    { id: 1, url: 'https://github.com', title: 'GitHub', icon_url: '', description: 'Code hosting platform', sort_order: 10, group_id: null },
-    { id: 2, url: 'https://google.com', title: 'Google', icon_url: '', description: 'Search engine', sort_order: 20, group_id: 100 },
-    { id: 3, url: 'https://youtube.com', title: 'YouTube', icon_url: '', description: 'Video streaming', sort_order: 30, group_id: 200 },
-  ];
-  const mockGroups: Group[] = [
-    { id: 100, name: 'Search Tools', sort_order: 10 },
-    { id: 200, name: 'Entertainment', sort_order: 20 },
-  ];
+  const mockBoardData: BoardData = {
+    ungrouped_sites: [
+      { id: 1, url: 'https://github.com', title: 'GitHub', icon_url: '', description: 'Code hosting platform', sort_order: 10, group_id: null },
+    ],
+    groups: [
+      {
+        id: 100,
+        name: 'Search Tools',
+        sort_order: 10,
+        sites: [
+          { id: 2, url: 'https://google.com', title: 'Google', icon_url: '', description: 'Search engine', sort_order: 20, group_id: 100 },
+        ],
+      },
+      {
+        id: 200,
+        name: 'Entertainment',
+        sort_order: 20,
+        sites: [
+          { id: 3, url: 'https://youtube.com', title: 'YouTube', icon_url: '', description: 'Video streaming', sort_order: 30, group_id: 200 },
+        ],
+      },
+    ],
+  };
 
   it('should create component and compute layout correctly without search query, preserving empty groups', () => {
     const fixture = TestBed.createComponent(SitesBoardComponent);
     const component = fixture.componentInstance;
 
-    const mockGroupsWithEmpty: Group[] = [
-      ...mockGroups,
-      { id: 300, name: 'Empty Group', sort_order: 30 },
-    ];
+    const mockBoardWithEmpty: BoardData = {
+      ...mockBoardData,
+      groups: [
+        ...mockBoardData.groups,
+        { id: 300, name: 'Empty Group', sort_order: 30, sites: [] },
+      ],
+    };
 
-    fixture.componentRef.setInput('sites', mockSites);
-    fixture.componentRef.setInput('groups', mockGroupsWithEmpty);
+    fixture.componentRef.setInput('boardData', mockBoardWithEmpty);
     fixture.detectChanges();
 
     expect(component).toBeTruthy();
@@ -52,8 +68,7 @@ describe('SitesBoardComponent', () => {
     const fixture = TestBed.createComponent(SitesBoardComponent);
     const component = fixture.componentInstance;
 
-    fixture.componentRef.setInput('sites', mockSites);
-    fixture.componentRef.setInput('groups', mockGroups);
+    fixture.componentRef.setInput('boardData', mockBoardData);
     fixture.componentRef.setInput('searchQuery', 'google');
     fixture.detectChanges();
 
@@ -73,8 +88,7 @@ describe('SitesBoardComponent', () => {
     const fixture = TestBed.createComponent(SitesBoardComponent);
     const component = fixture.componentInstance;
 
-    fixture.componentRef.setInput('sites', mockSites);
-    fixture.componentRef.setInput('groups', mockGroups);
+    fixture.componentRef.setInput('boardData', mockBoardData);
     fixture.componentRef.setInput('searchQuery', 'github.com');
     fixture.detectChanges();
 
@@ -92,8 +106,7 @@ describe('SitesBoardComponent', () => {
     const fixture = TestBed.createComponent(SitesBoardComponent);
     const component = fixture.componentInstance;
 
-    fixture.componentRef.setInput('sites', mockSites);
-    fixture.componentRef.setInput('groups', mockGroups);
+    fixture.componentRef.setInput('boardData', mockBoardData);
     fixture.componentRef.setInput('searchQuery', 'streaming');
     fixture.detectChanges();
 
@@ -111,8 +124,7 @@ describe('SitesBoardComponent', () => {
     const fixture = TestBed.createComponent(SitesBoardComponent);
     const component = fixture.componentInstance;
 
-    fixture.componentRef.setInput('sites', mockSites);
-    fixture.componentRef.setInput('groups', mockGroups);
+    fixture.componentRef.setInput('boardData', mockBoardData);
     fixture.componentRef.setInput('searchQuery', 'non_existing_keyword_xyz');
     fixture.detectChanges();
 

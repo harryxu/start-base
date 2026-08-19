@@ -148,6 +148,19 @@ class SiteRead(SQLModel):
     group_id: int | None
 
 
+class GroupWithSites(GroupRead):
+    """Group schema with nested sites."""
+
+    sites: list[SiteRead] = []
+
+
+class BoardRead(SQLModel):
+    """Aggregated dashboard layout schema containing ungrouped sites and groups with their sites."""
+
+    ungrouped_sites: list[SiteRead] = []
+    groups: list[GroupWithSites] = []
+
+
 class ReorderItem(SQLModel):
     """Payload item for bulk-reordering groups."""
 
@@ -161,3 +174,4 @@ class SiteReorderItem(SQLModel):
     id: int
     sort_order: float
     group_id: int | None = None
+
