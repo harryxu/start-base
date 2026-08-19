@@ -36,12 +36,13 @@ import { LucideSearch, LucideX } from '@lucide/angular';
     `,
   ],
   template: `
-    <!-- Search box container -->
-    <div
-      class="search-box-container w-full h-full flex items-center justify-center sm:justify-start sm:px-2.5 gap-0 sm:gap-2 rounded-lg border border-transparent sm:border-base-content/20 bg-transparent sm:bg-base-100/50 sm:hover:border-base-content/35"
+    <!-- Search box container using DaisyUI label.input -->
+    <label
+      class="search-box-container input input-sm w-full justify-center  border-transparent bg-transparent sm:justify-start sm:border-base-content/20 sm:bg-base-100/30"
       [class.has-query]="query().length > 0"
-      [class.px-2]="isFocused() || query().length > 0"
-      [class.gap-1.5]="isFocused() || query().length > 0"
+      [class.bg-base-100]="isFocused() || query().length > 0"
+      [class.px-3]="isFocused() || query().length > 0"
+      [class.gap-2]="isFocused() || query().length > 0"
       (mousedown)="onContainerMouseDown($event)"
       (click)="focusInput()"
     >
@@ -52,7 +53,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
       <input
         #inputRef
         type="text"
-        class="search-input min-w-0 bg-transparent text-base sm:text-sm text-base-content placeholder:text-base-content/40 outline-none w-0 opacity-0 sm:w-full sm:opacity-100"
+        class="search-input grow min-w-0 text-base sm:text-sm w-0 opacity-0 sm:w-full sm:opacity-100"
         [placeholder]="placeholder()"
         [value]="query()"
         [tabIndex]="tabIndex()"
@@ -88,7 +89,7 @@ import { LucideSearch, LucideX } from '@lucide/angular';
           >⌃K</kbd
         >
       }
-    </div>
+    </label>
   `,
 })
 export class SearchBoxComponent {

@@ -105,7 +105,7 @@ describe('SearchBoxComponent', () => {
   });
 
   it('should apply has-query class to container when query is non-empty', () => {
-    const container = fixture.nativeElement.querySelector('.search-box-container') as HTMLDivElement;
+    const container = fixture.nativeElement.querySelector('.search-box-container') as HTMLElement;
     expect(container.classList.contains('has-query')).toBe(false);
 
     component.query.set('flutter');
