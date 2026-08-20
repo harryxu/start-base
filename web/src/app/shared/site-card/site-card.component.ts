@@ -39,6 +39,7 @@ import { ConfigService } from '../../core/services/config.service';
     >
       <a
         [href]="site().url"
+        tabindex="0"
         target="_blank"
         rel="noopener noreferrer"
         class="site-link flex flex-col items-center justify-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
