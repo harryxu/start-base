@@ -100,8 +100,44 @@
   <ng-template #groupMenu>
     <div
       cdkMenu
-      class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-35 z-50 flex flex-col gap-1"
+      class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-36 z-50 flex flex-col gap-1"
     >
+      <!-- Display mode switcher (Row 1) -->
+      <div class="join w-full grid grid-cols-3 mb-0.5">
+        <button
+          type="button"
+          class="btn btn-xs btn-ghost join-item"
+          [class.btn-active]="effectiveViewMode() === 'full'"
+          (click)="setSiteViewMode('full')"
+          title="Icon and Text"
+          aria-label="Icon and Text"
+        >
+          <svg lucideGalleryThumbnails class="w-3.5 h-3.5"></svg>
+        </button>
+        <button
+          type="button"
+          class="btn btn-xs btn-ghost join-item"
+          [class.btn-active]="effectiveViewMode() === 'icon'"
+          (click)="setSiteViewMode('icon')"
+          title="Icon Only"
+          aria-label="Icon Only"
+        >
+          <svg lucideSquare class="w-3.5 h-3.5"></svg>
+        </button>
+        <button
+          type="button"
+          class="btn btn-xs btn-ghost join-item"
+          [class.btn-active]="effectiveViewMode() === 'text'"
+          (click)="setSiteViewMode('text')"
+          title="Text Only"
+          aria-label="Text Only"
+        >
+          <svg lucideMinus class="w-3.5 h-3.5"></svg>
+        </button>
+      </div>
+
+      <div class="h-px bg-base-200 my-0.5"></div>
+
       <button
         cdkMenuItem
         (click)="addSite.emit({ group_id: group().id })"

@@ -2,12 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GroupContainerComponent } from './group-container.component';
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 import type { Group, Site } from '../../core/models/types';
-
+import { BoardService } from '../../core/services/board.service';
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
 
 describe('GroupContainerComponent', () => {
   let component: GroupContainerComponent;
   let fixture: ComponentFixture<GroupContainerComponent>;
+  const mockBoardService = {
+    updateGroup: vi.fn(),
+  };
 
   const mockGroup: Group = {
     id: 1,
@@ -28,9 +31,14 @@ describe('GroupContainerComponent', () => {
   ];
 
   beforeEach(async () => {
+    mockBoardService.updateGroup.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [GroupContainerComponent],
-      providers: [...COMMON_TEST_PROVIDERS],
+      providers: [
+        ...COMMON_TEST_PROVIDERS,
+        { provide: BoardService, useValue: mockBoardService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(GroupContainerComponent);
@@ -80,5 +88,17 @@ describe('GroupContainerComponent', () => {
     fixture.detectChanges();
 
     expect(document.querySelector('.menu')).toBeFalsy();
+  });
+
+  it('should switch site view mode when clicking mode button in menu', () => {
+    const moreBtn = fixture.nativeElement.querySelector('button[title="Group actions"]');
+    moreBtn.click();
+    fixture.detectChanges();
+
+    const iconOnlyBtn = document.querySelector('button[title="Icon Only"]') as HTMLButtonElement;
+    expect(iconOnlyBtn).toBeTruthy();
+    iconOnlyBtn.click();
+
+    expect(mockBoardService.updateGroup).toHaveBeenCalledWith(1, { site_view_mode: 'icon' });
   });
 });

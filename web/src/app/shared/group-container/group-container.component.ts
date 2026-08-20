@@ -2,8 +2,11 @@ import { Component, input, output, signal, computed, ViewChild, inject } from '@
 import {
   LucideEllipsis,
   LucideFolder,
+  LucideGalleryThumbnails,
+  LucideMinus,
   LucidePencil,
   LucidePlus,
+  LucideSquare,
   LucideTrash2,
 } from '@lucide/angular';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
@@ -15,6 +18,7 @@ import { SiteCardComponent } from '../site-card/site-card.component';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { ConfigService } from '../../core/services/config.service';
 import { GroupCollapseService } from '../../core/services/group-collapse.service';
+import { BoardService } from '../../core/services/board.service';
 import { API_BASE } from '../../core/api/api.service';
 
 @Component({
@@ -33,6 +37,9 @@ import { API_BASE } from '../../core/api/api.service';
     LucidePlus,
     LucidePencil,
     LucideTrash2,
+    LucideGalleryThumbnails,
+    LucideSquare,
+    LucideMinus,
   ],
   styles: [
     `
@@ -61,6 +68,7 @@ import { API_BASE } from '../../core/api/api.service';
         }
       }
 
+      /* Invert item order when opening above so menu items maintain a consistent distance to the cursor/finger whether opening upwards or downwards */
       ::ng-deep .cdk-overlay-pane.menu-opens-above .menu {
         flex-direction: column-reverse;
       }
@@ -70,6 +78,7 @@ import { API_BASE } from '../../core/api/api.service';
 })
 export class GroupContainerComponent {
   configService = inject(ConfigService);
+  private boardService = inject(BoardService);
 
   /**
    * Preferred positions for the group header menu: opens upward from the trigger.
@@ -141,6 +150,11 @@ export class GroupContainerComponent {
 
   closeMenu(): void {
     this.triggerMenu?.close();
+  }
+
+  setSiteViewMode(mode: SiteViewMode): void {
+    this.boardService.updateGroup(this.group().id, { site_view_mode: mode });
+    this.closeMenu();
   }
 
   iconFailed = signal(false);
