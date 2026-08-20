@@ -1,35 +1,21 @@
 <div
   class="site-group collapse collapse-arrow border rounded-xl shadow-sm overflow-hidden border-base-300/60 transition-all duration-200"
-  [class.app-with-bgimg]="configService.bgUrl()"
-  [class.app-without-bgimg]="!configService.bgUrl()"
-  [class.collapse-open]="!collapsed()"
-  [class.collapse-close]="collapsed()"
-  [class.backdrop-blur-md]="configService.bgUrl()"
-  [class.ring-2]="isExternalDragOver()"
-  [class.ring-primary]="isExternalDragOver()"
-  (dragenter)="onDragEnter($event)"
-  (dragover)="onDragOver($event)"
-  (dragleave)="onDragLeave($event)"
-  (drop)="onDrop($event)"
->
+  [class.app-with-bgimg]="configService.bgUrl()" [class.app-without-bgimg]="!configService.bgUrl()"
+  [class.collapse-open]="!collapsed()" [class.collapse-close]="collapsed()"
+  [class.backdrop-blur-md]="configService.bgUrl()" [class.ring-2]="isExternalDragOver()"
+  [class.ring-primary]="isExternalDragOver()" (dragenter)="onDragEnter($event)" (dragover)="onDragOver($event)"
+  (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
   <!-- Group header -->
   <div
     class="group-header collapse-title flex items-center justify-between min-h-0 py-1.5 pl-9 pr-12 select-none cursor-pointer"
-    [class.bg-base-200]="!configService.bgUrl()"
-    [class.bg-base-200/70]="configService.bgUrl()"
-    [class.backdrop-blur-sm]="configService.bgUrl()"
-    (click)="toggleCollapse()"
-  >
+    [class.bg-base-200]="!configService.bgUrl()" [class.bg-base-200/70]="configService.bgUrl()"
+    [class.backdrop-blur-sm]="configService.bgUrl()" (click)="toggleCollapse()">
     <div class="flex items-center gap-2 flex-1 min-w-0">
       @if (group().icon_url && !iconFailed()) {
-        <img
-          [src]="fullIconUrl()"
-          alt="Group icon"
-          class="w-4 h-4 rounded object-contain shrink-0"
-          (error)="onIconError()"
-        />
+      <img [src]="fullIconUrl()" alt="Group icon" class="w-4 h-4 rounded object-contain shrink-0"
+        (error)="onIconError()" />
       } @else {
-        <svg lucideFolder class="w-3.5 h-3.5 text-base-content/30 shrink-0"></svg>
+      <svg lucideFolder class="w-3.5 h-3.5 text-base-content/30 shrink-0"></svg>
       }
       <span class="text-sm font-semibold text-base-content truncate">
         {{ group().name }}
@@ -38,127 +24,70 @@
 
     <!-- Quick actions button (•••) positioned to the left of collapse-arrow indicator -->
     @if (!configService.isReadOnly()) {
-      <button
-        tabindex="-1"
-        [cdkMenuTriggerFor]="groupMenu"
-        [cdkMenuPosition]="groupMenuPositions"
-        (cdkMenuOpened)="onGroupMenuOpened()"
-        (click)="$event.stopPropagation()"
-        class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
-        title="Group actions"
-      >
-        <svg lucideEllipsis class="w-4 h-4"></svg>
-      </button>
+    <button tabindex="-1" [cdkMenuTriggerFor]="groupMenu" [cdkMenuPosition]="groupMenuPositions"
+      (cdkMenuOpened)="onGroupMenuOpened()" (click)="$event.stopPropagation()"
+      class="btn btn-sm btn-ghost btn-square w-7 h-7 text-base-content/60 hover:text-base-content"
+      title="Group actions">
+      <svg lucideEllipsis class="w-4 h-4"></svg>
+    </button>
     }
   </div>
 
   <!-- Sites grid inside collapse-content -->
-  <div
-    class="group-content collapse-content p-0 rounded-b-xl"
-    [class.bg-base-100]="!configService.bgUrl()"
-    [class.bg-base-100/50]="configService.bgUrl()"
-    [class.backdrop-blur-sm]="configService.bgUrl()"
-  >
-    <div
-      cdkDropList
-      cdkDropListOrientation="mixed"
-      [id]="'group-' + group().id"
-      [cdkDropListData]="sites()"
-      [cdkDropListConnectedTo]="allSiteDropListIds()"
-      (cdkDropListDropped)="siteDropped.emit($event)"
-      class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 px-2 py-3 min-h-20"
-    >
+  <div class="group-content collapse-content p-0 rounded-b-xl" [class.bg-base-100]="!configService.bgUrl()"
+    [class.bg-base-100/50]="configService.bgUrl()" [class.backdrop-blur-sm]="configService.bgUrl()">
+    <div cdkDropList cdkDropListOrientation="mixed" [id]="'group-' + group().id" [cdkDropListData]="sites()"
+      [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="siteDropped.emit($event)"
+      class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 px-2 py-3 min-h-20">
       @for (site of sites(); track site.id) {
-        <div
-          cdkDrag
-          [cdkDragData]="site"
-          [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
-          [cdkDragDisabled]="configService.isReadOnly()"
-          (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
-        >
-          <div
-            *cdkDragPlaceholder
-            class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"
-          ></div>
-          <app-site-card
-            #siteCard
-            [site]="site"
-            [view_mode]="effectiveViewMode()"
-            [isFetching]="isSiteFetching(site.id)"
-            (editSite)="editSite.emit($event)"
-            (deleteSite)="deleteSite.emit($event)"
-          />
-        </div>
+      <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
+        [cdkDragDisabled]="configService.isReadOnly()" (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()">
+        <div *cdkDragPlaceholder
+          class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
+        <app-site-card #siteCard [site]="site" [view_mode]="effectiveViewMode()" [isFetching]="isSiteFetching(site.id)"
+          (editSite)="editSite.emit($event)" (deleteSite)="deleteSite.emit($event)" />
+      </div>
       }
       @if (sites().length === 0) {
-        <p class="text-xs text-base-content/40 self-center px-2">No sites in this group yet.</p>
+      <p class="text-xs text-base-content/40 self-center px-2">No sites in this group yet.</p>
       }
     </div>
   </div>
 
   <!-- CDK Group Menu Template -->
   <ng-template #groupMenu>
-    <div
-      cdkMenu
-      class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-36 z-50 flex flex-col gap-1"
-    >
+    <div cdkMenu
+      class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-36 z-50 flex flex-col gap-1">
       <!-- Display mode switcher (Row 1) -->
       <div class="join w-full grid grid-cols-3 mb-0.5">
-        <button
-          type="button"
-          class="btn btn-xs btn-ghost join-item"
-          [class.btn-active]="effectiveViewMode() === 'full'"
-          (click)="setSiteViewMode('full')"
-          title="Icon and Text"
-          aria-label="Icon and Text"
-        >
+        <button type="button" class="btn btn-xs btn-ghost join-item" [class.btn-active]="effectiveViewMode() === 'full'"
+          (click)="setSiteViewMode('full')" title="Icon and Text" aria-label="Icon and Text">
           <svg lucideGalleryThumbnails class="w-3.5 h-3.5"></svg>
         </button>
-        <button
-          type="button"
-          class="btn btn-xs btn-ghost join-item"
-          [class.btn-active]="effectiveViewMode() === 'icon'"
-          (click)="setSiteViewMode('icon')"
-          title="Icon Only"
-          aria-label="Icon Only"
-        >
+        <button type="button" class="btn btn-xs btn-ghost join-item" [class.btn-active]="effectiveViewMode() === 'icon'"
+          (click)="setSiteViewMode('icon')" title="Icon Only" aria-label="Icon Only">
           <svg lucideSquare class="w-3.5 h-3.5"></svg>
         </button>
-        <button
-          type="button"
-          class="btn btn-xs btn-ghost join-item"
-          [class.btn-active]="effectiveViewMode() === 'text'"
-          (click)="setSiteViewMode('text')"
-          title="Text Only"
-          aria-label="Text Only"
-        >
+        <button type="button" class="btn btn-xs btn-ghost join-item" [class.btn-active]="effectiveViewMode() === 'text'"
+          (click)="setSiteViewMode('text')" title="Text Only" aria-label="Text Only">
           <svg lucideMinus class="w-3.5 h-3.5"></svg>
         </button>
       </div>
 
       <div class="h-px bg-base-200 my-0.5"></div>
 
-      <button
-        cdkMenuItem
-        (click)="addSite.emit({ group_id: group().id })"
-        class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
-      >
+      <button cdkMenuItem (click)="addSite.emit({ group_id: group().id })"
+        class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors">
         <svg lucidePlus class="w-4 h-4"></svg>
         <span>Add Site</span>
       </button>
-      <button
-        cdkMenuItem
-        (click)="editGroup.emit(group())"
-        class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
-      >
+      <button cdkMenuItem (click)="editGroup.emit(group())"
+        class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors">
         <svg lucidePencil class="w-4 h-4"></svg>
         <span>Edit</span>
       </button>
-      <button
-        cdkMenuItem
-        (click)="deleteGroup.emit(group())"
-        class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error outline-none focus:outline-none rounded-lg w-full font-medium transition-colors"
-      >
+      <button cdkMenuItem (click)="deleteGroup.emit(group())"
+        class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error outline-none focus:outline-none rounded-lg w-full font-medium transition-colors">
         <svg lucideTrash2 class="w-4 h-4"></svg>
         <span>Delete</span>
       </button>

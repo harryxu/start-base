@@ -100,6 +100,15 @@ import { ConfigService } from '../../core/services/config.service';
   styles: [
     `
       .site-card {
+        .site-link {
+          outline: none;
+
+          &:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+          }
+        }
+
         &.is-floating {
           border-radius: 8px;
           box-shadow:
