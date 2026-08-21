@@ -140,4 +140,42 @@ describe('SiteCardComponent', () => {
     expect(iconEl).toBeFalsy();
     expect(titleEl).toBeTruthy();
   });
+
+  it('should render 2x1 size layout with horizontal alignment and description', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      col_span: 2,
+      row_span: 1,
+    });
+    fixture.detectChanges();
+
+    expect(component.sizeKey()).toBe('2x1');
+    const linkEl = fixture.nativeElement.querySelector('.site-link');
+    expect(linkEl.classList.contains('flex-col')).toBe(false);
+    expect(fixture.nativeElement.textContent).toContain('Test description');
+  });
+
+  it('should render 1x2 size layout', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      col_span: 1,
+      row_span: 2,
+    });
+    fixture.detectChanges();
+
+    expect(component.sizeKey()).toBe('1x2');
+    expect(fixture.nativeElement.textContent).toContain('Test description');
+  });
+
+  it('should render 2x2 size layout with large card structure', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      col_span: 2,
+      row_span: 2,
+    });
+    fixture.detectChanges();
+
+    expect(component.sizeKey()).toBe('2x2');
+    expect(fixture.nativeElement.textContent).toContain('Test description');
+  });
 });

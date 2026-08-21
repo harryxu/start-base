@@ -39,5 +39,30 @@ describe('SiteFormComponent', () => {
     expect(component).toBeTruthy();
     expect(component.formUrl).toBe('https://example.com');
     expect(component.formTitle).toBe('Example');
+    expect(component.formColSpan).toBe(1);
+    expect(component.formRowSpan).toBe(1);
+  });
+
+  it('should initialize with custom col_span and row_span when editing', () => {
+    const fixture = TestBed.createComponent(SiteFormComponent);
+    const component = fixture.componentInstance;
+
+    const mockSite: Site = {
+      id: 2,
+      url: 'https://example.com',
+      title: 'Large Site',
+      icon_url: null,
+      description: null,
+      sort_order: 0,
+      group_id: null,
+      col_span: 2,
+      row_span: 2,
+    };
+
+    fixture.componentRef.setInput('site', mockSite);
+    fixture.detectChanges();
+
+    expect(component.formColSpan).toBe(2);
+    expect(component.formRowSpan).toBe(2);
   });
 });

@@ -22,7 +22,7 @@ import { ConfigService } from '../../core/services/config.service';
   ],
   template: `
     <div
-      class="site-card min-w-2 relative shrink-0"
+      class="site-card min-w-2 relative shrink-0 h-full"
       [class.is-floating]="!configService.isReadOnly() && isMenuOpen()"
       [class.app-with-bgimg]="configService.bgUrl()"
       [class.app-without-bgimg]="!configService.bgUrl()"
@@ -37,40 +37,159 @@ import { ConfigService } from '../../core/services/config.service';
       [disabled]="configService.isReadOnly()"
       (longPress)="openContextMenu($event)"
     >
-      <a
-        [href]="site().url"
-        tabindex="0"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="site-link flex flex-col items-center justify-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
-        [class.select-none]="!configService.isReadOnly()"
-        [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
-        [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
-        [title]="tooltip()"
-      >
-        @if (view_mode() !== 'text') {
-          <div class="w-12 h-12 flex items-center justify-center">
-            @if (showSkeleton()) {
-              <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
-            } @else if (hasIcon()) {
-              <img
-                [src]="iconUrl()"
-                [alt]="displayTitle()"
-                class="site-icon w-12 object-contain shrink-0"
-                (error)="onIconError()"
-              />
-            } @else {
-              <svg lucideGlobe class="w-12 h-12 text-base-content/60 "></svg>
+      <!-- 1×1 layout (default): vertical icon + title -->
+      @if (sizeKey() === '1x1') {
+        <a
+          [href]="site().url"
+          tabindex="0"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="site-link flex flex-col items-center justify-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
+          [class.select-none]="!configService.isReadOnly()"
+          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
+          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
+          [title]="tooltip()"
+        >
+          @if (view_mode() !== 'text') {
+            <div class="w-12 h-12 flex items-center justify-center">
+              @if (showSkeleton()) {
+                <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
+              } @else if (hasIcon()) {
+                <img
+                  [src]="iconUrl()"
+                  [alt]="displayTitle()"
+                  class="site-icon w-12 object-contain shrink-0"
+                  (error)="onIconError()"
+                />
+              } @else {
+                <svg lucideGlobe class="w-12 h-12 text-base-content/60"></svg>
+              }
+            </div>
+          }
+          @if (view_mode() !== 'icon') {
+            <span
+              class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full line-clamp-2 break-all px-1 text-center leading-tight"
+              >{{ displayTitle() }}</span
+            >
+          }
+        </a>
+      }
+
+      <!-- 2×1 layout: horizontal icon-left + title/desc-right -->
+      @if (sizeKey() === '2x1') {
+        <a
+          [href]="site().url"
+          tabindex="0"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="site-link flex items-center gap-3 rounded-[10px] w-full h-full relative cursor-pointer px-3 py-3 hover:bg-base-200"
+          [class.select-none]="!configService.isReadOnly()"
+          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
+          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
+          [title]="tooltip()"
+        >
+          @if (view_mode() !== 'text') {
+            <div class="w-12 h-12 flex items-center justify-center shrink-0">
+              @if (showSkeleton()) {
+                <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
+              } @else if (hasIcon()) {
+                <img
+                  [src]="iconUrl()"
+                  [alt]="displayTitle()"
+                  class="site-icon w-12 object-contain shrink-0"
+                  (error)="onIconError()"
+                />
+              } @else {
+                <svg lucideGlobe class="w-12 h-12 text-base-content/60"></svg>
+              }
+            </div>
+          }
+          @if (view_mode() !== 'icon') {
+            <div class="flex flex-col gap-0.5 min-w-0">
+              <span class="site-title text-sm text-base-content font-medium truncate">{{ displayTitle() }}</span>
+              @if (site().description) {
+                <span class="text-xs text-base-content/50 line-clamp-2 break-all leading-tight">{{ site().description }}</span>
+              }
+            </div>
+          }
+        </a>
+      }
+
+      <!-- 1×2 layout: vertical with larger icon + title + description -->
+      @if (sizeKey() === '1x2') {
+        <a
+          [href]="site().url"
+          tabindex="0"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="site-link flex flex-col items-center justify-center gap-2 rounded-[10px] w-full h-full text-center relative cursor-pointer px-2 py-4 hover:bg-base-200"
+          [class.select-none]="!configService.isReadOnly()"
+          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
+          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
+          [title]="tooltip()"
+        >
+          @if (view_mode() !== 'text') {
+            <div class="w-14 h-14 flex items-center justify-center">
+              @if (showSkeleton()) {
+                <div class="skeleton w-14 h-14 rounded-[7px] shrink-0"></div>
+              } @else if (hasIcon()) {
+                <img
+                  [src]="iconUrl()"
+                  [alt]="displayTitle()"
+                  class="site-icon w-14 object-contain shrink-0"
+                  (error)="onIconError()"
+                />
+              } @else {
+                <svg lucideGlobe class="w-14 h-14 text-base-content/60"></svg>
+              }
+            </div>
+          }
+          @if (view_mode() !== 'icon') {
+            <span class="site-title text-sm text-base-content font-medium max-w-full line-clamp-2 break-all leading-tight">{{ displayTitle() }}</span>
+            @if (site().description) {
+              <span class="text-xs text-base-content/50 max-w-full line-clamp-3 break-all leading-tight px-1">{{ site().description }}</span>
             }
-          </div>
-        }
-        @if (view_mode() !== 'icon') {
-          <span
-            class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full line-clamp-2 break-all px-1 text-center leading-tight"
-            >{{ displayTitle() }}</span
-          >
-        }
-      </a>
+          }
+        </a>
+      }
+
+      <!-- 2×2 layout: large centered icon + title + description -->
+      @if (sizeKey() === '2x2') {
+        <a
+          [href]="site().url"
+          tabindex="0"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="site-link flex flex-col items-center justify-center gap-3 rounded-[10px] w-full h-full text-center relative cursor-pointer p-4 hover:bg-base-200"
+          [class.select-none]="!configService.isReadOnly()"
+          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
+          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
+          [title]="tooltip()"
+        >
+          @if (view_mode() !== 'text') {
+            <div class="w-16 h-16 flex items-center justify-center">
+              @if (showSkeleton()) {
+                <div class="skeleton w-16 h-16 rounded-[7px] shrink-0"></div>
+              } @else if (hasIcon()) {
+                <img
+                  [src]="iconUrl()"
+                  [alt]="displayTitle()"
+                  class="site-icon w-16 object-contain shrink-0"
+                  (error)="onIconError()"
+                />
+              } @else {
+                <svg lucideGlobe class="w-16 h-16 text-base-content/60"></svg>
+              }
+            </div>
+          }
+          @if (view_mode() !== 'icon') {
+            <span class="site-title text-base text-base-content font-medium max-w-full line-clamp-2 break-all leading-tight">{{ displayTitle() }}</span>
+            @if (site().description) {
+              <span class="text-sm text-base-content/50 max-w-full line-clamp-3 break-all leading-tight">{{ site().description }}</span>
+            }
+          }
+        </a>
+      }
 
       <!-- CDK Context Menu Template -->
       <ng-template #menu>
@@ -149,6 +268,13 @@ export class SiteCardComponent {
   isMenuOpen = signal(false);
 
   private globalMenuService = inject(GlobalMenuService);
+
+  /** Computed size key from site's col_span and row_span. */
+  sizeKey = computed(() => {
+    const col = this.site().col_span ?? 1;
+    const row = this.site().row_span ?? 1;
+    return `${col}x${row}`;
+  });
 
   openContextMenu(event: PointerEvent): void {
     if (this.configService.isReadOnly()) return;

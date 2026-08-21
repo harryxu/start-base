@@ -68,6 +68,10 @@ import { API_BASE } from '../../core/api/api.service';
         }
       }
 
+      .site-grid {
+        grid-auto-flow: dense;
+      }
+
       /* Invert item order when opening above so menu items maintain a consistent distance to the cursor/finger whether opening upwards or downwards */
       ::ng-deep .cdk-overlay-pane.menu-opens-above .menu {
         flex-direction: column-reverse;

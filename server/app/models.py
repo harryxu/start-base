@@ -44,6 +44,8 @@ class Site(SQLModel, table=True):
     description: str | None = None
     sort_order: float = Field(default=0.0)
     group_id: int | None = Field(default=None, foreign_key="group.id")
+    col_span: int = Field(default=1)
+    row_span: int = Field(default=1)
 
 
 class SystemConfig(SQLModel, table=True):
@@ -127,6 +129,8 @@ class SiteCreate(SQLModel):
     description: str | None = None
     sort_order: float = 0.0
     group_id: int | None = None
+    col_span: int = 1
+    row_span: int = 1
 
 
 class SiteUpdate(SQLModel):
@@ -136,6 +140,8 @@ class SiteUpdate(SQLModel):
     description: str | None = None
     sort_order: float | None = None
     group_id: int | None = None
+    col_span: int | None = None
+    row_span: int | None = None
 
 
 class SiteRead(SQLModel):
@@ -146,6 +152,8 @@ class SiteRead(SQLModel):
     description: str | None
     sort_order: float
     group_id: int | None
+    col_span: int
+    row_span: int
 
 
 class GroupWithSites(GroupRead):
