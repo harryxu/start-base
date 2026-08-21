@@ -49,6 +49,7 @@ export class SettingsModalComponent {
   formTitle = this.configService.pageTitle();
   formAccessMode = signal<string>(this.configService.accessMode());
   formSiteViewMode = signal<SiteViewMode>(this.configService.siteViewMode());
+  formSiteBorder = signal<boolean>(this.configService.siteBorder());
   formUsername = this.authService.currentUser()?.username || '';
   formPassword = '';
 
@@ -90,6 +91,10 @@ export class SettingsModalComponent {
 
       if (this.formSiteViewMode() !== this.configService.siteViewMode()) {
         updates['site_view_mode'] = this.formSiteViewMode();
+      }
+
+      if (this.formSiteBorder() !== this.configService.siteBorder()) {
+        updates['site-border'] = this.formSiteBorder() ? '1' : '0';
       }
 
       if (this.selectedFile) {

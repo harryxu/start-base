@@ -178,4 +178,15 @@ describe('SiteCardComponent', () => {
     expect(component.sizeKey()).toBe('2x2');
     expect(fixture.nativeElement.textContent).toContain('Test description');
   });
+
+  it('should apply has-border class when siteBorder config is enabled', () => {
+    component.configService.siteBorder.set(false);
+    fixture.detectChanges();
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('has-border')).toBe(false);
+
+    component.configService.siteBorder.set(true);
+    fixture.detectChanges();
+    expect(cardEl.classList.contains('has-border')).toBe(true);
+  });
 });

@@ -23,6 +23,7 @@ import { ConfigService } from '../../core/services/config.service';
   template: `
     <div
       class="site-card min-w-2 relative shrink-0 h-full"
+      [class.has-border]="configService.siteBorder()"
       [class.is-floating]="!configService.isReadOnly() && isMenuOpen()"
       [class.app-with-bgimg]="configService.bgUrl()"
       [class.app-without-bgimg]="!configService.bgUrl()"
@@ -226,6 +227,12 @@ import { ConfigService } from '../../core/services/config.service';
           &:focus-visible {
             outline: 2px solid var(--color-primary);
             outline-offset: 2px;
+          }
+        }
+
+        &.has-border {
+          .site-link {
+            border: 1px solid var(--color-base-300);
           }
         }
 
