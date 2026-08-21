@@ -23,6 +23,7 @@ import { ConfigService } from '../../core/services/config.service';
   template: `
     <div
       class="site-card min-w-2 relative shrink-0 h-full"
+      [class]="sizeClass()"
       [class.has-border]="configService.siteBorder()"
       [class.is-floating]="!configService.isReadOnly() && isMenuOpen()"
       [class.app-with-bgimg]="configService.bgUrl()"
@@ -38,159 +39,47 @@ import { ConfigService } from '../../core/services/config.service';
       [disabled]="configService.isReadOnly()"
       (longPress)="openContextMenu($event)"
     >
-      <!-- 1×1 layout (default): vertical icon + title -->
-      @if (sizeKey() === '1x1') {
-        <a
-          [href]="site().url"
-          tabindex="0"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="site-link flex flex-col items-center justify-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
-          [class.select-none]="!configService.isReadOnly()"
-          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
-          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
-          [title]="tooltip()"
-        >
-          @if (view_mode() !== 'text') {
-            <div class="icon-1x1 w-12 h-12 flex items-center justify-center">
-              @if (showSkeleton()) {
-                <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
-              } @else if (hasIcon()) {
-                <img
-                  [src]="iconUrl()"
-                  [alt]="displayTitle()"
-                  class="site-icon w-12 object-contain shrink-0"
-                  (error)="onIconError()"
-                />
-              } @else {
-                <svg lucideGlobe class="w-12 h-12 text-base-content/60"></svg>
-              }
-            </div>
-          }
-          @if (view_mode() !== 'icon') {
-            <span
-              class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full line-clamp-2 break-all px-1 text-center leading-tight"
-              >{{ displayTitle() }}</span
-            >
-          }
-        </a>
-      }
-
-      <!-- 2×1 layout: horizontal icon-left + title/desc-right -->
-      @if (sizeKey() === '2x1') {
-        <a
-          [href]="site().url"
-          tabindex="0"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="site-link flex items-center gap-3 rounded-[10px] w-full h-full relative cursor-pointer px-3 py-3 hover:bg-base-200"
-          [class.select-none]="!configService.isReadOnly()"
-          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
-          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
-          [title]="tooltip()"
-        >
-          @if (view_mode() !== 'text') {
-            <div class="w-12 h-12 flex items-center justify-center shrink-0">
-              @if (showSkeleton()) {
-                <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
-              } @else if (hasIcon()) {
-                <img
-                  [src]="iconUrl()"
-                  [alt]="displayTitle()"
-                  class="site-icon w-12 object-contain shrink-0"
-                  (error)="onIconError()"
-                />
-              } @else {
-                <svg lucideGlobe class="w-12 h-12 text-base-content/60"></svg>
-              }
-            </div>
-          }
-          @if (view_mode() !== 'icon') {
-            <div class="flex flex-col gap-0.5 min-w-0">
-              <span class="site-title text-sm text-base-content font-medium truncate">{{ displayTitle() }}</span>
-              @if (site().description) {
-                <span class="text-xs text-base-content/50 line-clamp-2 break-all leading-tight">{{ site().description }}</span>
-              }
-            </div>
-          }
-        </a>
-      }
-
-      <!-- 1×2 layout: vertical with larger icon + title + description -->
-      @if (sizeKey() === '1x2') {
-        <a
-          [href]="site().url"
-          tabindex="0"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="site-link flex flex-col items-center justify-center gap-2 rounded-[10px] w-full h-full text-center relative cursor-pointer px-2 py-4 hover:bg-base-200"
-          [class.select-none]="!configService.isReadOnly()"
-          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
-          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
-          [title]="tooltip()"
-        >
-          @if (view_mode() !== 'text') {
-            <div class="w-14 h-14 flex items-center justify-center">
-              @if (showSkeleton()) {
-                <div class="skeleton w-14 h-14 rounded-[7px] shrink-0"></div>
-              } @else if (hasIcon()) {
-                <img
-                  [src]="iconUrl()"
-                  [alt]="displayTitle()"
-                  class="site-icon w-14 object-contain shrink-0"
-                  (error)="onIconError()"
-                />
-              } @else {
-                <svg lucideGlobe class="w-14 h-14 text-base-content/60"></svg>
-              }
-            </div>
-          }
-          @if (view_mode() !== 'icon') {
-            <span class="site-title text-sm text-base-content font-medium max-w-full line-clamp-2 break-all leading-tight">{{ displayTitle() }}</span>
-            @if (site().description) {
-              <span class="text-xs text-base-content/50 max-w-full line-clamp-3 break-all leading-tight px-1">{{ site().description }}</span>
+      <a
+        [href]="site().url"
+        tabindex="0"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="site-link flex rounded-[10px] w-full relative cursor-pointer hover:bg-base-200"
+        [class.select-none]="!configService.isReadOnly()"
+        [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
+        [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
+        [title]="tooltip()"
+      >
+        @if (view_mode() !== 'text') {
+          <div class="icon-wrapper flex items-center justify-center shrink-0">
+            @if (showSkeleton()) {
+              <div class="skeleton w-full h-full rounded-[7px] shrink-0"></div>
+            } @else if (hasIcon()) {
+              <img
+                [src]="iconUrl()"
+                [alt]="displayTitle()"
+                class="site-icon w-full h-full object-contain shrink-0"
+                (error)="onIconError()"
+              />
+            } @else {
+              <svg lucideGlobe class="w-full h-full text-base-content/60"></svg>
             }
-          }
-        </a>
-      }
+          </div>
+        }
 
-      <!-- 2×2 layout: large centered icon + title + description -->
-      @if (sizeKey() === '2x2') {
-        <a
-          [href]="site().url"
-          tabindex="0"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="site-link flex flex-col items-center justify-center gap-3 rounded-[10px] w-full h-full text-center relative cursor-pointer p-4 hover:bg-base-200"
-          [class.select-none]="!configService.isReadOnly()"
-          [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
-          [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
-          [title]="tooltip()"
-        >
-          @if (view_mode() !== 'text') {
-            <div class="w-16 h-16 flex items-center justify-center">
-              @if (showSkeleton()) {
-                <div class="skeleton w-16 h-16 rounded-[7px] shrink-0"></div>
-              } @else if (hasIcon()) {
-                <img
-                  [src]="iconUrl()"
-                  [alt]="displayTitle()"
-                  class="site-icon w-16 object-contain shrink-0"
-                  (error)="onIconError()"
-                />
-              } @else {
-                <svg lucideGlobe class="w-16 h-16 text-base-content/60"></svg>
-              }
-            </div>
-          }
-          @if (view_mode() !== 'icon') {
-            <span class="site-title text-base text-base-content font-medium max-w-full line-clamp-2 break-all leading-tight">{{ displayTitle() }}</span>
-            @if (site().description) {
-              <span class="text-sm text-base-content/50 max-w-full line-clamp-3 break-all leading-tight">{{ site().description }}</span>
+        @if (view_mode() !== 'icon') {
+          <div class="site-text flex flex-col min-w-0">
+            <span class="site-title text-base-content leading-tight">
+              {{ displayTitle() }}
+            </span>
+            @if (showDescription()) {
+              <span class="site-description text-base-content/50 leading-tight">
+                {{ site().description }}
+              </span>
             }
-          }
-        </a>
-      }
+          </div>
+        }
+      </a>
 
       <!-- CDK Context Menu Template -->
       <ng-template #menu>
@@ -230,24 +119,19 @@ import { ConfigService } from '../../core/services/config.service';
           }
         }
 
+        /* Border mode */
         &.has-border {
           .site-link {
             border: 1px solid var(--color-neutral-content);
           }
 
-          .icon-1x1 {
+          &.size_1_1 .icon-wrapper {
             width: 2.5rem;
             height: 2.5rem;
-
-            .site-icon,
-            .skeleton,
-            svg {
-              width: 2.5rem;
-              height: 2.5rem;
-            }
           }
         }
 
+        /* Floating elevation when context menu is open */
         &.is-floating {
           border-radius: 8px;
           box-shadow:
@@ -259,6 +143,7 @@ import { ConfigService } from '../../core/services/config.service';
           }
         }
 
+        /* Wallpaper text shadow for ungrouped cards */
         &.app-with-bgimg.ungrouped {
           .site-link {
             .site-title {
@@ -267,6 +152,181 @@ import { ConfigService } from '../../core/services/config.service';
                 1px 1px 5px color-mix(in oklab, var(--color-base-100) 50%, transparent),
                 0 0 10px color-mix(in oklab, var(--color-base-100) 90%, transparent);
             }
+          }
+        }
+
+        /* ==== Size-specific Styles ==== */
+
+        /* 1×1: Vertical icon + title */
+        &.size_1_1 {
+          .site-link {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.625rem;
+            text-align: center;
+            padding: 0.75rem 0;
+          }
+
+          .icon-wrapper {
+            width: 3rem;
+            height: 3rem;
+          }
+
+          .site-text {
+            align-items: center;
+            text-align: center;
+            max-width: 100%;
+            padding: 0 0.25rem;
+          }
+
+          .site-title {
+            font-size: 11px;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            word-break: break-all;
+            text-align: center;
+
+            @media (min-width: 640px) {
+              font-size: 0.75rem;
+            }
+            @media (min-width: 1024px) {
+              font-size: 0.875rem;
+            }
+          }
+        }
+
+        /* 2×1: Horizontal icon-left + title/desc-right */
+        &.size_2_1 {
+          .site-link {
+            flex-direction: row;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            height: 100%;
+          }
+
+          .icon-wrapper {
+            width: 3rem;
+            height: 3rem;
+          }
+
+          .site-text {
+            gap: 0.125rem;
+            text-align: left;
+          }
+
+          .site-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .site-description {
+            font-size: 0.75rem;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            word-break: break-all;
+          }
+        }
+
+        /* 1×2: Vertical with larger icon + title + description */
+        &.size_1_2 {
+          .site-link {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-align: center;
+            padding: 1rem 0.5rem;
+            height: 100%;
+          }
+
+          .icon-wrapper {
+            width: 3.5rem;
+            height: 3.5rem;
+          }
+
+          .site-text {
+            align-items: center;
+            text-align: center;
+            max-width: 100%;
+            gap: 0.25rem;
+            padding: 0 0.25rem;
+          }
+
+          .site-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            max-width: 100%;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            word-break: break-all;
+          }
+
+          .site-description {
+            font-size: 0.75rem;
+            max-width: 100%;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            word-break: break-all;
+          }
+        }
+
+        /* 2×2: Large centered icon + title + description */
+        &.size_2_2 {
+          .site-link {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-align: center;
+            padding: 1rem;
+            height: 100%;
+          }
+
+          .icon-wrapper {
+            width: 4rem;
+            height: 4rem;
+          }
+
+          .site-text {
+            align-items: center;
+            text-align: center;
+            max-width: 100%;
+            gap: 0.375rem;
+            padding: 0 0.5rem;
+          }
+
+          .site-title {
+            font-size: 1rem;
+            font-weight: 500;
+            max-width: 100%;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            word-break: break-all;
+          }
+
+          .site-description {
+            font-size: 0.875rem;
+            max-width: 100%;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            word-break: break-all;
           }
         }
       }
@@ -288,11 +348,14 @@ export class SiteCardComponent {
 
   private globalMenuService = inject(GlobalMenuService);
 
-  /** Computed size key from site's col_span and row_span. */
-  sizeKey = computed(() => {
-    const col = this.site().col_span ?? 1;
-    const row = this.site().row_span ?? 1;
-    return `${col}x${row}`;
+  /** CSS modifier class added to the root element (e.g. 'size_1_1', 'size_2_1'). */
+  sizeClass = computed(() => `size_${this.site().col_span || 1}_${this.site().row_span || 1}`);
+
+  /** Key identifying the card dimensions ('1x1', '2x1', etc.). */
+  sizeKey = computed(() => `${this.site().col_span || 1}x${this.site().row_span || 1}`);
+
+  showDescription = computed(() => {
+    return this.sizeKey() !== '1x1' && !!this.site().description?.trim();
   });
 
   openContextMenu(event: PointerEvent): void {

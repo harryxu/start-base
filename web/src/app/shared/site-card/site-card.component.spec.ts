@@ -150,8 +150,9 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
 
     expect(component.sizeKey()).toBe('2x1');
-    const linkEl = fixture.nativeElement.querySelector('.site-link');
-    expect(linkEl.classList.contains('flex-col')).toBe(false);
+    expect(component.sizeClass()).toBe('size_2_1');
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('size_2_1')).toBe(true);
     expect(fixture.nativeElement.textContent).toContain('Test description');
   });
 
@@ -164,6 +165,9 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
 
     expect(component.sizeKey()).toBe('1x2');
+    expect(component.sizeClass()).toBe('size_1_2');
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('size_1_2')).toBe(true);
     expect(fixture.nativeElement.textContent).toContain('Test description');
   });
 
@@ -176,6 +180,9 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
 
     expect(component.sizeKey()).toBe('2x2');
+    expect(component.sizeClass()).toBe('size_2_2');
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('size_2_2')).toBe(true);
     expect(fixture.nativeElement.textContent).toContain('Test description');
   });
 
