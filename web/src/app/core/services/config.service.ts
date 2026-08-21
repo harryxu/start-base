@@ -91,7 +91,7 @@ export class ConfigService {
         this.siteViewMode.set('full');
       }
 
-      const borderVal = config['site-border'] ?? config['site_border'];
+      const borderVal = config['site_border'];
       if (borderVal !== undefined) {
         this.siteBorder.set(borderVal === '1' || borderVal === 1 || borderVal === true);
       } else {
@@ -136,7 +136,7 @@ export class ConfigService {
       if (res['site_view_mode']) {
         this.siteViewMode.set(res['site_view_mode'] as SiteViewMode);
       }
-      const borderVal = res['site-border'] ?? res['site_border'];
+      const borderVal = res['site_border'];
       if (borderVal !== undefined) {
         this.siteBorder.set(borderVal === '1' || borderVal === 1 || borderVal === true);
       }

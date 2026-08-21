@@ -53,6 +53,10 @@ import { ConfigService } from '../../core/services/config.service';
     `
       .site-grid {
         grid-auto-flow: dense;
+
+        &.has-border {
+          gap: 0.5rem;
+        }
       }
     `,
   ],

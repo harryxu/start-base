@@ -38,7 +38,8 @@
     [class.bg-base-100/50]="configService.bgUrl()" [class.backdrop-blur-sm]="configService.bgUrl()">
     <div cdkDropList cdkDropListOrientation="mixed" [id]="'group-' + group().id" [cdkDropListData]="sites()"
       [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="siteDropped.emit($event)"
-      class="site-grid grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 px-2 py-3 min-h-20">
+      class="site-grid grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 px-2 py-3 min-h-20"
+      [class.has-border]="configService.siteBorder()">
       @for (site of sites(); track site.id) {
       <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
         [cdkDragDisabled]="configService.isReadOnly()" (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"

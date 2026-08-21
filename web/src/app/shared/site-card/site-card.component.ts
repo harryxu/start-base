@@ -52,7 +52,7 @@ import { ConfigService } from '../../core/services/config.service';
           [title]="tooltip()"
         >
           @if (view_mode() !== 'text') {
-            <div class="w-12 h-12 flex items-center justify-center">
+            <div class="icon-1x1 w-12 h-12 flex items-center justify-center">
               @if (showSkeleton()) {
                 <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
               } @else if (hasIcon()) {
@@ -232,7 +232,19 @@ import { ConfigService } from '../../core/services/config.service';
 
         &.has-border {
           .site-link {
-            border: 1px solid var(--color-base-300);
+            border: 1px solid var(--color-neutral-content);
+          }
+
+          .icon-1x1 {
+            width: 2.5rem;
+            height: 2.5rem;
+
+            .site-icon,
+            .skeleton,
+            svg {
+              width: 2.5rem;
+              height: 2.5rem;
+            }
           }
         }
 

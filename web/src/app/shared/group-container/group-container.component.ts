@@ -70,6 +70,10 @@ import { API_BASE } from '../../core/api/api.service';
 
       .site-grid {
         grid-auto-flow: dense;
+
+        &.has-border {
+          gap: 0.5rem;
+        }
       }
 
       /* Invert item order when opening above so menu items maintain a consistent distance to the cursor/finger whether opening upwards or downwards */

@@ -94,7 +94,7 @@ export class SettingsModalComponent {
       }
 
       if (this.formSiteBorder() !== this.configService.siteBorder()) {
-        updates['site-border'] = this.formSiteBorder() ? '1' : '0';
+        updates['site_border'] = this.formSiteBorder() ? '1' : '0';
       }
 
       if (this.selectedFile) {

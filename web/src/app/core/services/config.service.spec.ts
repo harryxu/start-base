@@ -67,19 +67,19 @@ describe('ConfigService', () => {
     );
   });
 
-  it('should parse site-border configuration when present and default to false', async () => {
+  it('should parse site_border configuration when present and default to false', async () => {
     expect(service.siteBorder()).toBe(false);
 
     const loadPromise = service.loadConfig(true);
     const req = httpMock.expectOne(`${API_BASE}/api/config/`);
-    req.flush({ 'site-border': '1' });
+    req.flush({ site_border: '1' });
     await loadPromise;
 
     expect(service.siteBorder()).toBe(true);
 
-    const updatePromise = service.updateConfig({ 'site-border': '0' });
+    const updatePromise = service.updateConfig({ site_border: '0' });
     const patchReq = httpMock.expectOne(`${API_BASE}/api/config/`);
-    patchReq.flush({ 'site-border': '0' });
+    patchReq.flush({ site_border: '0' });
     await updatePromise;
 
     expect(service.siteBorder()).toBe(false);
