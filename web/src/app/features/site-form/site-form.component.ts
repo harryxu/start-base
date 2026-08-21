@@ -170,14 +170,14 @@ import { BoardService } from '../../core/services/board.service';
               <span class="text-xs text-base-content/60 pl-1">Card Size</span>
               <div class="join w-full grid grid-cols-4">
                 @for (size of siteSizes; track size.key) {
-                  <button
-                    type="button"
-                    class="btn btn-sm join-item"
-                    [class.btn-active]="formColSpan === size.col && formRowSpan === size.row"
-                    (click)="formColSpan = size.col; formRowSpan = size.row"
-                  >
-                    {{ size.label }}
-                  </button>
+                  <input
+                    type="radio"
+                    name="card-size"
+                    class="join-item btn btn-sm"
+                    [attr.aria-label]="size.label"
+                    [checked]="formColSpan === size.col && formRowSpan === size.row"
+                    (change)="formColSpan = size.col; formRowSpan = size.row"
+                  />
                 }
               </div>
             </div>
