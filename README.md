@@ -4,6 +4,8 @@ Lightweight dashboard to quickly access your websites.
 
 ![Screen 1](./assets/screen1.png)
 
+Screencast demo: https://www.youtube.com/watch?v=5lDdiElmCYU
+
 ## Features
 
 - ✨ **Intuitive UI** — Manage all settings and sites directly in the UI without editing configuration files
