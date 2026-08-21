@@ -23,7 +23,7 @@
   /* Border mode */
   &.has-border {
     .site-link {
-      border: 1px solid var(--color-neutral-content);
+      border: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent);
     }
 
     &.size_1_1 .icon-wrapper {
