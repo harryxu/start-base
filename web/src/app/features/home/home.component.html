@@ -85,7 +85,7 @@
     <div class="fixed bottom-6 right-6 z-40">
       <button
         type="button"
-        (click)="configService.toggleEditMode()"
+        (click)="toggleEditMode()"
         class="btn btn-circle shadow-xl transition-all duration-200 flex items-center justify-center cursor-pointer"
         [class.btn-primary]="configService.editMode()"
         [class.text-primary-content]="configService.editMode()"

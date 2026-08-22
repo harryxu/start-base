@@ -7,6 +7,7 @@ import { HeaderComponent } from '../../shared/header/header.component';
 import { ConfigService } from '../../core/services/config.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BoardService } from '../../core/services/board.service';
+import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { SitesBoardComponent } from '../sites-board/sites-board.component';
 import { SiteFormComponent } from '../site-form/site-form.component';
 import { GroupFormComponent } from '../group-form/group-form.component';
@@ -34,6 +35,12 @@ export class HomeComponent {
   configService = inject(ConfigService);
   authService = inject(AuthService);
   boardService = inject(BoardService);
+  globalMenuService = inject(GlobalMenuService);
+
+  toggleEditMode(): void {
+    this.globalMenuService.closeAll();
+    this.configService.toggleEditMode();
+  }
 
   // ---- UI state ----
 

@@ -42,35 +42,42 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
       [class.is-edit-mode]="configService.editMode()"
       [cdkContextMenuTriggerFor]="canUseContextMenu() ? menu : null"
       [cdkContextMenuDisabled]="!canUseContextMenu()"
-      #trigger="cdkContextMenuTriggerFor"
+      #triggerContextMenu="cdkContextMenuTriggerFor"
       (cdkContextMenuOpened)="onContextMenuOpened()"
       (cdkContextMenuClosed)="onContextMenuClosed()"
       appLongPress
       [disabled]="!canUseContextMenu()"
       (longPress)="openContextMenu($event)"
     >
-      <!-- Edit Mode Overlay Action Controls -->
+      <!-- Edit Mode Unified Glass Capsule Toolbar -->
       @if (configService.editMode() && !configService.isReadOnly()) {
-        <div class="site-card-actions absolute top-1 left-1 right-1 z-30 flex items-center justify-between pointer-events-auto">
-          <!-- Top-left drag handle -->
+        <div
+          class="site-card-actions absolute top-1 right-1 z-30 flex items-center rounded-full bg-base-100/75 hover:bg-base-100/95 text-base-content/60 hover:text-base-content backdrop-blur-md shadow-xs transition-all duration-150 p-0.5 pointer-events-auto"
+        >
+          <!-- Drag Handle -->
           <div
             cdkDragHandle
-            class="drag-handle p-1 rounded-md bg-base-100/90 text-base-content/70 hover:text-base-content shadow-xs border border-base-300/80 cursor-grab active:cursor-grabbing hover:bg-base-200 transition-all flex items-center justify-center backdrop-blur-xs"
+            class="drag-handle p-0.5 rounded-full hover:bg-base-content/10 cursor-grab active:cursor-grabbing transition-colors flex items-center justify-center"
             title="Drag to reorder"
           >
-            <svg lucideGripVertical class="w-3.5 h-3.5"></svg>
+            <svg lucideGripVertical class="w-3 h-3"></svg>
           </div>
 
-          <!-- Top-right action menu button -->
+          <!-- Subtle Divider -->
+          <div class="w-px h-2.5 bg-base-content/15 mx-0.5"></div>
+
+          <!-- Action Menu Trigger Button -->
           <button
             type="button"
             [cdkMenuTriggerFor]="menu"
+            #triggerBtnMenu="cdkMenuTriggerFor"
             (cdkMenuOpened)="onContextMenuOpened()"
+            (cdkMenuClosed)="onContextMenuClosed()"
             (click)="$event.stopPropagation()"
-            class="action-menu-btn p-1 rounded-md bg-base-100/90 text-base-content/70 hover:text-base-content shadow-xs border border-base-300/80 hover:bg-base-200 transition-all cursor-pointer flex items-center justify-center backdrop-blur-xs"
+            class="action-menu-btn p-0.5 rounded-full hover:bg-base-content/10 cursor-pointer transition-colors flex items-center justify-center"
             title="Card actions"
           >
-            <svg lucideEllipsis class="w-3.5 h-3.5"></svg>
+            <svg lucideEllipsis class="w-3 h-3"></svg>
           </button>
         </div>
       }
@@ -97,7 +104,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
         >
           <button
             cdkMenuItem
-            (click)="editSite.emit(site())"
+            (click)="onEditSite()"
             class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
           >
             <svg lucidePencil class="w-4 h-4"></svg>
@@ -105,7 +112,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
           </button>
           <button
             cdkMenuItem
-            (click)="deleteSite.emit(site())"
+            (click)="onDeleteSite()"
             class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error outline-none focus:outline-none rounded-lg w-full font-medium transition-colors"
           >
             <svg lucideTrash2 class="w-4 h-4"></svg>
@@ -122,6 +129,16 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
     }
 
     .site-card {
+      &.is-edit-mode {
+        border-radius: 10px;
+        outline: 1px dashed color-mix(in oklab, var(--color-base-content) 12%, transparent);
+        outline-offset: -1px;
+
+        &:hover {
+          outline-color: color-mix(in oklab, var(--color-primary) 50%, transparent);
+        }
+      }
+
       /* Floating elevation when context menu is open */
       &.is-floating {
         border-radius: 8px;
@@ -156,7 +173,11 @@ export class SiteCardComponent {
   editSite = output<Site>();
   deleteSite = output<Site>();
 
-  @ViewChild(CdkContextMenuTrigger) triggerMenu?: CdkContextMenuTrigger;
+  @ViewChild('triggerContextMenu', { read: CdkContextMenuTrigger })
+  triggerContextMenu?: CdkContextMenuTrigger;
+
+  @ViewChild('triggerBtnMenu', { read: CdkMenuTrigger })
+  triggerBtnMenu?: CdkMenuTrigger;
 
   isMenuOpen = signal(false);
 
@@ -171,7 +192,7 @@ export class SiteCardComponent {
   openContextMenu(event: PointerEvent): void {
     if (!this.canUseContextMenu()) return;
     this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
-    this.triggerMenu?.open({ x: event.clientX, y: event.clientY });
+    this.triggerContextMenu?.open({ x: event.clientX, y: event.clientY });
   }
 
   onContextMenuOpened(): void {
@@ -185,6 +206,18 @@ export class SiteCardComponent {
   }
 
   closeMenu(): void {
-    this.triggerMenu?.close();
+    this.triggerContextMenu?.close();
+    this.triggerBtnMenu?.close();
+    this.isMenuOpen.set(false);
+  }
+
+  onEditSite(): void {
+    this.closeMenu();
+    this.editSite.emit(this.site());
+  }
+
+  onDeleteSite(): void {
+    this.closeMenu();
+    this.deleteSite.emit(this.site());
   }
 }
