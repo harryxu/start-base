@@ -209,4 +209,32 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
     expect(cardEl.classList.contains('has-border')).toBe(false);
   });
+
+  it('should render app-iframe-plugin when site_type is iframe', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'iframe',
+      url: 'https://example.com/widget.html',
+    });
+    fixture.detectChanges();
+
+    const iframePluginEl = fixture.nativeElement.querySelector('app-iframe-plugin');
+    const siteLinkEl = fixture.nativeElement.querySelector('.site-link');
+    expect(iframePluginEl).toBeTruthy();
+    expect(siteLinkEl).toBeFalsy();
+  });
+
+  it('should render app-webcomponent-plugin when site_type is webcomponent', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'webcomponent',
+      url: 'https://example.com/plugin.js',
+    });
+    fixture.detectChanges();
+
+    const wcPluginEl = fixture.nativeElement.querySelector('app-webcomponent-plugin');
+    const siteLinkEl = fixture.nativeElement.querySelector('.site-link');
+    expect(wcPluginEl).toBeTruthy();
+    expect(siteLinkEl).toBeFalsy();
+  });
 });

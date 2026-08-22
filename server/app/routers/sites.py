@@ -1,7 +1,8 @@
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlmodel import Session, select
 
-from app.database import engine, get_session
+from app import database
+from app.database import get_session
 from app.models import Site, SiteCreate, SiteRead, SiteReorderItem, SiteUpdate
 from app.services.metadata import download_icon, fetch_site_metadata
 
@@ -12,7 +13,7 @@ async def _update_site_metadata(site_id: int, url: str) -> None:
     """Background task: fetch missing metadata and persist it."""
     metadata = await fetch_site_metadata(url)
 
-    with Session(engine) as session:
+    with Session(database.engine) as session:
         site = session.get(Site, site_id)
         if site:
             if metadata.get("title") and not site.title:
@@ -42,7 +43,7 @@ async def create_site(
     session.commit()
     session.refresh(site)
 
-    if not site.title or not site.icon_url:
+    if site.site_type == "builtin" and (not site.title or not site.icon_url):
         background_tasks.add_task(_update_site_metadata, site.id, site.url)
 
     return site

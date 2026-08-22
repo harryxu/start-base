@@ -2,7 +2,7 @@
 
 Lightweight dashboard to quickly access your websites.
 
-![Screen 1](./assets/screen1.png)
+![Screen 1](./docs/assets/screen1.png)
 
 Screencast demo: https://www.youtube.com/watch?v=5lDdiElmCYU
 
@@ -24,4 +24,4 @@ docker run -p 5600:5600 -v "$(pwd)/data:/app/data" harryxu/startbase:latest
 
 Upload your favorite background image.
 
-![Screen 2](./assets/screen2.png)
+![Screen 2](./docs/assets/screen2.png)

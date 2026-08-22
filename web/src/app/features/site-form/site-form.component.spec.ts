@@ -65,4 +65,32 @@ describe('SiteFormComponent', () => {
     expect(component.formColSpan).toBe(2);
     expect(component.formRowSpan).toBe(2);
   });
+
+  it('should initialize and toggle plugin mode correctly', () => {
+    const fixture = TestBed.createComponent(SiteFormComponent);
+    const component = fixture.componentInstance;
+
+    const mockPluginSite: Site = {
+      id: 3,
+      url: 'https://example.com/plugin.js',
+      title: 'My Plugin',
+      icon_url: null,
+      description: 'Plugin Desc',
+      sort_order: 0,
+      group_id: null,
+      site_type: 'iframe',
+      plugin_params: 'key1=value1\nkey2=value2',
+    };
+
+    fixture.componentRef.setInput('site', mockPluginSite);
+    fixture.detectChanges();
+
+    expect(component.isPluginMode()).toBe(true);
+    expect(component.formPluginType).toBe('iframe');
+    expect(component.formPluginParams).toBe('key1=value1\nkey2=value2');
+
+    // Toggle off
+    component.togglePluginMode(false);
+    expect(component.isPluginMode()).toBe(false);
+  });
 });
