@@ -32,9 +32,15 @@
       border: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent);
     }
 
-    &.size_1_1 .icon-wrapper {
-      width: 2rem;
-      height: 2rem;
+    &.size_1_1 {
+      .site-link {
+        justify-content: center;
+      }
+
+      .icon-wrapper {
+        width: 2rem;
+        height: 2rem;
+      }
     }
   }
 
@@ -70,7 +76,6 @@
   &.size_2_2 {
     .site-link {
       flex-direction: column;
-      justify-content: center;
       text-align: center;
     }
 
@@ -102,6 +107,7 @@
   /* 1×1: Vertical icon + title */
   &.size_1_1 {
     .site-link {
+      justify-content: flex-start;
       gap: 0.625rem;
       padding: 0.75rem 0;
     }
@@ -161,6 +167,7 @@
   /* 1×2: Vertical with larger icon + title + description */
   &.size_1_2 {
     .site-link {
+      justify-content: center;
       gap: 0.5rem;
       padding: 1rem 0.5rem;
     }
@@ -190,6 +197,7 @@
   /* 2×2: Large centered icon + title + description */
   &.size_2_2 {
     .site-link {
+      justify-content: center;
       gap: 0.75rem;
       padding: 1rem;
     }
