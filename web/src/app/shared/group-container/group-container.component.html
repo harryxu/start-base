@@ -38,13 +38,19 @@
     [class.bg-base-100/50]="configService.bgUrl()" [class.backdrop-blur-sm]="configService.bgUrl()">
     <div cdkDropList cdkDropListOrientation="mixed" [id]="'group-' + group().id" [cdkDropListData]="sites()"
       [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="siteDropped.emit($event)"
-      class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 px-2 py-3 min-h-20">
+      class="site-grid grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 px-2 py-3 min-h-20"
+      [class.has-border]="effectiveSiteBorder()">
       @for (site of sites(); track site.id) {
       <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
-        [cdkDragDisabled]="configService.isReadOnly()" (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()">
+        [cdkDragDisabled]="configService.isReadOnly()" (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
+        class="h-full"
+        [style.grid-column]="'span ' + (site.col_span || 1)"
+        [style.grid-row]="'span ' + (site.row_span || 1)">
         <div *cdkDragPlaceholder
-          class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
-        <app-site-card #siteCard [site]="site" [view_mode]="effectiveViewMode()" [isFetching]="isSiteFetching(site.id)"
+          class="rounded-lg border-2 border-dashed border-base-content/10 bg-base-200 h-full"
+          [style.grid-column]="'span ' + (site.col_span || 1)"
+          [style.grid-row]="'span ' + (site.row_span || 1)"></div>
+        <app-site-card #siteCard [site]="site" [view_mode]="effectiveViewMode()" [hasBorder]="effectiveSiteBorder()" [isFetching]="isSiteFetching(site.id)"
           (editSite)="editSite.emit($event)" (deleteSite)="deleteSite.emit($event)" />
       </div>
       }

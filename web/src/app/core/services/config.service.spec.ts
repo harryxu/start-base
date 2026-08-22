@@ -66,4 +66,22 @@ describe('ConfigService', () => {
       'You are currently viewing the Start Base Demo. Data will be reset every 3 hours.',
     );
   });
+
+  it('should parse site_border configuration when present and default to false', async () => {
+    expect(service.siteBorder()).toBe(false);
+
+    const loadPromise = service.loadConfig(true);
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
+    req.flush({ site_border: '1' });
+    await loadPromise;
+
+    expect(service.siteBorder()).toBe(true);
+
+    const updatePromise = service.updateConfig({ site_border: '0' });
+    const patchReq = httpMock.expectOne(`${API_BASE}/api/config/`);
+    patchReq.flush({ site_border: '0' });
+    await updatePromise;
+
+    expect(service.siteBorder()).toBe(false);
+  });
 });

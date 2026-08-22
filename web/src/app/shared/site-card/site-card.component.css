@@ -1,0 +1,226 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.site-card {
+  .site-link {
+    outline: none;
+    align-items: center;
+    height: 100%;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+  }
+
+  .site-title {
+    overflow: hidden;
+  }
+
+  .site-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-all;
+  }
+
+  /* Border mode */
+  &.has-border {
+    .site-link {
+      border: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent);
+    }
+
+    &.size_1_1 {
+      .site-link {
+        justify-content: center;
+      }
+
+      .icon-wrapper {
+        width: 2rem;
+        height: 2rem;
+      }
+    }
+  }
+
+  /* Floating elevation when context menu is open */
+  &.is-floating {
+    border-radius: 8px;
+    box-shadow:
+      0 10px 20px rgba(0, 0, 0, 0.15),
+      0 3px 6px rgba(0, 0, 0, 0.1);
+
+    .site-link:hover {
+      background: none;
+    }
+  }
+
+  /* Wallpaper text shadow for ungrouped cards */
+  &.app-with-bgimg.ungrouped {
+    .site-link {
+      .site-title {
+        text-shadow:
+          -1px -1px 5px color-mix(in oklab, var(--color-base-100) 50%, transparent),
+          1px 1px 5px color-mix(in oklab, var(--color-base-100) 50%, transparent),
+          0 0 10px color-mix(in oklab, var(--color-base-100) 90%, transparent);
+      }
+    }
+  }
+
+  /* ==== Size Groups ==== */
+
+  /* Vertical layout (1×1, 1×2, 2×2) */
+  &.size_1_1,
+  &.size_1_2,
+  &.size_2_2 {
+    .site-link {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .site-text {
+      align-items: center;
+      text-align: center;
+      max-width: 100%;
+    }
+
+    .site-title {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      word-break: break-all;
+    }
+  }
+
+  /* Non-1×1 sizes (2×1, 1×2, 2×2) */
+  &.size_2_1,
+  &.size_1_2,
+  &.size_2_2 {
+    .site-title {
+      font-weight: 500;
+    }
+  }
+
+  /* ==== Size-specific Styles ==== */
+
+  /* 1×1: Vertical icon + title */
+  &.size_1_1 {
+    .site-link {
+      justify-content: flex-start;
+      gap: 0.625rem;
+      padding: 0.75rem 0;
+    }
+
+    .icon-wrapper {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .site-text {
+      padding: 0 0.25rem;
+    }
+
+    .site-title {
+      font-size: 11px;
+      text-align: center;
+
+      @media (min-width: 640px) {
+        font-size: 0.75rem;
+      }
+      @media (min-width: 1024px) {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  /* 2×1: Horizontal icon-left + title/desc-right */
+  &.size_2_1 {
+    .site-link {
+      flex-direction: row;
+      gap: 0.75rem;
+      padding: 0.75rem;
+    }
+
+    .icon-wrapper {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .site-text {
+      gap: 0.125rem;
+      text-align: left;
+    }
+
+    .site-title {
+      font-size: 0.875rem;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .site-description {
+      font-size: 0.75rem;
+      -webkit-line-clamp: 2;
+    }
+  }
+
+  /* 1×2: Vertical with larger icon + title + description */
+  &.size_1_2 {
+    .site-link {
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1rem 0.5rem;
+    }
+
+    .icon-wrapper {
+      width: 3.5rem;
+      height: 3.5rem;
+    }
+
+    .site-text {
+      gap: 0.25rem;
+      padding: 0 0.25rem;
+    }
+
+    .site-title {
+      font-size: 0.875rem;
+      max-width: 100%;
+    }
+
+    .site-description {
+      font-size: 0.75rem;
+      max-width: 100%;
+      -webkit-line-clamp: 3;
+    }
+  }
+
+  /* 2×2: Large centered icon + title + description */
+  &.size_2_2 {
+    .site-link {
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+
+    .icon-wrapper {
+      width: 4rem;
+      height: 4rem;
+    }
+
+    .site-text {
+      gap: 0.375rem;
+      padding: 0 0.5rem;
+    }
+
+    .site-title {
+      font-size: 1rem;
+      max-width: 100%;
+    }
+
+    .site-description {
+      font-size: 0.875rem;
+      max-width: 100%;
+      -webkit-line-clamp: 3;
+    }
+  }
+}

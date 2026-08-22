@@ -11,6 +11,7 @@ def test_get_default_configs(client: TestClient) -> None:
     assert data["page_title"] == "Start Base"
     assert data["theme"] == "emerald"
     assert data["site_view_mode"] == "full"
+    assert data["site_border"] == "0"
 
 
 def test_batch_update_configs(client: TestClient) -> None:

@@ -24,6 +24,7 @@ export class ConfigService {
   bgUrl = signal<string | null>(null);
   accessMode = signal<string>('none_guard');
   siteViewMode = signal<SiteViewMode>('full');
+  siteBorder = signal<boolean>(false);
   isDemo = signal<boolean>(false);
   demoMsg = signal<string>('');
 
@@ -90,6 +91,13 @@ export class ConfigService {
         this.siteViewMode.set('full');
       }
 
+      const borderVal = config['site_border'];
+      if (borderVal !== undefined) {
+        this.siteBorder.set(borderVal === '1' || borderVal === 1 || borderVal === true);
+      } else {
+        this.siteBorder.set(false);
+      }
+
       if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
@@ -127,6 +135,10 @@ export class ConfigService {
       }
       if (res['site_view_mode']) {
         this.siteViewMode.set(res['site_view_mode'] as SiteViewMode);
+      }
+      const borderVal = res['site_border'];
+      if (borderVal !== undefined) {
+        this.siteBorder.set(borderVal === '1' || borderVal === 1 || borderVal === true);
       }
       if (res['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((res['bg_url'] || '').trim() || null);

@@ -49,6 +49,17 @@ import { ConfigService } from '../../core/services/config.service';
     LucideSearch,
   ],
   templateUrl: './sites-board.component.html',
+  styles: [
+    `
+      .site-grid {
+        grid-auto-flow: dense;
+
+        &.has-border {
+          gap: 0.75rem;
+        }
+      }
+    `,
+  ],
 })
 export class SitesBoardComponent {
   configService = inject(ConfigService);

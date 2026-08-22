@@ -62,13 +62,19 @@
     @if (localUngroupedSites().length > 0) {
       <div cdkDropList cdkDropListOrientation="mixed" id="ungrouped-0" [cdkDropListData]="localUngroupedSites()"
         [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="onSiteDrop($event)"
-        class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 min-h-20 p-2 rounded-xl border border-transparent">
+        class="site-grid grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-1 min-h-20 p-2 rounded-xl border border-transparent"
+        [class.has-border]="configService.siteBorder()">
         @for (site of localUngroupedSites(); track site.id) {
         <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
           [cdkDragDisabled]="configService.isReadOnly() || isSearching()"
-          (cdkDragStarted)="closeAllMenus()">
+          (cdkDragStarted)="closeAllMenus()"
+          class="h-full"
+          [style.grid-column]="'span ' + (site.col_span || 1)"
+          [style.grid-row]="'span ' + (site.row_span || 1)">
           <div *cdkDragPlaceholder
-            class="w-18 h-16.5 rounded-lg border-2 border-dashed border-base-content/10 bg-base-200"></div>
+            class="rounded-lg border-2 border-dashed border-base-content/10 bg-base-200 h-full"
+            [style.grid-column]="'span ' + (site.col_span || 1)"
+            [style.grid-row]="'span ' + (site.row_span || 1)"></div>
           <app-site-card [site]="site" [view_mode]="configService.siteViewMode()" [isFetching]="isSiteFetching(site.id)"
             (editSite)="editSite.emit($event)"
             (deleteSite)="deleteSite.emit($event)" />

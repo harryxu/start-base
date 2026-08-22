@@ -28,12 +28,16 @@ def test_create_site(client: TestClient, session: Session) -> None:
         assert data["icon_url"] == "https://example.com/icon.png"
         assert data["description"] == "An example site for testing"
         assert data["sort_order"] == 1.2
+        assert data["col_span"] == 1
+        assert data["row_span"] == 1
         assert "id" in data
 
         # Verify database state directly
         site = session.get(Site, data["id"])
         assert site is not None
         assert site.url == "https://example.com"
+        assert site.col_span == 1
+        assert site.row_span == 1
 
         # Background task should NOT be added
         mock_update.assert_not_called()
@@ -99,6 +103,46 @@ def test_update_site(client: TestClient, session: Session) -> None:
     # Try updating non-existent site
     response = client.patch("/api/sites/9999", json={"title": "Ghost"})
     assert response.status_code == 404
+
+
+def test_create_and_update_site_spans(client: TestClient, session: Session) -> None:
+    """Test creating and updating sites with custom col_span and row_span."""
+    # Create with custom spans
+    response = client.post(
+        "/api/sites/",
+        json={
+            "url": "https://dashboard.example.com",
+            "title": "Custom Spans Site",
+            "icon_url": "https://example.com/icon.png",
+            "col_span": 2,
+            "row_span": 3,
+        },
+    )
+    assert response.status_code == 201
+    data = response.json()
+    assert data["col_span"] == 2
+    assert data["row_span"] == 3
+    site_id = data["id"]
+
+    # Verify db state
+    site = session.get(Site, site_id)
+    assert site is not None
+    assert site.col_span == 2
+    assert site.row_span == 3
+
+    # Update col_span and row_span
+    response = client.patch(
+        f"/api/sites/{site_id}",
+        json={"col_span": 4, "row_span": 1},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["col_span"] == 4
+    assert data["row_span"] == 1
+
+    session.refresh(site)
+    assert site.col_span == 4
+    assert site.row_span == 1
 
 
 def test_delete_site(client: TestClient, session: Session) -> None:

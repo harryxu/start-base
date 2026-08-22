@@ -143,6 +143,21 @@ import { BoardService } from '../../core/services/board.service';
               </select>
               <span>Site View Mode</span>
             </label>
+
+            <!-- Site Border -->
+            <label class="floating-label w-full text-base-content/60">
+              <select
+                id="group-site-border"
+                [(ngModel)]="formSiteBorder"
+                name="siteBorder"
+                class="select select-bordered select-lg w-full text-base-content"
+              >
+                <option value="">Follow Global</option>
+                <option value="1">Show Border</option>
+                <option value="0">Hide Border</option>
+              </select>
+              <span>Site Border</span>
+            </label>
           </div>
 
           <!-- Footer actions -->
@@ -176,6 +191,7 @@ export class GroupFormComponent {
   formName = '';
   formIconUrl = '';
   formSiteViewMode: SiteViewMode | '' = '';
+  formSiteBorder = '';
 
   iconFailed = signal(false);
   selectedIconFile: File | null = null;
@@ -212,10 +228,12 @@ export class GroupFormComponent {
         this.formName = g.name;
         this.formIconUrl = g.icon_url ?? '';
         this.formSiteViewMode = g.site_view_mode ?? '';
+        this.formSiteBorder = g.site_border ?? '';
       } else {
         this.formName = '';
         this.formIconUrl = '';
         this.formSiteViewMode = '';
+        this.formSiteBorder = '';
       }
     });
   }
@@ -274,6 +292,7 @@ export class GroupFormComponent {
       name: trimmedName,
       icon_url: this.formIconUrl.trim() || null,
       site_view_mode: this.formSiteViewMode,
+      site_border: this.formSiteBorder,
     };
 
     const editingGroup = this.group();

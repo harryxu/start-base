@@ -68,6 +68,14 @@ import { API_BASE } from '../../core/api/api.service';
         }
       }
 
+      .site-grid {
+        grid-auto-flow: dense;
+
+        &.has-border {
+          gap: 0.75rem;
+        }
+      }
+
       /* Invert item order when opening above so menu items maintain a consistent distance to the cursor/finger whether opening upwards or downwards */
       ::ng-deep .cdk-overlay-pane.menu-opens-above .menu {
         flex-direction: column-reverse;
@@ -126,6 +134,17 @@ export class GroupContainerComponent {
       return groupMode;
     }
     return this.view_mode();
+  });
+
+  effectiveSiteBorder = computed<boolean>(() => {
+    const border = this.group().site_border?.trim();
+    if (border === '1') {
+      return true;
+    }
+    if (border === '0') {
+      return false;
+    }
+    return this.configService.siteBorder();
   });
 
   addSite = output<Partial<Site>>();

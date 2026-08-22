@@ -15,6 +15,7 @@ export const mockConfigService = {
   fullBgUrl: computed(() => ''),
   accessMode: mockAccessMode,
   siteViewMode: signal<SiteViewMode>('full'),
+  siteBorder: signal<boolean>(false),
   isReadOnly: computed(() => mockAccessMode() !== 'none_guard' && mockCurrentUser() === null),
   loadConfig: async () => {},
 };

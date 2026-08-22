@@ -20,126 +20,23 @@ import { ConfigService } from '../../core/services/config.service';
     LucidePencil,
     LucideTrash2,
   ],
-  template: `
-    <div
-      class="site-card min-w-2 relative shrink-0"
-      [class.is-floating]="!configService.isReadOnly() && isMenuOpen()"
-      [class.app-with-bgimg]="configService.bgUrl()"
-      [class.app-without-bgimg]="!configService.bgUrl()"
-      [class.grouped]="!!site().group_id"
-      [class.ungrouped]="!site().group_id"
-      [cdkContextMenuTriggerFor]="configService.isReadOnly() ? null : menu"
-      [cdkContextMenuDisabled]="configService.isReadOnly()"
-      #trigger="cdkContextMenuTriggerFor"
-      (cdkContextMenuOpened)="onContextMenuOpened()"
-      (cdkContextMenuClosed)="onContextMenuClosed()"
-      appLongPress
-      [disabled]="configService.isReadOnly()"
-      (longPress)="openContextMenu($event)"
-    >
-      <a
-        [href]="site().url"
-        tabindex="0"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="site-link flex flex-col items-center justify-center gap-2.5 rounded-[10px] w-full text-center relative cursor-pointer py-3 hover:bg-base-200"
-        [class.select-none]="!configService.isReadOnly()"
-        [class.[-webkit-touch-callout:none]]="!configService.isReadOnly()"
-        [class.[-webkit-user-drag:none]]="!configService.isReadOnly()"
-        [title]="tooltip()"
-      >
-        @if (view_mode() !== 'text') {
-          <div class="w-12 h-12 flex items-center justify-center">
-            @if (showSkeleton()) {
-              <div class="skeleton w-12 h-12 rounded-[7px] shrink-0"></div>
-            } @else if (hasIcon()) {
-              <img
-                [src]="iconUrl()"
-                [alt]="displayTitle()"
-                class="site-icon w-12 object-contain shrink-0"
-                (error)="onIconError()"
-              />
-            } @else {
-              <svg lucideGlobe class="w-12 h-12 text-base-content/60 "></svg>
-            }
-          </div>
-        }
-        @if (view_mode() !== 'icon') {
-          <span
-            class="site-title lg:text-sm sm:text-xs text-[11px] text-base-content max-w-full line-clamp-2 break-all px-1 text-center leading-tight"
-            >{{ displayTitle() }}</span
-          >
-        }
-      </a>
-
-      <!-- CDK Context Menu Template -->
-      <ng-template #menu>
-        <div
-          cdkMenu
-          class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-30 z-50 flex flex-col gap-1"
-        >
-          <button
-            cdkMenuItem
-            (click)="editSite.emit(site())"
-            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
-          >
-            <svg lucidePencil class="w-4 h-4"></svg>
-            <span>Edit</span>
-          </button>
-          <button
-            cdkMenuItem
-            (click)="deleteSite.emit(site())"
-            class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-error/15 text-error outline-none focus:outline-none rounded-lg w-full font-medium transition-colors"
-          >
-            <svg lucideTrash2 class="w-4 h-4"></svg>
-            <span>Delete</span>
-          </button>
-        </div>
-      </ng-template>
-    </div>
-  `,
-  styles: [
-    `
-      .site-card {
-        .site-link {
-          outline: none;
-
-          &:focus-visible {
-            outline: 2px solid var(--color-primary);
-            outline-offset: 2px;
-          }
-        }
-
-        &.is-floating {
-          border-radius: 8px;
-          box-shadow:
-            0 10px 20px rgba(0, 0, 0, 0.15),
-            0 3px 6px rgba(0, 0, 0, 0.1);
-
-          .site-link:hover {
-            background: none;
-          }
-        }
-
-        &.app-with-bgimg.ungrouped {
-          .site-link {
-            .site-title {
-              text-shadow:
-                -1px -1px 5px color-mix(in oklab, var(--color-base-100) 50%, transparent),
-                1px 1px 5px color-mix(in oklab, var(--color-base-100) 50%, transparent),
-                0 0 10px color-mix(in oklab, var(--color-base-100) 90%, transparent);
-            }
-          }
-        }
-      }
-    `,
-  ],
+  templateUrl: './site-card.component.html',
+  styleUrl: './site-card.component.css',
 })
 export class SiteCardComponent {
   configService = inject(ConfigService);
   site = input.required<Site>();
   isFetching = input<boolean>(false);
   view_mode = input<SiteViewMode>('full');
+  hasBorder = input<boolean | undefined>(undefined);
+
+  effectiveBorder = computed(() => {
+    const custom = this.hasBorder();
+    if (custom !== undefined) {
+      return custom;
+    }
+    return this.configService.siteBorder();
+  });
 
   editSite = output<Site>();
   deleteSite = output<Site>();
@@ -149,6 +46,16 @@ export class SiteCardComponent {
   isMenuOpen = signal(false);
 
   private globalMenuService = inject(GlobalMenuService);
+
+  /** CSS modifier class added to the root element (e.g. 'size_1_1', 'size_2_1'). */
+  sizeClass = computed(() => `size_${this.site().col_span || 1}_${this.site().row_span || 1}`);
+
+  /** Key identifying the card dimensions ('1x1', '2x1', etc.). */
+  sizeKey = computed(() => `${this.site().col_span || 1}x${this.site().row_span || 1}`);
+
+  showDescription = computed(() => {
+    return this.sizeKey() !== '1x1' && !!this.site().description?.trim();
+  });
 
   openContextMenu(event: PointerEvent): void {
     if (this.configService.isReadOnly()) return;

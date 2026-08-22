@@ -7,12 +7,13 @@ from app.models import Group, Site
 def test_create_group(client: TestClient, session: Session) -> None:
     """Test creating a new group."""
     response = client.post(
-        "/api/groups/", json={"name": "Social", "sort_order": 1.5}
+        "/api/groups/", json={"name": "Social", "sort_order": 1.5, "site_border": "1"}
     )
     assert response.status_code == 201
     data = response.json()
     assert data["name"] == "Social"
     assert data["sort_order"] == 1.5
+    assert data["site_border"] == "1"
     assert "id" in data
 
     # Verify database state directly
@@ -20,6 +21,7 @@ def test_create_group(client: TestClient, session: Session) -> None:
     assert group is not None
     assert group.name == "Social"
     assert group.sort_order == 1.5
+    assert group.site_border == "1"
 
 
 def test_list_groups(client: TestClient, session: Session) -> None:
@@ -47,19 +49,21 @@ def test_list_groups(client: TestClient, session: Session) -> None:
 
 def test_update_group(client: TestClient, session: Session) -> None:
     """Test updating a group's details."""
-    g = Group(name="News", sort_order=1.0)
+    g = Group(name="News", sort_order=1.0, site_border="")
     session.add(g)
     session.commit()
     session.refresh(g)
 
     # Patch group
     response = client.patch(
-        f"/api/groups/{g.id}", json={"name": "Global News", "sort_order": 0.5}
+        f"/api/groups/{g.id}",
+        json={"name": "Global News", "sort_order": 0.5, "site_border": "0"},
     )
     assert response.status_code == 200
     data = response.json()
     assert data["name"] == "Global News"
     assert data["sort_order"] == 0.5
+    assert data["site_border"] == "0"
 
     # Try patching non-existent group
     response = client.patch("/api/groups/9999", json={"name": "Ghost"})

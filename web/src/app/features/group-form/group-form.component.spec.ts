@@ -15,6 +15,7 @@ describe('GroupFormComponent', () => {
     id: 1,
     name: 'Work',
     icon_url: '/files/icons/work.png',
+    site_border: '1',
     sort_order: 10,
   };
 
@@ -43,5 +44,6 @@ describe('GroupFormComponent', () => {
 
     expect(component.formName).toBe('Work');
     expect(component.formIconUrl).toBe('/files/icons/work.png');
+    expect(component.formSiteBorder).toBe('1');
   });
 });

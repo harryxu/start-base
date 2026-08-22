@@ -52,4 +52,22 @@ describe('SettingsModalComponent', () => {
 
     await submitPromise;
   });
+
+  it('should submit site_border update', async () => {
+    const fixture = TestBed.createComponent(SettingsModalComponent);
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
+    req.flush({ page_title: 'Start Base', theme: 'emerald', site_border: '0' });
+
+    const component = fixture.componentInstance;
+    component.formSiteBorder.set(true);
+
+    const submitPromise = component.onSubmit();
+
+    const patchReq = httpMock.expectOne(`${API_BASE}/api/config/`);
+    expect(patchReq.request.method).toBe('PATCH');
+    expect(patchReq.request.body['site_border']).toBe('1');
+    patchReq.flush({ page_title: 'Start Base', theme: 'emerald', site_border: '1' });
+
+    await submitPromise;
+  });
 });

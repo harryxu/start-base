@@ -140,4 +140,73 @@ describe('SiteCardComponent', () => {
     expect(iconEl).toBeFalsy();
     expect(titleEl).toBeTruthy();
   });
+
+  it('should render 2x1 size layout with horizontal alignment and description', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      col_span: 2,
+      row_span: 1,
+    });
+    fixture.detectChanges();
+
+    expect(component.sizeKey()).toBe('2x1');
+    expect(component.sizeClass()).toBe('size_2_1');
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('size_2_1')).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Test description');
+  });
+
+  it('should render 1x2 size layout', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      col_span: 1,
+      row_span: 2,
+    });
+    fixture.detectChanges();
+
+    expect(component.sizeKey()).toBe('1x2');
+    expect(component.sizeClass()).toBe('size_1_2');
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('size_1_2')).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Test description');
+  });
+
+  it('should render 2x2 size layout with large card structure', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      col_span: 2,
+      row_span: 2,
+    });
+    fixture.detectChanges();
+
+    expect(component.sizeKey()).toBe('2x2');
+    expect(component.sizeClass()).toBe('size_2_2');
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('size_2_2')).toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('Test description');
+  });
+
+  it('should apply has-border class when siteBorder config is enabled', () => {
+    component.configService.siteBorder.set(false);
+    fixture.detectChanges();
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('has-border')).toBe(false);
+
+    component.configService.siteBorder.set(true);
+    fixture.detectChanges();
+    expect(cardEl.classList.contains('has-border')).toBe(true);
+  });
+
+  it('should allow hasBorder input to override global siteBorder config', () => {
+    component.configService.siteBorder.set(false);
+    fixture.componentRef.setInput('hasBorder', true);
+    fixture.detectChanges();
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('has-border')).toBe(true);
+
+    component.configService.siteBorder.set(true);
+    fixture.componentRef.setInput('hasBorder', false);
+    fixture.detectChanges();
+    expect(cardEl.classList.contains('has-border')).toBe(false);
+  });
 });

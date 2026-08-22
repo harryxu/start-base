@@ -23,6 +23,7 @@ DEFAULT_CONFIGS: dict[str, Any] = {
     "bg_url": "",
     "access_mode": "none_guard",
     "site_view_mode": "full",
+    "site_border": "0",
 }
 
 

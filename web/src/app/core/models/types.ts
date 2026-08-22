@@ -8,6 +8,7 @@ export interface Group {
   name: string;
   icon_url?: string | null;
   site_view_mode?: SiteViewMode | null;
+  site_border?: string | null;
   sort_order: number;
 }
 
@@ -19,7 +20,22 @@ export interface Site {
   description: string | null;
   sort_order: number;
   group_id: number | null;
+  col_span?: number;
+  row_span?: number;
 }
+
+/**
+ * Predefined site card size options.
+ * Each size defines its col_span and row_span values.
+ */
+export type SiteSize = '1x1' | '2x1' | '1x2' | '2x2';
+
+export const SITE_SIZES: { key: SiteSize; label: string; col: number; row: number }[] = [
+  { key: '1x1', label: '1×1', col: 1, row: 1 },
+  { key: '2x1', label: '2×1', col: 2, row: 1 },
+  { key: '1x2', label: '1×2', col: 1, row: 2 },
+  { key: '2x2', label: '2×2', col: 2, row: 2 },
+];
 
 export interface ReorderItem {
   id: number;

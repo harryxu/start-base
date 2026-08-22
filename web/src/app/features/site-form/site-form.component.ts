@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { ApiService, API_BASE } from '../../core/api/api.service';
 import type { Site } from '../../core/models/types';
+import { SITE_SIZES } from '../../core/models/types';
 import { BoardService } from '../../core/services/board.service';
 
 @Component({
@@ -163,6 +164,23 @@ import { BoardService } from '../../core/services/board.service';
               </select>
               <span>Group</span>
             </label>
+
+            <!-- Card size selector -->
+            <div class="flex flex-col gap-1.5">
+              <span class="text-xs text-base-content/60 pl-1">Card Size</span>
+              <div class="join w-full grid grid-cols-4">
+                @for (size of siteSizes; track size.key) {
+                  <input
+                    type="radio"
+                    name="card-size"
+                    class="join-item btn btn-sm"
+                    [attr.aria-label]="size.label"
+                    [checked]="formColSpan === size.col && formRowSpan === size.row"
+                    (change)="formColSpan = size.col; formRowSpan = size.row"
+                  />
+                }
+              </div>
+            </div>
           </div>
 
           <!-- Footer actions -->
@@ -202,6 +220,10 @@ export class SiteFormComponent {
   formIconUrl = '';
   formDescription = '';
   formGroupId: number | null = null;
+  formColSpan = 1;
+  formRowSpan = 1;
+
+  readonly siteSizes = SITE_SIZES;
 
   iconFailed = signal(false);
   selectedIconFile: File | null = null;
@@ -241,18 +263,24 @@ export class SiteFormComponent {
         this.formIconUrl = s.icon_url ?? '';
         this.formDescription = s.description ?? '';
         this.formGroupId = s.group_id;
+        this.formColSpan = s.col_span ?? 1;
+        this.formRowSpan = s.row_span ?? 1;
       } else if (def) {
         this.formUrl = def.url ?? '';
         this.formTitle = def.title ?? '';
         this.formIconUrl = def.icon_url ?? '';
         this.formDescription = def.description ?? '';
         this.formGroupId = def.group_id ?? null;
+        this.formColSpan = def.col_span ?? 1;
+        this.formRowSpan = def.row_span ?? 1;
       } else {
         this.formUrl = '';
         this.formTitle = '';
         this.formIconUrl = '';
         this.formDescription = '';
         this.formGroupId = null;
+        this.formColSpan = 1;
+        this.formRowSpan = 1;
       }
     });
   }
@@ -311,6 +339,8 @@ export class SiteFormComponent {
       icon_url: this.formIconUrl.trim() || null,
       description: this.formDescription.trim() || null,
       group_id: this.formGroupId,
+      col_span: this.formColSpan,
+      row_span: this.formRowSpan,
     };
 
     const editingSite = this.site();
