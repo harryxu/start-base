@@ -52,19 +52,19 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
       <!-- Edit Mode Unified Glass Capsule Toolbar -->
       @if (configService.editMode() && !configService.isReadOnly()) {
         <div
-          class="site-card-actions absolute top-1 right-1 z-30 flex items-center rounded-full bg-base-100/75 hover:bg-base-100/95 text-base-content/60 hover:text-base-content backdrop-blur-md shadow-xs transition-all duration-150 p-0.5 pointer-events-auto"
+          class="site-card-actions absolute top-1 right-1 z-30 flex items-center rounded-full p-0.5 pointer-events-auto"
         >
           <!-- Drag Handle -->
           <div
             cdkDragHandle
-            class="drag-handle p-0.5 rounded-full hover:bg-base-content/10 cursor-grab active:cursor-grabbing transition-colors flex items-center justify-center"
+            class="drag-handle p-1 rounded-full hover:bg-base-content/15 active:bg-base-content/25 cursor-grab active:cursor-grabbing flex items-center justify-center"
             title="Drag to reorder"
           >
-            <svg lucideGripVertical class="w-3 h-3"></svg>
+            <svg lucideGripVertical class="w-3.5 h-3.5"></svg>
           </div>
 
           <!-- Subtle Divider -->
-          <div class="w-px h-2.5 bg-base-content/15 mx-0.5"></div>
+          <div class="actions-divider w-px h-3 mx-0.5"></div>
 
           <!-- Action Menu Trigger Button -->
           <button
@@ -74,10 +74,10 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
             (cdkMenuOpened)="onContextMenuOpened()"
             (cdkMenuClosed)="onContextMenuClosed()"
             (click)="$event.stopPropagation()"
-            class="action-menu-btn p-0.5 rounded-full hover:bg-base-content/10 cursor-pointer transition-colors flex items-center justify-center"
+            class="action-menu-btn p-1 rounded-full hover:bg-base-content/15 active:bg-base-content/25 cursor-pointer flex items-center justify-center"
             title="Card actions"
           >
-            <svg lucideEllipsis class="w-3 h-3"></svg>
+            <svg lucideEllipsis class="w-3.5 h-3.5"></svg>
           </button>
         </div>
       }
@@ -126,6 +126,26 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
     :host {
       display: block;
       height: 100%;
+    }
+
+    .site-card-actions {
+      background-color: color-mix(in oklab, var(--color-base-100) 75%, transparent);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: var(--color-base-content);
+      border: 1px solid color-mix(in oklab, var(--color-base-content) 18%, transparent);
+      box-shadow:
+        0 4px 14px color-mix(in oklab, var(--color-base-content) 16%, transparent),
+        0 1px 3px color-mix(in oklab, var(--color-base-content) 12%, transparent);
+
+      &:hover {
+        background-color: color-mix(in oklab, var(--color-base-100) 90%, transparent);
+        border-color: color-mix(in oklab, var(--color-base-content) 28%, transparent);
+      }
+
+      .actions-divider {
+        background-color: color-mix(in oklab, var(--color-base-content) 18%, transparent);
+      }
     }
 
     .site-card {
