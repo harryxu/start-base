@@ -159,4 +159,9 @@
     --input-color: color-mix(in oklab, var(--color-info) 25%, var(--color-base-200));
     outline-offset: 0;
   }
+
+  /* Prevent iframe from absorbing pointer events during drag-and-drop */
+  .cdk-drop-list-dragging iframe {
+    pointer-events: none !important;
+  }
 }

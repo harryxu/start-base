@@ -25,6 +25,7 @@ export class ConfigService {
   accessMode = signal<string>('none_guard');
   siteViewMode = signal<SiteViewMode>('full');
   siteBorder = signal<boolean>(false);
+  editMode = signal<boolean>(false);
   isDemo = signal<boolean>(false);
   demoMsg = signal<string>('');
 
@@ -38,6 +39,14 @@ export class ConfigService {
   isReadOnly = computed(
     () => this.accessMode() !== 'none_guard' && this.authService.currentUser() === null,
   );
+
+  toggleEditMode(): void {
+    if (this.isReadOnly()) {
+      this.editMode.set(false);
+      return;
+    }
+    this.editMode.update((v) => !v);
+  }
 
   fullBgUrl = computed(() => {
     const url = this.bgUrl();

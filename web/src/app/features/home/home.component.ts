@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 
-import { LucideInfo, LucideX } from '@lucide/angular';
+import { LucideCheck, LucideInfo, LucidePencil, LucideX } from '@lucide/angular';
 import type { Group, Site } from '../../core/models/types';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { HeaderComponent } from '../../shared/header/header.component';
@@ -24,6 +24,8 @@ import { SettingsModalComponent } from '../settings-modal/settings-modal.compone
     SettingsModalComponent,
     LucideInfo,
     LucideX,
+    LucidePencil,
+    LucideCheck,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',

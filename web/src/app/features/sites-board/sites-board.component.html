@@ -66,7 +66,7 @@
         [class.has-border]="configService.siteBorder()">
         @for (site of localUngroupedSites(); track site.id) {
         <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
-          [cdkDragDisabled]="configService.isReadOnly() || isSearching()"
+          [cdkDragDisabled]="configService.isReadOnly() || isSearching() || (!configService.editMode() && (site.site_type && site.site_type !== 'builtin'))"
           (cdkDragStarted)="closeAllMenus()"
           class="h-full"
           [style.grid-column]="'span ' + (site.col_span || 1)"

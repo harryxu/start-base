@@ -237,4 +237,61 @@ describe('SiteCardComponent', () => {
     expect(wcPluginEl).toBeTruthy();
     expect(siteLinkEl).toBeFalsy();
   });
+
+  it('should not render top action controls when editMode is false', () => {
+    component.configService.editMode.set(false);
+    fixture.detectChanges();
+
+    const actionsEl = fixture.nativeElement.querySelector('.site-card-actions');
+    expect(actionsEl).toBeFalsy();
+  });
+
+  it('should render top-left drag handle and top-right action menu button when editMode is true', () => {
+    component.configService.editMode.set(true);
+    fixture.detectChanges();
+
+    const actionsEl = fixture.nativeElement.querySelector('.site-card-actions');
+    const dragHandle = fixture.nativeElement.querySelector('.drag-handle');
+    const menuBtn = fixture.nativeElement.querySelector('.action-menu-btn');
+
+    expect(actionsEl).toBeTruthy();
+    expect(dragHandle).toBeTruthy();
+    expect(menuBtn).toBeTruthy();
+  });
+
+  it('should open context menu when clicking top-right action menu button in editMode', () => {
+    component.configService.editMode.set(true);
+    fixture.detectChanges();
+
+    const menuBtn = fixture.nativeElement.querySelector('.action-menu-btn');
+    menuBtn.click();
+    fixture.detectChanges();
+
+    const menuEl = document.querySelector('.menu');
+    expect(menuEl).toBeTruthy();
+    expect(menuEl?.textContent).toContain('Edit');
+    expect(menuEl?.textContent).toContain('Delete');
+  });
+
+  it('should disable context menu for iframe plugins when editMode is false', () => {
+    component.configService.editMode.set(false);
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'iframe',
+    });
+    fixture.detectChanges();
+
+    expect(component.canUseContextMenu()).toBe(false);
+  });
+
+  it('should enable context menu for iframe plugins when editMode is true', () => {
+    component.configService.editMode.set(true);
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'iframe',
+    });
+    fixture.detectChanges();
+
+    expect(component.canUseContextMenu()).toBe(true);
+  });
 });

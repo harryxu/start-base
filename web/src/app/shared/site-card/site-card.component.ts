@@ -1,6 +1,7 @@
-import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
+import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
+import { CdkDragHandle } from '@angular/cdk/drag-drop';
 import { Component, computed, inject, input, output, signal, ViewChild } from '@angular/core';
-import { LucidePencil, LucideTrash2 } from '@lucide/angular';
+import { LucideEllipsis, LucideGripVertical, LucidePencil, LucideTrash2 } from '@lucide/angular';
 import { LongPressDirective } from '../long-press.directive';
 
 import type { Site, SiteViewMode } from '../../core/models/types';
@@ -16,8 +17,12 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
   imports: [
     CdkMenu,
     CdkMenuItem,
+    CdkMenuTrigger,
     CdkContextMenuTrigger,
+    CdkDragHandle,
     LongPressDirective,
+    LucideEllipsis,
+    LucideGripVertical,
     LucidePencil,
     LucideTrash2,
     SiteBuiltinComponent,
@@ -34,15 +39,43 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
       [class.app-without-bgimg]="!configService.bgUrl()"
       [class.grouped]="!!site().group_id"
       [class.ungrouped]="!site().group_id"
-      [cdkContextMenuTriggerFor]="configService.isReadOnly() ? null : menu"
-      [cdkContextMenuDisabled]="configService.isReadOnly()"
+      [class.is-edit-mode]="configService.editMode()"
+      [cdkContextMenuTriggerFor]="canUseContextMenu() ? menu : null"
+      [cdkContextMenuDisabled]="!canUseContextMenu()"
       #trigger="cdkContextMenuTriggerFor"
       (cdkContextMenuOpened)="onContextMenuOpened()"
       (cdkContextMenuClosed)="onContextMenuClosed()"
       appLongPress
-      [disabled]="configService.isReadOnly()"
+      [disabled]="!canUseContextMenu()"
       (longPress)="openContextMenu($event)"
     >
+      <!-- Edit Mode Overlay Action Controls -->
+      @if (configService.editMode() && !configService.isReadOnly()) {
+        <div class="site-card-actions absolute top-1 left-1 right-1 z-30 flex items-center justify-between pointer-events-auto">
+          <!-- Top-left drag handle -->
+          <div
+            cdkDragHandle
+            class="drag-handle p-1 rounded-md bg-base-100/90 text-base-content/70 hover:text-base-content shadow-xs border border-base-300/80 cursor-grab active:cursor-grabbing hover:bg-base-200 transition-all flex items-center justify-center backdrop-blur-xs"
+            title="Drag to reorder"
+          >
+            <svg lucideGripVertical class="w-3.5 h-3.5"></svg>
+          </div>
+
+          <!-- Top-right action menu button -->
+          <button
+            type="button"
+            [cdkMenuTriggerFor]="menu"
+            (cdkMenuOpened)="onContextMenuOpened()"
+            (click)="$event.stopPropagation()"
+            class="action-menu-btn p-1 rounded-md bg-base-100/90 text-base-content/70 hover:text-base-content shadow-xs border border-base-300/80 hover:bg-base-200 transition-all cursor-pointer flex items-center justify-center backdrop-blur-xs"
+            title="Card actions"
+          >
+            <svg lucideEllipsis class="w-3.5 h-3.5"></svg>
+          </button>
+        </div>
+      }
+
+      <!-- Content -->
       @if (site().site_type === 'iframe') {
         <app-iframe-plugin [site]="site()" [sizeKey]="sizeKey()" />
       } @else if (site().site_type === 'webcomponent') {
@@ -114,6 +147,12 @@ export class SiteCardComponent {
     return this.configService.siteBorder();
   });
 
+  canUseContextMenu = computed(() => {
+    if (this.configService.isReadOnly()) return false;
+    if (this.configService.editMode()) return true;
+    return !this.site().site_type || this.site().site_type === 'builtin';
+  });
+
   editSite = output<Site>();
   deleteSite = output<Site>();
 
@@ -130,7 +169,7 @@ export class SiteCardComponent {
   sizeKey = computed(() => `${this.site().col_span || 1}x${this.site().row_span || 1}`);
 
   openContextMenu(event: PointerEvent): void {
-    if (this.configService.isReadOnly()) return;
+    if (!this.canUseContextMenu()) return;
     this.globalMenuService.registerOpenedMenu(() => this.closeMenu());
     this.triggerMenu?.open({ x: event.clientX, y: event.clientY });
   }

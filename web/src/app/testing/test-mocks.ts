@@ -16,6 +16,10 @@ export const mockConfigService = {
   accessMode: mockAccessMode,
   siteViewMode: signal<SiteViewMode>('full'),
   siteBorder: signal<boolean>(false),
+  editMode: signal<boolean>(false),
+  toggleEditMode: function () {
+    this.editMode.update((v: boolean) => !v);
+  },
   isReadOnly: computed(() => mockAccessMode() !== 'none_guard' && mockCurrentUser() === null),
   loadConfig: async () => {},
 };
