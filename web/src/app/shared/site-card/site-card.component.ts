@@ -51,10 +51,11 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
     >
       <!-- Edit Mode Action Controls: Drag Handle (Left) & Action Menu (Right) -->
       @if (configService.editMode() && !configService.isReadOnly()) {
-        <!-- Drag Handle: Top-Left, no background, just icon -->
+        <!-- Drag Handle: Top-Left (has protective frosted backdrop for non-builtin plugins) -->
         <div
           cdkDragHandle
-          class="drag-handle absolute top-1 left-1 z-30 p-1 text-base-content/60 hover:text-base-content cursor-grab active:cursor-grabbing flex items-center justify-center pointer-events-auto"
+          class="drag-handle absolute top-1 left-1 z-30 p-1 rounded-full cursor-grab active:cursor-grabbing flex items-center justify-center pointer-events-auto"
+          [class.has-backdrop]="isPluginSite()"
           title="Drag to reorder"
         >
           <svg lucideGripVertical class="w-3.5 h-3.5"></svg>
@@ -121,15 +122,8 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
       height: 100%;
     }
 
-    .drag-handle {
-      color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
-
-      &:hover {
-        color: var(--color-base-content);
-      }
-    }
-
-    .action-menu-btn {
+    .action-menu-btn,
+    .drag-handle.has-backdrop {
       background-color: color-mix(in oklab, var(--color-base-100) 35%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -140,6 +134,14 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
 
       &:hover {
         background-color: color-mix(in oklab, var(--color-base-100) 85%, transparent);
+      }
+    }
+
+    .drag-handle:not(.has-backdrop) {
+      color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+
+      &:hover {
+        color: var(--color-base-content);
       }
     }
 
@@ -170,6 +172,8 @@ export class SiteCardComponent {
   isFetching = input<boolean>(false);
   view_mode = input<SiteViewMode>('full');
   hasBorder = input<boolean | undefined>(undefined);
+
+  isPluginSite = computed(() => !!this.site().site_type && this.site().site_type !== 'builtin');
 
   effectiveBorder = computed(() => {
     const custom = this.hasBorder();
