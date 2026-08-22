@@ -49,37 +49,30 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
       [disabled]="!canUseContextMenu()"
       (longPress)="openContextMenu($event)"
     >
-      <!-- Edit Mode Unified Glass Capsule Toolbar -->
+      <!-- Edit Mode Action Controls: Drag Handle (Left) & Action Menu (Right) -->
       @if (configService.editMode() && !configService.isReadOnly()) {
+        <!-- Drag Handle: Top-Left, no background, just icon -->
         <div
-          class="site-card-actions absolute top-1 right-1 z-30 flex items-center rounded-full p-0.5 pointer-events-auto"
+          cdkDragHandle
+          class="drag-handle absolute top-1 left-1 z-30 p-1 text-base-content/60 hover:text-base-content cursor-grab active:cursor-grabbing flex items-center justify-center pointer-events-auto"
+          title="Drag to reorder"
         >
-          <!-- Drag Handle -->
-          <div
-            cdkDragHandle
-            class="drag-handle p-1 rounded-full hover:bg-base-content/15 active:bg-base-content/25 cursor-grab active:cursor-grabbing flex items-center justify-center"
-            title="Drag to reorder"
-          >
-            <svg lucideGripVertical class="w-3.5 h-3.5"></svg>
-          </div>
-
-          <!-- Subtle Divider -->
-          <div class="actions-divider w-px h-3 mx-0.5"></div>
-
-          <!-- Action Menu Trigger Button -->
-          <button
-            type="button"
-            [cdkMenuTriggerFor]="menu"
-            #triggerBtnMenu="cdkMenuTriggerFor"
-            (cdkMenuOpened)="onContextMenuOpened()"
-            (cdkMenuClosed)="onContextMenuClosed()"
-            (click)="$event.stopPropagation()"
-            class="action-menu-btn p-1 rounded-full hover:bg-base-content/15 active:bg-base-content/25 cursor-pointer flex items-center justify-center"
-            title="Card actions"
-          >
-            <svg lucideEllipsis class="w-3.5 h-3.5"></svg>
-          </button>
+          <svg lucideGripVertical class="w-3.5 h-3.5"></svg>
         </div>
+
+        <!-- Action Menu Trigger Button: Top-Right with translucent glass shadow style -->
+        <button
+          type="button"
+          [cdkMenuTriggerFor]="menu"
+          #triggerBtnMenu="cdkMenuTriggerFor"
+          (cdkMenuOpened)="onContextMenuOpened()"
+          (cdkMenuClosed)="onContextMenuClosed()"
+          (click)="$event.stopPropagation()"
+          class="action-menu-btn absolute top-1 right-1 z-30 p-1 rounded-full cursor-pointer flex items-center justify-center pointer-events-auto"
+          title="Card actions"
+        >
+          <svg lucideEllipsis class="w-3.5 h-3.5"></svg>
+        </button>
       }
 
       <!-- Content -->
@@ -128,7 +121,15 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
       height: 100%;
     }
 
-    .site-card-actions {
+    .drag-handle {
+      color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+
+      &:hover {
+        color: var(--color-base-content);
+      }
+    }
+
+    .action-menu-btn {
       background-color: color-mix(in oklab, var(--color-base-100) 35%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
@@ -139,10 +140,6 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
 
       &:hover {
         background-color: color-mix(in oklab, var(--color-base-100) 85%, transparent);
-      }
-
-      .actions-divider {
-        background-color: color-mix(in oklab, var(--color-base-content) 18%, transparent);
       }
     }
 

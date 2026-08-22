@@ -238,23 +238,23 @@ describe('SiteCardComponent', () => {
     expect(siteLinkEl).toBeFalsy();
   });
 
-  it('should not render top action controls when editMode is false', () => {
+  it('should not render drag handle and action menu when editMode is false', () => {
     component.configService.editMode.set(false);
     fixture.detectChanges();
 
-    const actionsEl = fixture.nativeElement.querySelector('.site-card-actions');
-    expect(actionsEl).toBeFalsy();
+    const dragHandle = fixture.nativeElement.querySelector('.drag-handle');
+    const menuBtn = fixture.nativeElement.querySelector('.action-menu-btn');
+    expect(dragHandle).toBeFalsy();
+    expect(menuBtn).toBeFalsy();
   });
 
   it('should render top-left drag handle and top-right action menu button when editMode is true', () => {
     component.configService.editMode.set(true);
     fixture.detectChanges();
 
-    const actionsEl = fixture.nativeElement.querySelector('.site-card-actions');
     const dragHandle = fixture.nativeElement.querySelector('.drag-handle');
     const menuBtn = fixture.nativeElement.querySelector('.action-menu-btn');
 
-    expect(actionsEl).toBeTruthy();
     expect(dragHandle).toBeTruthy();
     expect(menuBtn).toBeTruthy();
   });
