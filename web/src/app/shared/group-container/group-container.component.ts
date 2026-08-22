@@ -136,6 +136,17 @@ export class GroupContainerComponent {
     return this.view_mode();
   });
 
+  effectiveSiteBorder = computed<boolean>(() => {
+    const border = this.group().site_border?.trim();
+    if (border === '1') {
+      return true;
+    }
+    if (border === '0') {
+      return false;
+    }
+    return this.configService.siteBorder();
+  });
+
   addSite = output<Partial<Site>>();
   editGroup = output<Group>();
   deleteGroup = output<Group>();

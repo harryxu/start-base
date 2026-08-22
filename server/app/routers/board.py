@@ -29,11 +29,7 @@ def get_board(session: Session = Depends(get_session)) -> BoardRead:
     groups_with_sites: list[GroupWithSites] = []
     for group in groups:
         group_read = GroupWithSites(
-            id=group.id,
-            name=group.name,
-            icon_url=group.icon_url,
-            site_view_mode=group.site_view_mode,
-            sort_order=group.sort_order,
+            **group.model_dump(),
             sites=sites_by_group.get(group.id, []),
         )
         groups_with_sites.append(group_read)

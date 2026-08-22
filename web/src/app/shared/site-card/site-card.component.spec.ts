@@ -196,4 +196,17 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
     expect(cardEl.classList.contains('has-border')).toBe(true);
   });
+
+  it('should allow hasBorder input to override global siteBorder config', () => {
+    component.configService.siteBorder.set(false);
+    fixture.componentRef.setInput('hasBorder', true);
+    fixture.detectChanges();
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    expect(cardEl.classList.contains('has-border')).toBe(true);
+
+    component.configService.siteBorder.set(true);
+    fixture.componentRef.setInput('hasBorder', false);
+    fixture.detectChanges();
+    expect(cardEl.classList.contains('has-border')).toBe(false);
+  });
 });

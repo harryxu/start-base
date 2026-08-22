@@ -1,7 +1,7 @@
 <div
   class="site-card min-w-2 relative shrink-0 h-full"
   [class]="sizeClass()"
-  [class.has-border]="configService.siteBorder()"
+  [class.has-border]="effectiveBorder()"
   [class.is-floating]="!configService.isReadOnly() && isMenuOpen()"
   [class.app-with-bgimg]="configService.bgUrl()"
   [class.app-without-bgimg]="!configService.bgUrl()"

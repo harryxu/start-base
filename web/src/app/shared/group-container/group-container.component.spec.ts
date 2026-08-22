@@ -101,4 +101,26 @@ describe('GroupContainerComponent', () => {
 
     expect(mockBoardService.updateGroup).toHaveBeenCalledWith(1, { site_view_mode: 'icon' });
   });
+
+  it('should compute effectiveSiteBorder correctly based on group and global settings', () => {
+    // 1. Group site_border is '1' -> true
+    fixture.componentRef.setInput('group', { ...mockGroup, site_border: '1' });
+    fixture.detectChanges();
+    expect(component.effectiveSiteBorder()).toBe(true);
+
+    // 2. Group site_border is '0' -> false
+    fixture.componentRef.setInput('group', { ...mockGroup, site_border: '0' });
+    fixture.detectChanges();
+    expect(component.effectiveSiteBorder()).toBe(false);
+
+    // 3. Group site_border is '' -> follows global configService.siteBorder()
+    component.configService.siteBorder.set(true);
+    fixture.componentRef.setInput('group', { ...mockGroup, site_border: '' });
+    fixture.detectChanges();
+    expect(component.effectiveSiteBorder()).toBe(true);
+
+    component.configService.siteBorder.set(false);
+    fixture.detectChanges();
+    expect(component.effectiveSiteBorder()).toBe(false);
+  });
 });

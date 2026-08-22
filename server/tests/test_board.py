@@ -15,8 +15,8 @@ def test_get_board_empty(client: TestClient) -> None:
 
 def test_get_board_mixed_and_sorted(client: TestClient, session: Session) -> None:
     """Test getting aggregated board with sorted groups, nested sorted sites, and ungrouped sites."""
-    g1 = Group(name="Dev Tools", sort_order=20.0, site_view_mode="full")
-    g2 = Group(name="Search Engines", sort_order=10.0, site_view_mode="icon")
+    g1 = Group(name="Dev Tools", sort_order=20.0, site_view_mode="full", site_border="1")
+    g2 = Group(name="Search Engines", sort_order=10.0, site_view_mode="icon", site_border="0")
     session.add_all([g1, g2])
     session.commit()
     session.refresh(g1)
@@ -49,11 +49,13 @@ def test_get_board_mixed_and_sorted(client: TestClient, session: Session) -> Non
     assert len(data["groups"]) == 2
     assert data["groups"][0]["name"] == "Search Engines"
     assert data["groups"][0]["site_view_mode"] == "icon"
+    assert data["groups"][0]["site_border"] == "0"
     assert len(data["groups"][0]["sites"]) == 1
     assert data["groups"][0]["sites"][0]["title"] == "Google"
 
     assert data["groups"][1]["name"] == "Dev Tools"
     assert data["groups"][1]["site_view_mode"] == "full"
+    assert data["groups"][1]["site_border"] == "1"
     assert len(data["groups"][1]["sites"]) == 2
     assert data["groups"][1]["sites"][0]["title"] == "GitHub"
     assert data["groups"][1]["sites"][1]["title"] == "GitLab"

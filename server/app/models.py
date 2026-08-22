@@ -31,6 +31,7 @@ class Group(SQLModel, table=True):
     name: str = Field(min_length=1, max_length=200)
     icon_url: str | None = Field(default=None)
     site_view_mode: str = Field(default="")
+    site_border: str = Field(default="")
     sort_order: float = Field(default=0.0)
 
 
@@ -104,6 +105,7 @@ class GroupCreate(SQLModel):
     name: str
     icon_url: str | None = None
     site_view_mode: str = ""
+    site_border: str = ""
     sort_order: float = 0.0
 
 
@@ -111,6 +113,7 @@ class GroupUpdate(SQLModel):
     name: str | None = None
     icon_url: str | None = None
     site_view_mode: str | None = None
+    site_border: str | None = None
     sort_order: float | None = None
 
 
@@ -119,6 +122,7 @@ class GroupRead(SQLModel):
     name: str
     icon_url: str | None = None
     site_view_mode: str = ""
+    site_border: str = ""
     sort_order: float
 
 

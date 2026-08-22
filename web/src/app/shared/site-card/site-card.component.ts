@@ -28,6 +28,15 @@ export class SiteCardComponent {
   site = input.required<Site>();
   isFetching = input<boolean>(false);
   view_mode = input<SiteViewMode>('full');
+  hasBorder = input<boolean | undefined>(undefined);
+
+  effectiveBorder = computed(() => {
+    const custom = this.hasBorder();
+    if (custom !== undefined) {
+      return custom;
+    }
+    return this.configService.siteBorder();
+  });
 
   editSite = output<Site>();
   deleteSite = output<Site>();

@@ -8,6 +8,7 @@ export interface Group {
   name: string;
   icon_url?: string | null;
   site_view_mode?: SiteViewMode | null;
+  site_border?: string | null;
   sort_order: number;
 }
 
