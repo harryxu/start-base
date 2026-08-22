@@ -129,18 +129,16 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
     }
 
     .site-card-actions {
-      background-color: color-mix(in oklab, var(--color-base-100) 75%, transparent);
+      background-color: color-mix(in oklab, var(--color-base-100) 35%, transparent);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       color: var(--color-base-content);
-      border: 1px solid color-mix(in oklab, var(--color-base-content) 18%, transparent);
       box-shadow:
-        0 4px 14px color-mix(in oklab, var(--color-base-content) 16%, transparent),
-        0 1px 3px color-mix(in oklab, var(--color-base-content) 12%, transparent);
+        0 4px 14px color-mix(in oklab, var(--color-base-content) 14%, transparent),
+        0 1px 3px color-mix(in oklab, var(--color-base-content) 10%, transparent);
 
       &:hover {
-        background-color: color-mix(in oklab, var(--color-base-100) 90%, transparent);
-        border-color: color-mix(in oklab, var(--color-base-content) 28%, transparent);
+        background-color: color-mix(in oklab, var(--color-base-100) 85%, transparent);
       }
 
       .actions-divider {
