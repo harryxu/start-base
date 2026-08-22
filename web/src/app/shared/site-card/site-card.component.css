@@ -1,7 +1,13 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
 .site-card {
   .site-link {
     outline: none;
     align-items: center;
+    height: 100%;
 
     &:focus-visible {
       outline: 2px solid var(--color-primary);
@@ -86,10 +92,6 @@
   &.size_2_1,
   &.size_1_2,
   &.size_2_2 {
-    .site-link {
-      height: 100%;
-    }
-
     .site-title {
       font-weight: 500;
     }

@@ -43,6 +43,7 @@
       @for (site of sites(); track site.id) {
       <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
         [cdkDragDisabled]="configService.isReadOnly()" (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
+        class="h-full"
         [style.grid-column]="'span ' + (site.col_span || 1)"
         [style.grid-row]="'span ' + (site.row_span || 1)">
         <div *cdkDragPlaceholder

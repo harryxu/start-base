@@ -68,6 +68,7 @@
         <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
           [cdkDragDisabled]="configService.isReadOnly() || isSearching()"
           (cdkDragStarted)="closeAllMenus()"
+          class="h-full"
           [style.grid-column]="'span ' + (site.col_span || 1)"
           [style.grid-row]="'span ' + (site.row_span || 1)">
           <div *cdkDragPlaceholder
