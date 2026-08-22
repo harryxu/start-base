@@ -72,7 +72,7 @@ import { API_BASE } from '../../core/api/api.service';
         grid-auto-flow: dense;
 
         &.has-border {
-          gap: 0.5rem;
+          gap: 0.75rem;
         }
       }
 
