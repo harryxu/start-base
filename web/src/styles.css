@@ -162,6 +162,6 @@
 
   /* Prevent iframe from absorbing pointer events during drag-and-drop */
   .cdk-drop-list-dragging iframe {
-    pointer-events: none !important;
+    pointer-events: none;
   }
 }
