@@ -28,15 +28,22 @@ export function parsePluginParams(rawParams?: string | null): Record<string, str
 
 /**
  * Builds the combined parameter map including standard fixed parameters
- * (card-size, title, description) and custom user-defined parameters.
+ * (card-size, title, description, theme, theme-mode) and custom user-defined parameters.
  */
-export function buildPluginParams(site: Site, sizeKey: string): Record<string, string> {
+export function buildPluginParams(
+  site: Site,
+  sizeKey: string,
+  theme = 'emerald',
+  themeMode: 'light' | 'dark' = 'light',
+): Record<string, string> {
   const customParams = parsePluginParams(site.plugin_params);
 
   return {
     'card-size': sizeKey,
     title: site.title || '',
     description: site.description || '',
+    theme: theme || 'emerald',
+    'theme-mode': themeMode || 'light',
     ...customParams,
   };
 }

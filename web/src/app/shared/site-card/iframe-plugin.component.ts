@@ -2,6 +2,7 @@ import { Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 import type { Site } from '../../core/models/types';
+import { ConfigService } from '../../core/services/config.service';
 import { buildIframeUrl, buildPluginParams } from '../../core/utils/plugin.utils';
 
 @Component({
@@ -27,6 +28,7 @@ import { buildIframeUrl, buildPluginParams } from '../../core/utils/plugin.utils
   `,
 })
 export class IframePluginComponent {
+  private configService = inject(ConfigService);
   private sanitizer = inject(DomSanitizer);
 
   site = input.required<Site>();
@@ -34,7 +36,9 @@ export class IframePluginComponent {
 
   safeUrl = computed<SafeResourceUrl>(() => {
     const s = this.site();
-    const params = buildPluginParams(s, this.sizeKey());
+    const theme = this.configService.theme();
+    const themeMode = this.configService.themeMode();
+    const params = buildPluginParams(s, this.sizeKey(), theme, themeMode);
     const finalUrl = buildIframeUrl(s.url, params);
     return this.sanitizer.bypassSecurityTrustResourceUrl(finalUrl);
   });

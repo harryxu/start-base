@@ -11,6 +11,7 @@ const mockCurrentUser = signal<{ id: number; username: string } | null>(null);
 export const mockConfigService = {
   pageTitle: signal('Start Base'),
   theme: signal('emerald'),
+  themeMode: signal<'light' | 'dark'>('light'),
   bgUrl: signal<string | null>(null),
   fullBgUrl: computed(() => ''),
   accessMode: mockAccessMode,

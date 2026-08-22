@@ -5,12 +5,14 @@ import {
   ViewChild,
   computed,
   effect,
+  inject,
   input,
   signal,
 } from '@angular/core';
 import { LucideAlertCircle } from '@lucide/angular';
 
 import type { Site } from '../../core/models/types';
+import { ConfigService } from '../../core/services/config.service';
 import { buildPluginParams } from '../../core/utils/plugin.utils';
 
 export interface PluginLifecycle {
@@ -48,6 +50,8 @@ export interface PluginLifecycle {
   `,
 })
 export class WebcomponentPluginComponent implements OnDestroy {
+  private configService = inject(ConfigService);
+
   site = input.required<Site>();
   sizeKey = input.required<string>();
 
@@ -60,7 +64,9 @@ export class WebcomponentPluginComponent implements OnDestroy {
   private currentElement: HTMLElement | null = null;
 
   params = computed(() => {
-    return buildPluginParams(this.site(), this.sizeKey());
+    const theme = this.configService.theme();
+    const themeMode = this.configService.themeMode();
+    return buildPluginParams(this.site(), this.sizeKey(), theme, themeMode);
   });
 
   constructor() {

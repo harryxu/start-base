@@ -3,6 +3,7 @@ import { describe, beforeEach, it, expect } from 'vitest';
 
 import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
 import type { Site } from '../../core/models/types';
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
 
 describe('WebcomponentPluginComponent', () => {
   let component: WebcomponentPluginComponent;
@@ -23,6 +24,7 @@ describe('WebcomponentPluginComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [WebcomponentPluginComponent],
+      providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
 
     fixture = TestBed.createComponent(WebcomponentPluginComponent);
@@ -36,6 +38,8 @@ describe('WebcomponentPluginComponent', () => {
     expect(component).toBeTruthy();
     expect(component.params()['card-size']).toBe('1x1');
     expect(component.params()['title']).toBe('Custom WebComponent');
+    expect(component.params()['theme']).toBe('emerald');
+    expect(component.params()['theme-mode']).toBe('light');
     expect(component.params()['color']).toBe('blue');
   });
 

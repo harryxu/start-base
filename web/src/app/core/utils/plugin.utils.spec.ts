@@ -25,7 +25,7 @@ describe('Plugin Utilities', () => {
   });
 
   describe('buildPluginParams', () => {
-    it('should combine fixed parameters with custom parameters', () => {
+    it('should combine fixed parameters with custom parameters including default theme and theme-mode', () => {
       const site: Site = {
         id: 1,
         url: 'https://example.com',
@@ -43,8 +43,32 @@ describe('Plugin Utilities', () => {
         'card-size': '2x1',
         title: 'My Title',
         description: 'My Description',
+        theme: 'emerald',
+        'theme-mode': 'light',
         apiKey: 'secret123',
         refresh: '60',
+      });
+    });
+
+    it('should pass custom theme and theme-mode when provided', () => {
+      const site: Site = {
+        id: 2,
+        url: 'https://example.com',
+        title: 'Dark Widget',
+        description: null,
+        icon_url: null,
+        sort_order: 1,
+        group_id: null,
+      };
+
+      const params = buildPluginParams(site, '1x1', 'dracula', 'dark');
+
+      expect(params).toEqual({
+        'card-size': '1x1',
+        title: 'Dark Widget',
+        description: '',
+        theme: 'dracula',
+        'theme-mode': 'dark',
       });
     });
   });

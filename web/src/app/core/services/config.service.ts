@@ -12,6 +12,15 @@ import {
 export { SUPPORTED_THEMES };
 export type { ThemeName };
 
+export const DARK_THEMES = new Set<string>([
+  'coffee',
+  'business',
+  'night',
+  'dark',
+  'dim',
+  'dracula',
+]);
+
 @Service()
 export class ConfigService {
   private api = inject(ApiService);
@@ -21,6 +30,10 @@ export class ConfigService {
 
   pageTitle = signal<string>('Start Base');
   theme = signal<string>('emerald');
+
+  themeMode = computed<'light' | 'dark'>(() =>
+    DARK_THEMES.has(this.theme()) ? 'dark' : 'light',
+  );
   bgUrl = signal<string | null>(null);
   accessMode = signal<string>('none_guard');
   siteViewMode = signal<SiteViewMode>('full');

@@ -3,6 +3,7 @@ import { describe, beforeEach, it, expect } from 'vitest';
 
 import { IframePluginComponent } from './iframe-plugin.component';
 import type { Site } from '../../core/models/types';
+import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
 
 describe('IframePluginComponent', () => {
   let component: IframePluginComponent;
@@ -23,6 +24,7 @@ describe('IframePluginComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [IframePluginComponent],
+      providers: [...COMMON_TEST_PROVIDERS],
     }).compileComponents();
 
     fixture = TestBed.createComponent(IframePluginComponent);
@@ -32,7 +34,7 @@ describe('IframePluginComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create and render iframe with title and query parameters', () => {
+  it('should create and render iframe with title and query parameters including theme', () => {
     expect(component).toBeTruthy();
     const iframeEl: HTMLIFrameElement = fixture.nativeElement.querySelector('iframe');
     expect(iframeEl).toBeTruthy();
@@ -43,6 +45,8 @@ describe('IframePluginComponent', () => {
     expect(src).toContain('https://example.com/widget.html');
     expect(src).toContain('card-size=2x1');
     expect(src).toContain('title=Weather+Widget');
+    expect(src).toContain('theme=emerald');
+    expect(src).toContain('theme-mode=light');
     expect(src).toContain('apiKey=123');
     expect(src).toContain('city=Beijing');
   });

@@ -31,6 +31,8 @@ When rendering a plugin, Start Base automatically injects two sets of parameters
 | `card-size` | string | Dimension key of the card within the grid. | `'1x1'`, `'2x1'`, `'1x2'`, `'2x2'` |
 | `title` | string | Configured title of the plugin. | `'Weather Widget'` |
 | `description` | string | Optional description text. | `'Real-time forecast'` |
+| `theme` | string | Currently active system theme name. | `'emerald'`, `'dark'`, `'night'`, `'corporate'`, etc. |
+| `theme-mode` | string | Currently active theme mode. | `'light'` or `'dark'` |
 
 ### 2.2 Custom User Parameters
 
@@ -43,7 +45,7 @@ refreshInterval=30
 ```
 
 - Empty lines and lines starting with `#` are ignored.
-- For **Iframe Plugins**, all parameters are appended as **URL Query Strings** (`?card-size=2x1&city=London...`).
+- For **Iframe Plugins**, all parameters are appended as **URL Query Strings** (`?card-size=2x1&theme=emerald&theme-mode=light&city=London...`).
 - For **Web Component Plugins**, all parameters are passed as **DOM Attributes** and as a property object on the element or lifecycle context.
 
 ---
@@ -58,6 +60,8 @@ An Iframe plugin is a standard web page (HTML/CSS/JS) hosted on any web server o
 const params = new URLSearchParams(window.location.search);
 const cardSize = params.get('card-size'); // e.g., '2x1'
 const title = params.get('title');
+const theme = params.get('theme'); // e.g., 'emerald', 'dark', 'dracula'
+const themeMode = params.get('theme-mode'); // 'light' | 'dark'
 const city = params.get('city') || 'London';
 ```
 
@@ -127,10 +131,11 @@ export default WeatherPlugin;
 ```javascript
 export default {
   mount(container, props) {
+    const isDark = props['theme-mode'] === 'dark';
     container.innerHTML = `
-      <div class="p-3 h-full flex flex-col justify-between">
+      <div class="p-3 h-full flex flex-col justify-between" data-theme="${props.theme}">
         <span class="font-bold text-sm">${props.title || 'Widget'}</span>
-        <span class="text-xs opacity-70">Size: ${props['card-size']}</span>
+        <span class="text-xs opacity-70">Size: ${props['card-size']} | Theme: ${props.theme} (${props['theme-mode']})</span>
       </div>
     `;
   },
