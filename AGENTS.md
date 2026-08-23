@@ -6,6 +6,8 @@
 
 ```
 start-base/
+├── .agents/
+│   └── session-summary/ ← Session handover summaries
 ├── server/            ← Python FastAPI backend
 │   ├── app/           ← Core application logic (models, database, routers, services)
 │   ├── alembic/       ← Database migrations
@@ -108,3 +110,10 @@ When backend API specifications and schemas are needed, fetch the OpenAPI schema
   - Keep tests green across Python backend (`server/tests/`) and Angular frontend (`web/`).
   - Frontend Angular test coverage should prioritize **business logic and functional workflows** (e.g., state transformations, service interactions, event handling). Purely presentational details (e.g., specific CSS styling classes or static UI prompt messages) do not require exhaustive test assertions.
   - When making targeted code changes, pass the `--include` flag to `ng test` (e.g., `pnpm ng test --no-watch --include src/app/path/to/file.spec.ts`) to run unit tests specifically for the modified/added components or services. Only run the full test suite (`pnpm ng test --no-watch`) when changes impact widespread files across the codebase.
+
+## Session Summaries
+
+When compressing and summarizing the current session into a handover document for subsequent sessions to use as context:
+- Save the summary document to `.agents/session-summary/`.
+- Name the file with the format: `{datetime}-{topic}.md` (e.g. `2026-08-24-plugin-cache-handover.md` or `20260824-011800-plugin-cache.md`).
+
