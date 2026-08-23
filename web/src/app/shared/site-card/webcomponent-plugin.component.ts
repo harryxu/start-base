@@ -13,7 +13,7 @@ import { LucideAlertCircle } from '@lucide/angular';
 
 import type { Site } from '../../core/models/types';
 import { ConfigService } from '../../core/services/config.service';
-import { buildPluginParams } from '../../core/utils/plugin.utils';
+import { buildIframeUrl, buildPluginParams } from '../../core/utils/plugin.utils';
 
 export interface PluginLifecycle {
   mount(container: HTMLElement, props: Record<string, string>): void;
@@ -69,9 +69,16 @@ export class WebcomponentPluginComponent implements OnDestroy {
     return buildPluginParams(this.site(), this.sizeKey(), theme, themeMode);
   });
 
+  resolvedUrl = computed(() => {
+    const s = this.site();
+    const targetUrl = s.plugin_cached_url || s.url;
+    const params = this.params();
+    return buildIframeUrl(targetUrl, params);
+  });
+
   constructor() {
     effect(() => {
-      const url = this.site().url;
+      const url = this.resolvedUrl();
       const params = this.params();
       this.loadAndMountPlugin(url, params);
     });

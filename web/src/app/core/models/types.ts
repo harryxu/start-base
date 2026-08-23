@@ -26,6 +26,7 @@ export interface Site {
   row_span?: number;
   site_type?: SiteType;
   plugin_params?: string | null;
+  plugin_cached_url?: string | null;
 }
 
 /**

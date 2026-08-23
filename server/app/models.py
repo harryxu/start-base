@@ -166,6 +166,7 @@ class SiteRead(SQLModel):
     row_span: int
     site_type: str
     plugin_params: str | None = None
+    plugin_cached_url: str | None = None
 
 
 class GroupWithSites(GroupRead):

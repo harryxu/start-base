@@ -153,6 +153,37 @@ You can write plugins using modern frameworks and bundle them into a single `.js
 - **React Components in Web Components**: [React createRoot API](https://react.dev/reference/react-dom/client/createRoot) (render React trees inside `connectedCallback`)
 - **Vite Library Mode (Single JS Bundle)**: [Vite Guide - Library Mode](https://vite.dev/guide/build.html#library-mode)
 
+### 4.4 Server-Side Caching & Zero-CORS Architecture
+
+To ensure 100% reliability, offline resilience, and eliminate browser CORS issues across domains or ports:
+
+1. **Automatic Server-Side Download**: When a `Web Component` site is saved or updated, the Start Base backend automatically fetches the remote JS file via `httpx` and caches it into `server/data/files/plugins/{hash}-{sanitized_name}.js`.
+2. **Deterministic Deduplication**: The filename is derived from a 16-character SHA-256 hash of the normalized URL plus the original script name (e.g. `a1b2c3d4e5f67890-demo-plugin.js`). If multiple cards reference the exact same plugin URL, they share a single copy on disk and in browser module cache.
+3. **Same-Origin Static Delivery**: The frontend loads the plugin via `/static/plugins/{hash}-{sanitized_name}.js`, completely bypassing third-party CORS limitations.
+4. **On-Demand Synchronization**: Triggering `POST /api/sites/{id}/sync-plugin` forces the server to re-fetch the latest script from the remote URL and update the local cached snapshot.
+5. **Automatic Cleanup (GC)**: When a site is deleted or changes its URL, unreferenced plugin cache files are automatically purged from disk.
+
+### 4.5 Ready-to-use Demo & Local Testing
+
+A complete ready-to-run demo Web Component plugin is located at [`docs/demo-plugin.js`](./demo-plugin.js).
+
+To test locally, launch any standard HTTP server (CORS headers are optional since Start Base backend handles the download):
+
+```bash
+# Start server in docs directory (or use python3 docs/serve.py 8016)
+cd docs
+python3 -m http.server 8016
+```
+
+Then in Start Base:
+- **Plugin URL**: `http://localhost:8016/demo-plugin.js`
+- **Plugin Type**: `Web Component`
+- **Custom Parameters**:
+  ```text
+  author=YourName
+  greeting=Hello World!
+  ```
+
 ---
 
 ## 5. Adding and Configuring Plugins in Start Base

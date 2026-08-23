@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models import BoardRead, Group, GroupWithSites, Site, SiteRead
+from app.services.plugin_service import to_site_read
 
 router = APIRouter(prefix="/api/board", tags=["board"])
 
@@ -20,7 +21,7 @@ def get_board(session: Session = Depends(get_session)) -> BoardRead:
     ungrouped_sites: list[SiteRead] = []
 
     for site in sites:
-        site_read = SiteRead.model_validate(site)
+        site_read = to_site_read(site)
         if site.group_id is None or site.group_id not in valid_group_ids:
             ungrouped_sites.append(site_read)
         else:
