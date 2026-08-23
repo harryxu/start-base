@@ -108,7 +108,8 @@ When backend API specifications and schemas are needed, fetch the OpenAPI schema
   - **Minimalism & Cleanliness**: Only add essential Tailwind utility classes to HTML elements. Do NOT add redundant or useless classes (e.g. default resets like `py-0`, `min-h-0`, `leading-none`, duplicate sizing or flex properties) that clutter the template and make code hard to read and maintain. Rely on DaisyUI's built-in component styles whenever possible.
 - **Testing**:
   - Keep tests green across Python backend (`server/tests/`) and Angular frontend (`web/`).
-  - Frontend Angular test coverage should prioritize **business logic and functional workflows** (e.g., state transformations, service interactions, event handling). Purely presentational details (e.g., specific CSS styling classes or static UI prompt messages) do not require exhaustive test assertions.
+  - Frontend Angular test coverage should focus exclusively on **core business logic and functional workflows** (e.g., state transformations, service interactions, form submissions, event handling).
+  - **No tests for purely presentational changes**: Minor UI modifications (e.g., adding/changing icons, CSS/Tailwind styling tweaks, layout adjustments, static labels/templates) do **not** require writing or updating unit tests.
   - When making targeted code changes, pass the `--include` flag to `ng test` (e.g., `pnpm ng test --no-watch --include src/app/path/to/file.spec.ts`) to run unit tests specifically for the modified/added components or services. Only run the full test suite (`pnpm ng test --no-watch`) when changes impact widespread files across the codebase.
 
 ## Session Summaries
