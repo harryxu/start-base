@@ -19,3 +19,22 @@
   }
 }
 
+/* Floating Action Button (FAB) */
+.fab-edit-toggle {
+  &.is-default-mode {
+    border: none;
+    background-color: color-mix(in oklab, var(--color-base-100) 40%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: color-mix(in oklab, var(--color-base-content) 55%, transparent);
+    box-shadow:
+      0 6px 20px color-mix(in oklab, var(--color-base-content) 12%, transparent),
+      0 2px 6px color-mix(in oklab, var(--color-base-content) 8%, transparent);
+
+    &:hover {
+      background-color: color-mix(in oklab, var(--color-base-100) 80%, transparent);
+      color: var(--color-base-content);
+    }
+  }
+}
+
