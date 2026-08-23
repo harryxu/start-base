@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { LucideGlobe, LucideUpload, LucideX } from '@lucide/angular';
+import { LucideGlobe, LucideLink, LucidePuzzle, LucideUpload, LucideX } from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService, API_BASE } from '../../core/api/api.service';
@@ -12,7 +12,7 @@ import { BoardService } from '../../core/services/board.service';
 @Component({
   selector: 'app-site-form',
   standalone: true,
-  imports: [FormsModule, CdkTrapFocus, LucideX, LucideGlobe, LucideUpload],
+  imports: [FormsModule, CdkTrapFocus, LucideX, LucideGlobe, LucideUpload, LucideLink, LucidePuzzle],
   template: `
     <!-- DaisyUI modal (modal-open keeps it visible while rendered) -->
     <div
@@ -26,9 +26,16 @@ import { BoardService } from '../../core/services/board.service';
       <div class="modal-box max-w-md p-0 flex flex-col max-h-[90vh] my-auto">
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-base-200 shrink-0">
-          <h2 class="text-sm font-semibold">
-            {{ site() ? (isPluginMode() ? 'Edit Plugin' : 'Edit Site') : (isPluginMode() ? 'Add Plugin' : 'Add Site') }}
-          </h2>
+          <div class="flex items-center gap-2">
+            @if (isPluginMode()) {
+              <svg lucidePuzzle class="w-4 h-4 text-primary"></svg>
+            } @else {
+              <svg lucideLink class="w-4 h-4 text-primary"></svg>
+            }
+            <h2 class="text-sm font-semibold">
+              {{ site() ? (isPluginMode() ? 'Edit Plugin' : 'Edit Site') : (isPluginMode() ? 'Add Plugin' : 'Add Site') }}
+            </h2>
+          </div>
           <button
             class="btn btn-ghost btn-sm btn-square"
             (click)="closed.emit()"
