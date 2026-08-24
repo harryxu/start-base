@@ -9,7 +9,6 @@ import {
   input,
   signal,
 } from '@angular/core';
-import { LucideAlertCircle } from '@lucide/angular';
 
 import type { Site } from '../../core/models/types';
 import { ConfigService } from '../../core/services/config.service';
@@ -24,12 +23,13 @@ export interface PluginLifecycle {
 @Component({
   selector: 'app-webcomponent-plugin',
   standalone: true,
-  imports: [LucideAlertCircle],
   template: `
     <div class="w-full h-full relative rounded-[10px] overflow-hidden bg-base-100 flex flex-col">
       @if (errorMessage()) {
-        <div class="w-full h-full flex flex-col items-center justify-center p-3 text-center text-error gap-1">
-          <svg lucideAlertCircle class="w-5 h-5 opacity-80"></svg>
+        <div
+          class="w-full h-full flex flex-col items-center justify-center p-3 text-center text-error gap-1"
+        >
+          <svg LucideCircleAlert class="w-5 h-5 opacity-80"></svg>
           <span class="text-xs font-medium">{{ errorMessage() }}</span>
           <span class="text-[10px] opacity-60 max-w-full truncate">{{ site().url }}</span>
         </div>
@@ -38,7 +38,11 @@ export interface PluginLifecycle {
           <span class="loading loading-spinner loading-xs text-base-content/40"></span>
         </div>
       }
-      <div #mountPoint class="w-full h-full flex-1 min-h-0" [class.hidden]="isLoading() || errorMessage()"></div>
+      <div
+        #mountPoint
+        class="w-full h-full flex-1 min-h-0"
+        [class.hidden]="isLoading() || errorMessage()"
+      ></div>
     </div>
   `,
   styles: `
