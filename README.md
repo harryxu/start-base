@@ -10,9 +10,10 @@ Screencast demo: https://www.youtube.com/watch?v=5lDdiElmCYU
 
 - ✨ **Intuitive UI** — Manage all settings and sites directly in the UI without editing configuration files
 - 📌 **Grouped Sites** — Organize sites into custom groups
-- ⚡ **Drag & Drop** — Reorder sites and groups, long-press to drag sites.
+- ⚡ **Drag & Drop** — Reorder sites and groups, long-press to drag sites
 - 🖼️ **Auto Metadata** — Automatically fetch page titles and favicons
 - 📱 **Responsive Design** — Works seamlessly on desktop and mobile
+- 🧩 **Extensible** — Use the [plugin system](./docs/plugin.md) to add more functionality
 
 ## Quick Start
 
