@@ -3,7 +3,7 @@
  * @version 1.0.0
  * @author StartBase
  * @description Web Component Plugin with Network Proxy support
- * @allow-host api.github.com
+ * @allow-host jsonplaceholder.typicode.com
  *
  * Demonstrates:
  * 1. Fixed system parameters: card-size, title, description, theme, theme-mode
@@ -21,8 +21,9 @@ class StartBaseDemoPlugin extends HTMLElement {
   constructor() {
     super();
     this.count = 0;
-    this.zenQuote = '';
-    this.isLoadingQuote = false;
+    this.userCount = null;
+    this.userStatus = '';
+    this.isLoadingUsers = false;
   }
 
   connectedCallback() {
@@ -35,26 +36,29 @@ class StartBaseDemoPlugin extends HTMLElement {
     }
   }
 
-  async fetchQuote() {
-    if (this.isLoadingQuote) return;
-    this.isLoadingQuote = true;
+  async fetchUsers() {
+    if (this.isLoadingUsers) return;
+    this.isLoadingUsers = true;
     this.render();
 
     try {
       if (this.context && typeof this.context.fetch === 'function') {
-        const resp = await this.context.fetch('https://api.github.com/zen');
+        const resp = await this.context.fetch('https://jsonplaceholder.typicode.com/users');
         if (resp.ok) {
-          this.zenQuote = await resp.text();
+          const users = await resp.json();
+          const count = Array.isArray(users) ? users.length : 0;
+          this.userCount = count;
+          this.userStatus = `${count} users`;
         } else {
-          this.zenQuote = `Error: HTTP ${resp.status}`;
+          this.userStatus = `Error: HTTP ${resp.status}`;
         }
       } else {
-        this.zenQuote = 'No context.fetch available';
+        this.userStatus = 'No context.fetch available';
       }
     } catch (err) {
-      this.zenQuote = `Fetch failed: ${err.message || err}`;
+      this.userStatus = `Fetch failed: ${err.message || err}`;
     } finally {
-      this.isLoadingQuote = false;
+      this.isLoadingUsers = false;
       this.render();
     }
   }
@@ -84,7 +88,7 @@ class StartBaseDemoPlugin extends HTMLElement {
           <span class="badge badge-xs badge-neutral shrink-0 text-[9px] uppercase font-mono">${cardSize}</span>
         </div>
 
-        <!-- Body / Counter & Zen -->
+        <!-- Body / Counter & Users -->
         <div class="flex flex-col gap-1 my-1">
           <div class="flex items-center justify-between bg-base-200/60 rounded-lg p-2 gap-2">
             <div class="text-[11px] leading-tight min-w-0 truncate">
@@ -97,9 +101,10 @@ class StartBaseDemoPlugin extends HTMLElement {
             </button>
           </div>
 
-          ${this.zenQuote ? `
-            <div class="bg-base-200/40 rounded p-1.5 text-[10px] italic text-base-content/80 truncate">
-              "${this.zenQuote}"
+          ${this.userStatus ? `
+            <div class="bg-base-200/40 rounded p-1.5 text-[10px] text-base-content/80 truncate flex items-center justify-between">
+              <span>👥 Users:</span>
+              <span class="font-semibold font-mono">${this.userStatus}</span>
             </div>
           ` : ''}
         </div>
@@ -108,8 +113,8 @@ class StartBaseDemoPlugin extends HTMLElement {
         <div class="flex items-center justify-between text-[10px] opacity-70 pt-0.5">
           <span class="truncate font-mono">${theme} (${themeMode})</span>
           <div class="flex items-center gap-1">
-            <button id="fetch-quote-btn" type="button" class="btn btn-ghost btn-xs text-[10px] px-1.5 h-6 min-h-0 font-normal">
-              ${this.isLoadingQuote ? 'Loading...' : 'API ⚡'}
+            <button id="fetch-users-btn" type="button" class="btn btn-ghost btn-xs text-[10px] px-1.5 h-6 min-h-0 font-normal">
+              ${this.isLoadingUsers ? 'Loading...' : 'Users ⚡'}
             </button>
             <button id="open-modal-btn" type="button" class="btn btn-ghost btn-xs text-[10px] px-1.5 h-6 min-h-0 font-normal">
               Info ↗
@@ -131,7 +136,7 @@ class StartBaseDemoPlugin extends HTMLElement {
                 <li>author=${author}</li>
                 <li>greeting=${greeting}</li>
               </ul>
-              ${this.zenQuote ? `<p><strong>Zen API:</strong> <span class="italic text-[11px]">"${this.zenQuote}"</span></p>` : ''}
+              ${this.userStatus ? `<p><strong>Users API:</strong> <span class="text-[11px] font-mono">${this.userStatus}</span></p>` : ''}
             </div>
             <div class="modal-action mt-3">
               <button id="close-modal-btn" type="button" class="btn btn-sm btn-primary w-full">Close</button>
@@ -156,11 +161,11 @@ class StartBaseDemoPlugin extends HTMLElement {
     }
 
     // Proxy API fetch button interaction
-    const fetchBtn = this.querySelector('#fetch-quote-btn');
+    const fetchBtn = this.querySelector('#fetch-users-btn');
     if (fetchBtn) {
       fetchBtn.onclick = (e) => {
         e.stopPropagation();
-        this.fetchQuote();
+        this.fetchUsers();
       };
     }
 

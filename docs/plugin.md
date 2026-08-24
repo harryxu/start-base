@@ -230,9 +230,10 @@ export default WeatherPlugin;
 export default {
   async mount(container, props, context) {
     container.innerHTML = '<span class="loading loading-spinner"></span>';
-    const resp = await context.fetch('https://api.github.com/zen');
-    const text = await resp.text();
-    container.innerHTML = `<div class="p-2 italic text-xs">"${text}"</div>`;
+    const resp = await context.fetch('https://jsonplaceholder.typicode.com/users');
+    const users = await resp.json();
+    const count = Array.isArray(users) ? users.length : 0;
+    container.innerHTML = `<div class="p-2 text-xs">Users: ${count}</div>`;
   },
   unmount(container) {
     container.innerHTML = '';
