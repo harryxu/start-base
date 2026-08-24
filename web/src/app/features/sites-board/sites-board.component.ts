@@ -53,6 +53,15 @@ import { ConfigService } from '../../core/services/config.service';
     `
       .site-grid {
         grid-auto-flow: dense;
+        grid-auto-rows: var(--site-row-height, 7rem);
+
+        &.view-mode-icon {
+          --site-row-height: 4.5rem;
+        }
+
+        &.view-mode-text {
+          --site-row-height: 2.75rem;
+        }
 
         &.has-border {
           gap: 0.75rem;
