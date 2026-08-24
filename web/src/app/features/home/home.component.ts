@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 
-import { LucideInfo, LucideX } from '@lucide/angular';
+import { LucideCheck, LucideInfo, LucidePencil, LucideX } from '@lucide/angular';
 import type { Group, Site } from '../../core/models/types';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { ConfigService } from '../../core/services/config.service';
 import { AuthService } from '../../core/services/auth.service';
 import { BoardService } from '../../core/services/board.service';
+import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { SitesBoardComponent } from '../sites-board/sites-board.component';
 import { SiteFormComponent } from '../site-form/site-form.component';
 import { GroupFormComponent } from '../group-form/group-form.component';
@@ -24,6 +25,8 @@ import { SettingsModalComponent } from '../settings-modal/settings-modal.compone
     SettingsModalComponent,
     LucideInfo,
     LucideX,
+    LucidePencil,
+    LucideCheck,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -32,6 +35,12 @@ export class HomeComponent {
   configService = inject(ConfigService);
   authService = inject(AuthService);
   boardService = inject(BoardService);
+  globalMenuService = inject(GlobalMenuService);
+
+  toggleEditMode(): void {
+    this.globalMenuService.closeAll();
+    this.configService.toggleEditMode();
+  }
 
   // ---- UI state ----
 

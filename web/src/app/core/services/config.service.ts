@@ -12,6 +12,15 @@ import {
 export { SUPPORTED_THEMES };
 export type { ThemeName };
 
+export const DARK_THEMES = new Set<string>([
+  'coffee',
+  'business',
+  'night',
+  'dark',
+  'dim',
+  'dracula',
+]);
+
 @Service()
 export class ConfigService {
   private api = inject(ApiService);
@@ -21,10 +30,15 @@ export class ConfigService {
 
   pageTitle = signal<string>('Start Base');
   theme = signal<string>('emerald');
+
+  themeMode = computed<'light' | 'dark'>(() =>
+    DARK_THEMES.has(this.theme()) ? 'dark' : 'light',
+  );
   bgUrl = signal<string | null>(null);
   accessMode = signal<string>('none_guard');
   siteViewMode = signal<SiteViewMode>('full');
   siteBorder = signal<boolean>(false);
+  editMode = signal<boolean>(false);
   isDemo = signal<boolean>(false);
   demoMsg = signal<string>('');
 
@@ -38,6 +52,14 @@ export class ConfigService {
   isReadOnly = computed(
     () => this.accessMode() !== 'none_guard' && this.authService.currentUser() === null,
   );
+
+  toggleEditMode(): void {
+    if (this.isReadOnly()) {
+      this.editMode.set(false);
+      return;
+    }
+    this.editMode.update((v) => !v);
+  }
 
   fullBgUrl = computed(() => {
     const url = this.bgUrl();

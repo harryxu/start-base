@@ -130,13 +130,7 @@
 
 @layer utilities {
   .pb-safe-bottom {
-    padding-bottom: max(6rem, calc(4rem + env(safe-area-inset-bottom, 0px)));
-  }
-
-  @media (min-width: 640px) {
-    .pb-safe-bottom {
-      padding-bottom: max(3rem, calc(2rem + env(safe-area-inset-bottom, 0px)));
-    }
+    padding-bottom: max(8rem, calc(4rem + env(safe-area-inset-bottom, 0px)));
   }
 
   .modal,
@@ -158,5 +152,10 @@
   .select:open {
     --input-color: color-mix(in oklab, var(--color-info) 25%, var(--color-base-200));
     outline-offset: 0;
+  }
+
+  /* Prevent iframe from absorbing pointer events during drag-and-drop */
+  .cdk-drop-list-dragging iframe {
+    pointer-events: none;
   }
 }

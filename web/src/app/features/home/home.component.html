@@ -79,4 +79,31 @@
         (confirmed)="confirmDeleteGroup()" (cancelled)="cancelDeleteGroup()" />
     }
   }
+
+  <!-- ===== FLOATING EDIT MODE TOGGLE BUTTON ===== -->
+  @if (!configService.isReadOnly()) {
+    <div class="fixed bottom-6 right-6 z-40">
+      <button
+        type="button"
+        (click)="toggleEditMode()"
+        class="fab-edit-toggle btn btn-circle flex items-center justify-center cursor-pointer"
+        [class.btn-primary]="configService.editMode()"
+        [class.text-primary-content]="configService.editMode()"
+        [class.ring-2]="configService.editMode()"
+        [class.ring-primary]="configService.editMode()"
+        [class.ring-offset-2]="configService.editMode()"
+        [class.ring-offset-base-100]="configService.editMode()"
+        [class.shadow-xl]="configService.editMode()"
+        [class.is-default-mode]="!configService.editMode()"
+        [attr.aria-label]="configService.editMode() ? 'Exit Edit Mode' : 'Edit Layout & Widgets'"
+        [title]="configService.editMode() ? 'Exit Edit Mode' : 'Edit Layout & Widgets'"
+      >
+        @if (configService.editMode()) {
+          <svg lucideCheck class="w-5 h-5"></svg>
+        } @else {
+          <svg lucidePencil class="w-5 h-5"></svg>
+        }
+      </button>
+    </div>
+  }
 </div>

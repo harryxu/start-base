@@ -69,6 +69,10 @@ export class ApiService {
     return this.http.post<void>(`${API_BASE}/api/sites/reorder`, items);
   }
 
+  syncSitePlugin(id: number): Observable<Site> {
+    return this.http.post<Site>(`${API_BASE}/api/sites/${id}/sync-plugin`, {});
+  }
+
   uploadIcon(file: File, folder: string = 'icons'): Observable<{ url: string }> {
     return this.uploadImage(file, folder);
   }

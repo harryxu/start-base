@@ -2,7 +2,7 @@
 
 Lightweight dashboard to quickly access your websites.
 
-![Screen 1](./assets/screen1.png)
+![Screen 1](./docs/assets/screen1.png)
 
 Screencast demo: https://www.youtube.com/watch?v=5lDdiElmCYU
 
@@ -10,9 +10,10 @@ Screencast demo: https://www.youtube.com/watch?v=5lDdiElmCYU
 
 - ✨ **Intuitive UI** — Manage all settings and sites directly in the UI without editing configuration files
 - 📌 **Grouped Sites** — Organize sites into custom groups
-- ⚡ **Drag & Drop** — Reorder sites and groups, long-press to drag sites.
+- ⚡ **Drag & Drop** — Reorder sites and groups, long-press to drag sites
 - 🖼️ **Auto Metadata** — Automatically fetch page titles and favicons
 - 📱 **Responsive Design** — Works seamlessly on desktop and mobile
+- 🧩 **Extensible** — Use the [plugin system](./docs/plugin.md) to add more functionality
 
 ## Quick Start
 
@@ -24,4 +25,4 @@ docker run -p 5600:5600 -v "$(pwd)/data:/app/data" harryxu/startbase:latest
 
 Upload your favorite background image.
 
-![Screen 2](./assets/screen2.png)
+![Screen 2](./docs/assets/screen2.png)

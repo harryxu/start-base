@@ -84,4 +84,14 @@ describe('ConfigService', () => {
 
     expect(service.siteBorder()).toBe(false);
   });
+
+  it('should toggle editMode and respect isReadOnly', () => {
+    expect(service.editMode()).toBe(false);
+
+    service.toggleEditMode();
+    expect(service.editMode()).toBe(true);
+
+    service.toggleEditMode();
+    expect(service.editMode()).toBe(false);
+  });
 });

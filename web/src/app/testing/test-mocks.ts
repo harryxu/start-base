@@ -11,11 +11,16 @@ const mockCurrentUser = signal<{ id: number; username: string } | null>(null);
 export const mockConfigService = {
   pageTitle: signal('Start Base'),
   theme: signal('emerald'),
+  themeMode: signal<'light' | 'dark'>('light'),
   bgUrl: signal<string | null>(null),
   fullBgUrl: computed(() => ''),
   accessMode: mockAccessMode,
   siteViewMode: signal<SiteViewMode>('full'),
   siteBorder: signal<boolean>(false),
+  editMode: signal<boolean>(false),
+  toggleEditMode: function () {
+    this.editMode.update((v: boolean) => !v);
+  },
   isReadOnly: computed(() => mockAccessMode() !== 'none_guard' && mockCurrentUser() === null),
   loadConfig: async () => {},
 };

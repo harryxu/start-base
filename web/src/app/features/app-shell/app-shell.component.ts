@@ -13,7 +13,7 @@ import { HomeComponent } from '../home/home.component';
       <app-home />
     } @else {
       <!-- Initial loading state while checking system config & auth -->
-      <div class="min-h-screen min-h-dvh flex items-center justify-center bg-base-100">
+      <div class="min-h-screen flex items-center justify-center bg-base-100">
         <span class="loading loading-spinner loading-md text-primary"></span>
       </div>
     }

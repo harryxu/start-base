@@ -209,4 +209,89 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
     expect(cardEl.classList.contains('has-border')).toBe(false);
   });
+
+  it('should render app-iframe-plugin when site_type is iframe', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'iframe',
+      url: 'https://example.com/widget.html',
+    });
+    fixture.detectChanges();
+
+    const iframePluginEl = fixture.nativeElement.querySelector('app-iframe-plugin');
+    const siteLinkEl = fixture.nativeElement.querySelector('.site-link');
+    expect(iframePluginEl).toBeTruthy();
+    expect(siteLinkEl).toBeFalsy();
+  });
+
+  it('should render app-webcomponent-plugin when site_type is webcomponent', () => {
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'webcomponent',
+      url: 'https://example.com/plugin.js',
+    });
+    fixture.detectChanges();
+
+    const wcPluginEl = fixture.nativeElement.querySelector('app-webcomponent-plugin');
+    const siteLinkEl = fixture.nativeElement.querySelector('.site-link');
+    expect(wcPluginEl).toBeTruthy();
+    expect(siteLinkEl).toBeFalsy();
+  });
+
+  it('should not render drag handle and action menu when editMode is false', () => {
+    component.configService.editMode.set(false);
+    fixture.detectChanges();
+
+    const dragHandle = fixture.nativeElement.querySelector('.drag-handle');
+    const menuBtn = fixture.nativeElement.querySelector('.action-menu-btn');
+    expect(dragHandle).toBeFalsy();
+    expect(menuBtn).toBeFalsy();
+  });
+
+  it('should render top-left drag handle and top-right action menu button when editMode is true', () => {
+    component.configService.editMode.set(true);
+    fixture.detectChanges();
+
+    const dragHandle = fixture.nativeElement.querySelector('.drag-handle');
+    const menuBtn = fixture.nativeElement.querySelector('.action-menu-btn');
+
+    expect(dragHandle).toBeTruthy();
+    expect(menuBtn).toBeTruthy();
+  });
+
+  it('should open context menu when clicking top-right action menu button in editMode', () => {
+    component.configService.editMode.set(true);
+    fixture.detectChanges();
+
+    const menuBtn = fixture.nativeElement.querySelector('.action-menu-btn');
+    menuBtn.click();
+    fixture.detectChanges();
+
+    const menuEl = document.querySelector('.menu');
+    expect(menuEl).toBeTruthy();
+    expect(menuEl?.textContent).toContain('Edit');
+    expect(menuEl?.textContent).toContain('Delete');
+  });
+
+  it('should disable context menu for iframe plugins when editMode is false', () => {
+    component.configService.editMode.set(false);
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'iframe',
+    });
+    fixture.detectChanges();
+
+    expect(component.canUseContextMenu()).toBe(false);
+  });
+
+  it('should enable context menu for iframe plugins when editMode is true', () => {
+    component.configService.editMode.set(true);
+    fixture.componentRef.setInput('site', {
+      ...mockSite,
+      site_type: 'iframe',
+    });
+    fixture.detectChanges();
+
+    expect(component.canUseContextMenu()).toBe(true);
+  });
 });

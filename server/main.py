@@ -68,6 +68,7 @@ app.include_router(system.router)
 
 os.makedirs("data/db", exist_ok=True)
 os.makedirs("data/files/icons", exist_ok=True)
+os.makedirs("data/files/plugins", exist_ok=True)
 app.mount("/static", StaticFiles(directory="data/files"), name="static")
 
 

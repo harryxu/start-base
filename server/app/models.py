@@ -36,7 +36,7 @@ class Group(SQLModel, table=True):
 
 
 class Site(SQLModel, table=True):
-    """A bookmarked website displayed on the dashboard."""
+    """A bookmarked website or plugin displayed on the dashboard."""
 
     id: int | None = Field(default=None, primary_key=True)
     url: str
@@ -47,6 +47,8 @@ class Site(SQLModel, table=True):
     group_id: int | None = Field(default=None, foreign_key="group.id")
     col_span: int = Field(default=1)
     row_span: int = Field(default=1)
+    site_type: str = Field(default="builtin")
+    plugin_params: str | None = Field(default=None)
 
 
 class SystemConfig(SQLModel, table=True):
@@ -135,6 +137,8 @@ class SiteCreate(SQLModel):
     group_id: int | None = None
     col_span: int = 1
     row_span: int = 1
+    site_type: str = "builtin"
+    plugin_params: str | None = None
 
 
 class SiteUpdate(SQLModel):
@@ -146,6 +150,8 @@ class SiteUpdate(SQLModel):
     group_id: int | None = None
     col_span: int | None = None
     row_span: int | None = None
+    site_type: str | None = None
+    plugin_params: str | None = None
 
 
 class SiteRead(SQLModel):
@@ -158,6 +164,9 @@ class SiteRead(SQLModel):
     group_id: int | None
     col_span: int
     row_span: int
+    site_type: str
+    plugin_params: str | None = None
+    plugin_cached_url: str | None = None
 
 
 class GroupWithSites(GroupRead):

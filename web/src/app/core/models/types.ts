@@ -12,6 +12,8 @@ export interface Group {
   sort_order: number;
 }
 
+export type SiteType = 'builtin' | 'iframe' | 'webcomponent';
+
 export interface Site {
   id: number;
   url: string;
@@ -22,6 +24,9 @@ export interface Site {
   group_id: number | null;
   col_span?: number;
   row_span?: number;
+  site_type?: SiteType;
+  plugin_params?: string | null;
+  plugin_cached_url?: string | null;
 }
 
 /**

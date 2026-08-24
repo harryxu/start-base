@@ -212,9 +212,6 @@ def test_update_site_metadata_task(session: Session) -> None:
     ), patch(
         "app.routers.sites.download_icon",
         AsyncMock(return_value="/static/icons/1.png"),
-    ), patch(
-        "app.routers.sites.engine",
-        session.bind,
     ):
         # Run the async background task synchronously in our test thread
         asyncio.run(_update_site_metadata(s.id, s.url))
@@ -226,6 +223,44 @@ def test_update_site_metadata_task(session: Session) -> None:
         assert updated_site is not None
         assert updated_site.title == "Fetched Title"
         assert updated_site.icon_url == "/static/icons/1.png"
+
+
+def test_create_plugin_site(client: TestClient, session: Session) -> None:
+    """Test creating iframe and webcomponent plugin sites with plugin_params."""
+    with patch("app.routers.sites._update_site_metadata") as mock_update:
+        response = client.post(
+            "/api/sites/",
+            json={
+                "url": "https://example.com/widget.html",
+                "site_type": "iframe",
+                "plugin_params": "key1=value1\nkey2=value2",
+                "col_span": 2,
+                "row_span": 1,
+            },
+        )
+        assert response.status_code == 201
+        data = response.json()
+        assert data["site_type"] == "iframe"
+        assert data["plugin_params"] == "key1=value1\nkey2=value2"
+        assert data["col_span"] == 2
+        assert data["row_span"] == 1
+        # Should not trigger metadata scraper for non-builtin sites
+        mock_update.assert_not_called()
+
+        site_id = data["id"]
+        # Update to webcomponent plugin
+        update_res = client.patch(
+            f"/api/sites/{site_id}",
+            json={
+                "site_type": "webcomponent",
+                "plugin_params": "theme=dark\nrefresh=30",
+            },
+        )
+        assert update_res.status_code == 200
+        updated = update_res.json()
+        assert updated["site_type"] == "webcomponent"
+        assert updated["plugin_params"] == "theme=dark\nrefresh=30"
+
 
 
 
