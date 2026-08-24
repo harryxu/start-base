@@ -2,16 +2,14 @@
 
 import json
 from unittest.mock import AsyncMock, patch
+
 import httpx
-import pytest
 from sqlmodel import Session
 
 from app.models import Site
 from app.services.plugin_proxy_service import (
-    extract_api_urls,
     is_ip_blocked,
     is_url_allowed,
-    validate_target_url,
 )
 from app.services.plugin_service import parse_plugin_metadata
 

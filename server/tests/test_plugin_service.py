@@ -1,8 +1,8 @@
 """Unit tests for plugin_service (download, caching, deduplication, and cleanup)."""
 
 import hashlib
-from pathlib import Path
 from unittest.mock import AsyncMock, patch
+
 import httpx
 import pytest
 from sqlmodel import Session, SQLModel, create_engine
@@ -56,6 +56,7 @@ def test_to_site_read():
 
 
 import asyncio
+
 
 def test_download_plugin_and_deduplication(mock_plugins_dir):
     async def _test():

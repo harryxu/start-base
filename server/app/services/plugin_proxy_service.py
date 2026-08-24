@@ -2,12 +2,16 @@
 
 import ipaddress
 import json
+import logging
 import socket
 import urllib.parse
-from fastapi import HTTPException, Response
+
 import httpx
+from fastapi import HTTPException, Response
 
 from app.models import PluginProxyRequest, Site
+
+logger = logging.getLogger(__name__)
 
 MAX_RESPONSE_SIZE = 5 * 1024 * 1024  # 5 MB
 DEFAULT_TIMEOUT = 10.0
@@ -34,8 +38,8 @@ def extract_api_urls(plugin_meta_json: str | None) -> list[str]:
             urls = data.get("api_urls", [])
             if isinstance(urls, list):
                 return [str(u).strip() for u in urls if str(u).strip()]
-    except Exception:
-        pass
+    except (json.JSONDecodeError, TypeError, ValueError) as e:
+        logger.debug("Failed to decode plugin_meta JSON: %s", e)
     return []
 
 
@@ -48,8 +52,8 @@ def normalize_url_for_prefix(url: str) -> str:
             norm_scheme = parsed.scheme.lower()
             norm_netloc = parsed.netloc.lower()
             return urllib.parse.urlunsplit((norm_scheme, norm_netloc, parsed.path, parsed.query, parsed.fragment))
-    except Exception:
-        pass
+    except ValueError as e:
+        logger.debug("Failed to normalize URL prefix '%s': %s", url, e)
     return url
 
 
@@ -90,12 +94,11 @@ def is_ip_blocked(ip_str: str, allow_lan: bool) -> tuple[bool, str]:
             return True, f"Access to cloud metadata / link-local address ({ip_str}) is strictly prohibited."
 
     # If LAN access is NOT allowed, block all private, loopback, and reserved addresses
-    if not allow_lan:
-        if ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_unspecified:
-            return True, (
-                f"Access to private/LAN/loopback address ({ip_str}) is disabled for this plugin. "
-                "You can enable 'Allow LAN Access' in the plugin settings if needed."
-            )
+    if not allow_lan and (ip.is_private or ip.is_loopback or ip.is_reserved or ip.is_unspecified):
+        return True, (
+            f"Access to private/LAN/loopback address ({ip_str}) is disabled for this plugin. "
+            "You can enable 'Allow LAN Access' in the plugin settings if needed."
+        )
 
     return False, ""
 
@@ -111,7 +114,8 @@ def validate_target_url(
 
     try:
         parsed = urllib.parse.urlparse(url.strip())
-    except Exception as e:
+    except ValueError as e:
+        logger.warning("Malformed target URL '%s': %s", url, e)
         return False, f"Malformed URL: {e}", None
 
     if parsed.scheme not in ("http", "https"):
@@ -127,8 +131,10 @@ def validate_target_url(
     if not is_url_allowed(url, api_urls):
         return (
             False,
-            f"URL '{url.strip()}' is not in the allowed api_urls for this plugin. "
-            "Please declare it via '@api_urls' in the plugin metadata.",
+            (
+                f"URL '{url.strip()}' is not in the allowed api_urls for this plugin. "
+                "Please declare it via '@api_urls' in the plugin metadata."
+            ),
             None,
         )
 
@@ -137,6 +143,7 @@ def validate_target_url(
         addr_info = socket.getaddrinfo(hostname, port or (443 if parsed.scheme == "https" else 80))
         resolved_ips = {item[4][0] for item in addr_info if item[4]}
     except socket.gaierror as e:
+        logger.warning("Failed to resolve host '%s': %s", hostname, e)
         return False, f"Failed to resolve host '{hostname}': {e}", None
 
     if not resolved_ips:
@@ -179,7 +186,7 @@ async def forward_plugin_proxy(site: Site, req: PluginProxyRequest) -> Response:
     Execute sanitized, safe HTTP proxy request for a plugin.
     """
     api_urls = extract_api_urls(site.plugin_meta)
-    is_valid, err_msg, parsed_url = validate_target_url(req.url, api_urls, site.allow_lan)
+    is_valid, err_msg, _ = validate_target_url(req.url, api_urls, site.allow_lan)
 
     if not is_valid:
         raise HTTPException(status_code=403, detail=err_msg)
@@ -238,6 +245,11 @@ async def forward_plugin_proxy(site: Site, req: PluginProxyRequest) -> Response:
     except HTTPException:
         raise
     except httpx.TimeoutException:
+        logger.warning("Plugin proxy request to '%s' timed out after %ss", req.url, timeout)
         raise HTTPException(status_code=504, detail=f"Proxy request to '{req.url}' timed out after {timeout}s.")
+    except httpx.HTTPError as e:
+        logger.warning("Plugin proxy HTTP request failed for '%s': %s", req.url, e)
+        raise HTTPException(status_code=502, detail=f"Failed to forward request to '{req.url}': {e}") from e
     except Exception as e:
-        raise HTTPException(status_code=502, detail=f"Failed to forward request to '{req.url}': {e}")
+        logger.exception("Unexpected error in plugin proxy for '%s'", req.url)
+        raise HTTPException(status_code=500, detail="Internal proxy error") from e

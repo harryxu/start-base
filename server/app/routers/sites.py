@@ -7,7 +7,6 @@ from app.models import Site, SiteCreate, SiteRead, SiteReorderItem, SiteUpdate
 from app.services.metadata import download_icon, fetch_site_metadata
 from app.services.plugin_service import (
     cleanup_unused_plugins,
-    download_plugin,
     sync_plugin_for_site,
     to_site_read,
 )

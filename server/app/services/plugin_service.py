@@ -1,13 +1,18 @@
 """Service for downloading, caching, deduplicating, and serving Web Component plugin scripts."""
 
 import hashlib
-from pathlib import Path
+import json
+import logging
 import re
 import urllib.parse
+from pathlib import Path
+
 import httpx
 from sqlmodel import Session, select
 
 from app.models import Site, SiteRead
+
+logger = logging.getLogger(__name__)
 
 PLUGINS_DIR = Path("data/files/plugins")
 
@@ -38,7 +43,7 @@ def get_plugin_filename(url: str) -> str:
     parsed = urllib.parse.urlparse(normalized)
     path_name = Path(parsed.path).name
 
-    if path_name.endswith(".js") or path_name.endswith(".mjs"):
+    if path_name.endswith((".js", ".mjs")):
         base_name = path_name.rsplit(".", 1)[0]
     else:
         base_name = path_name or "plugin"
@@ -63,9 +68,6 @@ def get_plugin_cached_url(url: str) -> str:
     """Get the static URL path for a cached plugin."""
     filename = get_plugin_filename(url)
     return f"/static/plugins/{filename}"
-
-
-import json
 
 
 def parse_plugin_metadata(script_text: str) -> dict | None:
@@ -149,8 +151,9 @@ async def download_plugin(url: str, force: bool = False) -> str | None:
             if resp.status_code == 200:
                 target_path.write_bytes(resp.content)
                 return get_plugin_cached_url(url)
-    except Exception as e:
-        print(f"Warning: Failed to download plugin from {url}: {e}")
+            logger.warning("Failed to download plugin from %s: HTTP %s", url, resp.status_code)
+    except (httpx.HTTPError, OSError) as e:
+        logger.warning("Failed to download plugin from %s: %s", url, e)
         return None
     return None
 
@@ -170,8 +173,8 @@ async def sync_plugin_for_site(site_id: int, url: str, force: bool = False) -> s
     if target_path.exists() and not force:
         try:
             content_bytes = target_path.read_bytes()
-        except Exception:
-            pass
+        except OSError as e:
+            logger.debug("Failed to read cached plugin file %s: %s", target_path, e)
 
     if content_bytes is None:
         try:
@@ -180,8 +183,10 @@ async def sync_plugin_for_site(site_id: int, url: str, force: bool = False) -> s
                 if resp.status_code == 200:
                     content_bytes = resp.content
                     target_path.write_bytes(content_bytes)
-        except Exception as e:
-            print(f"Warning: Failed to download plugin from {url}: {e}")
+                else:
+                    logger.warning("Failed to fetch remote plugin from %s: HTTP %s", url, resp.status_code)
+        except (httpx.HTTPError, OSError) as e:
+            logger.warning("Failed to download plugin from %s: %s", url, e)
             return None
 
     if content_bytes is not None:
@@ -197,8 +202,8 @@ async def sync_plugin_for_site(site_id: int, url: str, force: bool = False) -> s
                     site.plugin_meta = meta_json
                     session.add(site)
                     session.commit()
-        except Exception as e:
-            print(f"Warning: Failed to parse and persist plugin metadata for site {site_id}: {e}")
+        except Exception as e:  # noqa: BLE001
+            logger.warning("Failed to parse and persist plugin metadata for site %s: %s", site_id, e)
 
         return get_plugin_cached_url(url)
 
@@ -219,6 +224,6 @@ def cleanup_unused_plugins(session: Session) -> None:
         if file_path.name not in active_filenames:
             try:
                 file_path.unlink()
-            except Exception as e:
-                print(f"Warning: Failed to remove unused plugin file {file_path}: {e}")
+            except OSError as e:
+                logger.warning("Failed to remove unused plugin file %s: %s", file_path, e)
 
