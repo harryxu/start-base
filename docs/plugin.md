@@ -163,11 +163,99 @@ To ensure 100% reliability, offline resilience, and eliminate browser CORS issue
 4. **On-Demand Synchronization**: Triggering `POST /api/sites/{id}/sync-plugin` forces the server to re-fetch the latest script from the remote URL and update the local cached snapshot.
 5. **Automatic Cleanup (GC)**: When a site is deleted or changes its URL, unreferenced plugin cache files are automatically purged from disk.
 
-### 4.5 Ready-to-use Demo & Local Testing
+### 4.5 Plugin Metadata Annotations
+
+You can declare metadata for your plugin using standard comment blocks (similar to JSDoc or Userscript headers). When the plugin script is downloaded or synced, Start Base automatically parses these annotations and persists them as JSON in the database:
+
+```javascript
+/**
+ * @name Weather & Homelab Widget
+ * @version 1.0.0
+ * @author Developer
+ * @description Real-time forecast & LAN status
+ * @allow-host api.weatherapi.com
+ * @allow-host *.openstreetmap.org
+ * @allow-host 192.168.1.100:8123
+ * @allow-hosts api.github.com, cdn.jsdelivr.net
+ */
+```
+
+| Directive | Description | Example |
+| :--- | :--- | :--- |
+| `@allow-host <host>` | Declares an authorized external host, IP, or wildcard pattern for the network proxy. | `@allow-host api.weatherapi.com`<br>`@allow-host 192.168.1.100:8123`<br>`@allow-host *.github.com` |
+| `@allow-hosts <h1, h2>` | Comma-separated list of authorized hosts. | `@allow-hosts api.github.com, cdn.weather.com` |
+| `@name <name>` | Optional human-readable name for the plugin. | `@name Weather Widget` |
+| `@version <ver>` | Optional semver version. | `@version 1.0.0` |
+| `@description <desc>` | Optional description text. | `@description Real-time forecast` |
+| `@author <author>` | Optional author name or handle. | `@author Harry` |
+
+> [!NOTE]
+> Plugins without metadata annotations remain 100% valid and run normally. However, any outbound network requests made through the proxy will be blocked unless authorized hosts are declared via `@allow-host`.
+
+---
+
+### 4.6 Zero-CORS Plugin Proxy Network API (`context.fetch`)
+
+To eliminate browser CORS restrictions and securely query external or internal APIs, Start Base provides a proxied `fetch` helper injected directly into the plugin context:
+
+#### Usage in Custom Elements:
+```javascript
+class WeatherPlugin extends HTMLElement {
+  async connectedCallback() {
+    this.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
+
+    try {
+      // Use the injected context.fetch to query the declared host
+      const response = await this.context.fetch('https://api.weatherapi.com/v1/current.json?q=London', {
+        headers: { 'Accept': 'application/json' },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        this.innerHTML = `<span class="font-bold">${data.location.name}: ${data.current.temp_c}°C</span>`;
+      } else {
+        this.innerHTML = `<span class="text-error text-xs">Error: ${response.status}</span>`;
+      }
+    } catch (err) {
+      this.innerHTML = `<span class="text-error text-xs">Failed: ${err.message}</span>`;
+    }
+  }
+}
+
+export default WeatherPlugin;
+```
+
+#### Usage in Universal Lifecycle Pattern:
+```javascript
+export default {
+  async mount(container, props, context) {
+    container.innerHTML = '<span class="loading loading-spinner"></span>';
+    const resp = await context.fetch('https://api.github.com/zen');
+    const text = await resp.text();
+    container.innerHTML = `<div class="p-2 italic text-xs">"${text}"</div>`;
+  },
+  unmount(container) {
+    container.innerHTML = '';
+  },
+};
+```
+
+---
+
+### 4.7 LAN & Homelab Access Control
+
+For security reasons, Start Base restricts outbound proxy requests:
+- **Cloud Metadata Interception**: Requests to AWS/GCP/Azure link-local metadata endpoints (`169.254.169.254`) and multicast ranges are strictly forbidden and always blocked.
+- **LAN / Private Network Access**: Private network ranges (`192.168.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12`) are blocked by default to prevent SSRF.
+- **Homelab User Toggle**: Users can enable **"Allow LAN / Private Network Access"** in the plugin settings form for individual self-hosted widgets (e.g. Home Assistant, Pi-hole, NAS monitoring). Note that LAN access can only be enabled by the user in the UI, never by the plugin script itself.
+
+---
+
+### 4.8 Ready-to-use Demo & Local Testing
 
 A complete ready-to-run demo Web Component plugin is located at [`docs/demo-plugin.js`](./demo-plugin.js).
 
-To test locally, launch any standard HTTP server (CORS headers are optional since Start Base backend handles the download):
+To test locally, launch any standard HTTP server:
 
 ```bash
 # Start server in docs directory (or use python3 docs/serve.py 8016)
@@ -183,6 +271,7 @@ Then in Start Base:
   author=YourName
   greeting=Hello World!
   ```
+- **Allow LAN Access**: Toggle if testing private IP endpoints.
 
 ---
 
@@ -196,4 +285,8 @@ Then in Start Base:
    - **Title & Description** *(optional)*.
    - **Group & Card Size** (`1×1`, `2×1`, `1×2`, `2×2`).
 4. **Set Custom Parameters (Optional)**: Input multiline `key=value` pairs in the parameters box.
-5. **Save**: Click **"Add site"** to render the plugin on the dashboard.
+5. **Review Declared Hosts & LAN Toggle**:
+   - If the plugin script declared `@allow-host`, the declared hosts are displayed in the form.
+   - Check **"Allow LAN / Private Network Access"** if connecting to Homelab/local devices.
+6. **Save**: Click **"Add site"** to render the plugin on the dashboard.
+

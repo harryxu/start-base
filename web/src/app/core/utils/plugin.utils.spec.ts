@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parsePluginParams, buildPluginParams, buildIframeUrl } from './plugin.utils';
+import { parsePluginParams, buildPluginParams, buildIframeUrl, parsePluginMeta } from './plugin.utils';
 import type { Site } from '../models/types';
 
 describe('Plugin Utilities', () => {
@@ -98,4 +98,25 @@ describe('Plugin Utilities', () => {
       expect(result).toContain('theme=dark');
     });
   });
+
+  describe('parsePluginMeta', () => {
+    it('should parse valid JSON metadata string', () => {
+      const jsonStr = JSON.stringify({
+        name: 'Weather Widget',
+        allow_hosts: ['api.weatherapi.com', '192.168.1.100:8123'],
+      });
+      const meta = parsePluginMeta(jsonStr);
+      expect(meta).toEqual({
+        name: 'Weather Widget',
+        allow_hosts: ['api.weatherapi.com', '192.168.1.100:8123'],
+      });
+    });
+
+    it('should return null for null, empty, or invalid JSON', () => {
+      expect(parsePluginMeta(null)).toBeNull();
+      expect(parsePluginMeta('')).toBeNull();
+      expect(parsePluginMeta('not json')).toBeNull();
+    });
+  });
 });
+

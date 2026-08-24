@@ -79,3 +79,80 @@ export function buildIframeUrl(baseUrl: string, params: Record<string, string>):
     return `${baseUrl}${separator}${queryString}`;
   }
 }
+
+/**
+ * Safely parses the JSON string from site.plugin_meta.
+ */
+export function parsePluginMeta(metaJson?: string | null): Record<string, any> | null {
+  if (!metaJson || !metaJson.trim()) return null;
+  try {
+    const parsed = JSON.parse(metaJson);
+    return typeof parsed === 'object' && parsed !== null ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+export interface PluginProxyFetchOptions extends RequestInit {
+  params?: Record<string, string>;
+  timeout?: number;
+}
+
+/**
+ * Executes a proxied network request for a Web Component plugin via the Start Base backend.
+ * Returns a standard Response object.
+ */
+export async function pluginProxyFetch(
+  siteId: number,
+  url: string,
+  options?: PluginProxyFetchOptions,
+): Promise<Response> {
+  const method = (options?.method || 'GET').toUpperCase();
+  const headers: Record<string, string> = {};
+
+  if (options?.headers) {
+    if (typeof Headers !== 'undefined' && options.headers instanceof Headers) {
+      options.headers.forEach((v, k) => {
+        headers[k] = v;
+      });
+    } else if (Array.isArray(options.headers)) {
+      for (const [k, v] of options.headers) {
+        headers[k] = v;
+      }
+    } else {
+      Object.assign(headers, options.headers);
+    }
+  }
+
+  let body: any = null;
+  if (options?.body) {
+    if (typeof options.body === 'string') {
+      try {
+        body = JSON.parse(options.body);
+      } catch {
+        body = options.body;
+      }
+    } else {
+      body = options.body;
+    }
+  }
+
+  const payload = {
+    site_id: siteId,
+    url,
+    method,
+    headers,
+    params: options?.params || {},
+    body,
+    timeout: options?.timeout || 10,
+  };
+
+  return fetch('/api/plugins/proxy', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+}
+

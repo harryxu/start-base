@@ -65,6 +65,75 @@ def get_plugin_cached_url(url: str) -> str:
     return f"/static/plugins/{filename}"
 
 
+import json
+
+
+def parse_plugin_metadata(script_text: str) -> dict | None:
+    """
+    Parse metadata comment block from a plugin JavaScript module.
+    Extracts @allow-host, @allow-hosts, @name, @version, @description, @author.
+    Returns a dict if metadata is found, otherwise None.
+    """
+    if not script_text or not script_text.strip():
+        return None
+
+    allow_hosts: list[str] = []
+    metadata: dict = {}
+
+    # Extract directives line by line
+    for line in script_text.splitlines():
+        line = line.strip()
+        # Clean comment markers
+        cleaned = re.sub(r"^(\/\*\*?|\*|\/\/)\s*", "", line).rstrip("*/").strip()
+
+        # Match @allow-host <host>
+        match_host = re.match(r"^@allow-host\s+(\S+)", cleaned, re.IGNORECASE)
+        if match_host:
+            host_val = match_host.group(1).rstrip("*/").strip()
+            if host_val and host_val not in allow_hosts:
+                allow_hosts.append(host_val)
+            continue
+
+        # Match @allow-hosts <host1>, <host2>...
+        match_hosts = re.match(r"^@allow-hosts\s+([^\r\n]+)", cleaned, re.IGNORECASE)
+        if match_hosts:
+            hosts_str = match_hosts.group(1).strip()
+            for h in hosts_str.split(","):
+                h_val = h.strip().rstrip("*/").strip()
+                if h_val and h_val not in allow_hosts:
+                    allow_hosts.append(h_val)
+            continue
+
+        # Match @name <name>
+        match_name = re.match(r"^@name\s+([^\r\n]+)", cleaned, re.IGNORECASE)
+        if match_name:
+            metadata["name"] = match_name.group(1).strip()
+            continue
+
+        # Match @version <ver>
+        match_version = re.match(r"^@version\s+([^\r\n]+)", cleaned, re.IGNORECASE)
+        if match_version:
+            metadata["version"] = match_version.group(1).strip()
+            continue
+
+        # Match @description <desc>
+        match_desc = re.match(r"^@description\s+([^\r\n]+)", cleaned, re.IGNORECASE)
+        if match_desc:
+            metadata["description"] = match_desc.group(1).strip()
+            continue
+
+        # Match @author <author>
+        match_author = re.match(r"^@author\s+([^\r\n]+)", cleaned, re.IGNORECASE)
+        if match_author:
+            metadata["author"] = match_author.group(1).strip()
+            continue
+
+    if allow_hosts:
+        metadata["allow_hosts"] = allow_hosts
+
+    return metadata if metadata else None
+
+
 async def download_plugin(url: str, force: bool = False) -> str | None:
     """
     Download a remote plugin JS script and cache it in PLUGINS_DIR.
@@ -92,6 +161,56 @@ async def download_plugin(url: str, force: bool = False) -> str | None:
     return None
 
 
+async def sync_plugin_for_site(site_id: int, url: str, force: bool = False) -> str | None:
+    """
+    Download/cache plugin script, parse metadata, and persist plugin_meta to the Site database record.
+    """
+    if not url or not url.strip():
+        return None
+
+    PLUGINS_DIR.mkdir(parents=True, exist_ok=True)
+    target_path = get_plugin_cache_path(url)
+
+    content_bytes: bytes | None = None
+
+    if target_path.exists() and not force:
+        try:
+            content_bytes = target_path.read_bytes()
+        except Exception:
+            pass
+
+    if content_bytes is None:
+        try:
+            async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
+                resp = await client.get(url.strip())
+                if resp.status_code == 200:
+                    content_bytes = resp.content
+                    target_path.write_bytes(content_bytes)
+        except Exception as e:
+            print(f"Warning: Failed to download plugin from {url}: {e}")
+            return None
+
+    if content_bytes is not None:
+        try:
+            script_text = content_bytes.decode("utf-8", errors="replace")
+            meta_dict = parse_plugin_metadata(script_text)
+            meta_json = json.dumps(meta_dict, ensure_ascii=False) if meta_dict else None
+
+            from app import database
+            with Session(database.engine) as session:
+                site = session.get(Site, site_id)
+                if site:
+                    site.plugin_meta = meta_json
+                    session.add(site)
+                    session.commit()
+        except Exception as e:
+            print(f"Warning: Failed to parse and persist plugin metadata for site {site_id}: {e}")
+
+        return get_plugin_cached_url(url)
+
+    return None
+
+
 def cleanup_unused_plugins(session: Session) -> None:
     """
     Delete cached plugin files that are no longer referenced by any active webcomponent site.
@@ -108,3 +227,4 @@ def cleanup_unused_plugins(session: Session) -> None:
                 file_path.unlink()
             except Exception as e:
                 print(f"Warning: Failed to remove unused plugin file {file_path}: {e}")
+
