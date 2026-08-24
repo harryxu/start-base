@@ -1,6 +1,5 @@
 """Plugin Proxy Service for forwarding external and LAN requests on behalf of plugins."""
 
-import fnmatch
 import ipaddress
 import json
 import socket
@@ -25,49 +24,52 @@ BLOCKED_METADATA_NETWORKS = [
 ]
 
 
-def extract_allowed_hosts(plugin_meta_json: str | None) -> list[str]:
-    """Extract list of allowed hosts from serialized plugin_meta JSON."""
+def extract_api_urls(plugin_meta_json: str | None) -> list[str]:
+    """Extract list of allowed API URL prefixes from serialized plugin_meta JSON."""
     if not plugin_meta_json or not plugin_meta_json.strip():
         return []
     try:
         data = json.loads(plugin_meta_json)
         if isinstance(data, dict):
-            hosts = data.get("allow_hosts", [])
-            if isinstance(hosts, list):
-                return [str(h).strip().lower() for h in hosts if str(h).strip()]
+            urls = data.get("api_urls", [])
+            if isinstance(urls, list):
+                return [str(u).strip() for u in urls if str(u).strip()]
     except Exception:
         pass
     return []
 
 
-def is_host_allowed(target_host: str, target_port: int | None, allow_hosts: list[str]) -> bool:
+def normalize_url_for_prefix(url: str) -> str:
+    """Normalize URL by lowercasing scheme and netloc for consistent prefix matching."""
+    url = url.strip()
+    try:
+        parsed = urllib.parse.urlsplit(url)
+        if parsed.scheme and parsed.netloc:
+            norm_scheme = parsed.scheme.lower()
+            norm_netloc = parsed.netloc.lower()
+            return urllib.parse.urlunsplit((norm_scheme, norm_netloc, parsed.path, parsed.query, parsed.fragment))
+    except Exception:
+        pass
+    return url
+
+
+def is_url_allowed(target_url: str, api_urls: list[str]) -> bool:
     """
-    Check if target_host or target_host:port matches any entry in allow_hosts.
-    Supports exact matching, wildcard matching (e.g. *.example.com), and port matching.
+    Check if target_url starts with any allowed URL prefix in api_urls.
+    Strict prefix matching, no wildcard support.
     """
-    if not allow_hosts:
+    if not api_urls or not target_url:
         return False
 
-    normalized_host = target_host.lower().strip()
-    host_with_port = f"{normalized_host}:{target_port}" if target_port else normalized_host
+    norm_target = normalize_url_for_prefix(target_url)
 
-    for pattern in allow_hosts:
-        pattern = pattern.lower().strip()
-        if not pattern:
+    for prefix in api_urls:
+        prefix = prefix.strip()
+        if not prefix:
             continue
-
-        # Match host:port exactly
-        if pattern == host_with_port or pattern == normalized_host:
+        norm_prefix = normalize_url_for_prefix(prefix)
+        if norm_target.startswith(norm_prefix):
             return True
-
-        # Wildcard match for domain (e.g., *.github.com)
-        if pattern.startswith("*."):
-            domain_suffix = pattern[2:]
-            if normalized_host == domain_suffix or normalized_host.endswith("." + domain_suffix):
-                return True
-        elif "*" in pattern:
-            if fnmatch.fnmatch(normalized_host, pattern) or fnmatch.fnmatch(host_with_port, pattern):
-                return True
 
     return False
 
@@ -99,10 +101,10 @@ def is_ip_blocked(ip_str: str, allow_lan: bool) -> tuple[bool, str]:
 
 
 def validate_target_url(
-    url: str, allow_hosts: list[str], allow_lan: bool
+    url: str, api_urls: list[str], allow_lan: bool
 ) -> tuple[bool, str, urllib.parse.ParseResult | None]:
     """
-    Validate target URL: scheme, host whitelist, DNS resolution, and IP range checks.
+    Validate target URL: scheme, api_urls whitelist prefix check, DNS resolution, and IP range checks.
     """
     if not url or not url.strip():
         return False, "Target URL is required", None
@@ -121,12 +123,12 @@ def validate_target_url(
 
     port = parsed.port
 
-    # 1. Check against allowed hosts
-    if not is_host_allowed(hostname, port, allow_hosts):
+    # 1. Check against allowed API URL prefixes
+    if not is_url_allowed(url, api_urls):
         return (
             False,
-            f"Host '{parsed.netloc}' is not in the allowed hosts for this plugin. "
-            "Please declare it via '@allow-host' in the plugin metadata.",
+            f"URL '{url.strip()}' is not in the allowed api_urls for this plugin. "
+            "Please declare it via '@api_urls' in the plugin metadata.",
             None,
         )
 
@@ -176,8 +178,8 @@ async def forward_plugin_proxy(site: Site, req: PluginProxyRequest) -> Response:
     """
     Execute sanitized, safe HTTP proxy request for a plugin.
     """
-    allow_hosts = extract_allowed_hosts(site.plugin_meta)
-    is_valid, err_msg, parsed_url = validate_target_url(req.url, allow_hosts, site.allow_lan)
+    api_urls = extract_api_urls(site.plugin_meta)
+    is_valid, err_msg, parsed_url = validate_target_url(req.url, api_urls, site.allow_lan)
 
     if not is_valid:
         raise HTTPException(status_code=403, detail=err_msg)

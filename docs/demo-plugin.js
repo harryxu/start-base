@@ -3,7 +3,7 @@
  * @version 1.0.0
  * @author StartBase
  * @description Web Component Plugin with Network Proxy support
- * @allow-host jsonplaceholder.typicode.com
+ * @api_urls https://jsonplaceholder.typicode.com/users
  *
  * Demonstrates:
  * 1. Fixed system parameters: card-size, title, description, theme, theme-mode

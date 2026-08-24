@@ -8,9 +8,9 @@ from sqlmodel import Session
 
 from app.models import Site
 from app.services.plugin_proxy_service import (
-    extract_allowed_hosts,
-    is_host_allowed,
+    extract_api_urls,
     is_ip_blocked,
+    is_url_allowed,
     validate_target_url,
 )
 from app.services.plugin_service import parse_plugin_metadata
@@ -23,10 +23,7 @@ def test_parse_plugin_metadata_full():
      * @version 1.2.0
      * @author Harry
      * @description Real-time forecast & status
-     * @allow-host api.weatherapi.com
-     * @allow-host *.openstreetmap.org
-     * @allow-host 192.168.1.100:8123
-     * @allow-hosts api.github.com, cdn.jsdelivr.net
+     * @api_urls https://api.weatherapi.com/v1/, http://192.168.1.100:8123/api/, https://jsonplaceholder.typicode.com/users
      */
 
     class WeatherPlugin extends HTMLElement {
@@ -43,11 +40,9 @@ def test_parse_plugin_metadata_full():
     assert meta["version"] == "1.2.0"
     assert meta["author"] == "Harry"
     assert meta["description"] == "Real-time forecast & status"
-    assert "api.weatherapi.com" in meta["allow_hosts"]
-    assert "*.openstreetmap.org" in meta["allow_hosts"]
-    assert "192.168.1.100:8123" in meta["allow_hosts"]
-    assert "api.github.com" in meta["allow_hosts"]
-    assert "cdn.jsdelivr.net" in meta["allow_hosts"]
+    assert "https://api.weatherapi.com/v1/" in meta["api_urls"]
+    assert "http://192.168.1.100:8123/api/" in meta["api_urls"]
+    assert "https://jsonplaceholder.typicode.com/users" in meta["api_urls"]
 
 
 def test_parse_plugin_metadata_empty():
@@ -56,27 +51,33 @@ def test_parse_plugin_metadata_empty():
     assert meta is None
 
 
-def test_is_host_allowed():
-    allowed = ["api.weatherapi.com", "*.github.com", "192.168.1.100:8123", "example.com:8080"]
+def test_is_url_allowed():
+    allowed = [
+        "https://jsonplaceholder.typicode.com/users",
+        "https://api.weatherapi.com/v1/",
+        "http://192.168.1.100:8123/api/",
+        "https://example.com/",
+    ]
 
-    # Exact match
-    assert is_host_allowed("api.weatherapi.com", None, allowed)
-    assert is_host_allowed("api.weatherapi.com", 443, allowed)
+    # Prefix matches
+    assert is_url_allowed("https://jsonplaceholder.typicode.com/users", allowed)
+    assert is_url_allowed("https://jsonplaceholder.typicode.com/users/1", allowed)
+    assert is_url_allowed("https://jsonplaceholder.typicode.com/users?page=1", allowed)
+    assert is_url_allowed("https://api.weatherapi.com/v1/current.json", allowed)
+    assert is_url_allowed("http://192.168.1.100:8123/api/states", allowed)
+    assert is_url_allowed("https://example.com/anything/else", allowed)
 
-    # Wildcard match
-    assert is_host_allowed("api.github.com", None, allowed)
-    assert is_host_allowed("raw.github.com", 443, allowed)
-    assert is_host_allowed("github.com", None, allowed)
-    assert not is_host_allowed("fakegithub.com", None, allowed)
+    # Case-insensitive scheme and hostname
+    assert is_url_allowed("HTTPS://JSONPlaceholder.typicode.com/users/1", allowed)
 
-    # Port match
-    assert is_host_allowed("192.168.1.100", 8123, allowed)
-    assert not is_host_allowed("192.168.1.100", 9000, allowed)
-    assert is_host_allowed("example.com", 8080, allowed)
-
-    # Disallowed
-    assert not is_host_allowed("google.com", None, allowed)
-    assert not is_host_allowed("evil.com", None, [])
+    # Non-matching prefix
+    assert not is_url_allowed("https://jsonplaceholder.typicode.com/", allowed)
+    assert not is_url_allowed("https://jsonplaceholder.typicode.com/posts", allowed)
+    assert not is_url_allowed("http://jsonplaceholder.typicode.com/users", allowed)
+    assert not is_url_allowed("https://api.weatherapi.com/v2/current.json", allowed)
+    assert not is_url_allowed("https://evil.com/data", allowed)
+    assert not is_url_allowed("https://example.com", allowed)
+    assert not is_url_allowed("https://test.com", [])
 
 
 def test_is_ip_blocked_security():
@@ -110,7 +111,7 @@ def test_is_ip_blocked_security():
 def test_plugin_proxy_api_site_not_found(client):
     res = client.post(
         "/api/plugins/proxy",
-        json={"site_id": 9999, "url": "https://api.github.com/zen"},
+        json={"site_id": 9999, "url": "https://jsonplaceholder.typicode.com/users"},
     )
     assert res.status_code == 404
     assert res.json()["detail"] == "Site not found"
@@ -129,10 +130,10 @@ def test_plugin_proxy_api_no_metadata_forbidden(client, session: Session):
 
     res = client.post(
         "/api/plugins/proxy",
-        json={"site_id": site.id, "url": "https://api.github.com/zen"},
+        json={"site_id": site.id, "url": "https://jsonplaceholder.typicode.com/users"},
     )
     assert res.status_code == 403
-    assert "not in the allowed hosts" in res.json()["detail"]
+    assert "not in the allowed" in res.json()["detail"]
 
 
 def test_plugin_proxy_api_host_not_in_allowlist(client, session: Session):
@@ -140,7 +141,7 @@ def test_plugin_proxy_api_host_not_in_allowlist(client, session: Session):
         url="http://localhost:8016/demo.js",
         title="Plugin with meta",
         site_type="webcomponent",
-        plugin_meta=json.dumps({"allow_hosts": ["api.weatherapi.com"]}),
+        plugin_meta=json.dumps({"api_urls": ["https://api.weatherapi.com/v1/"]}),
     )
     session.add(site)
     session.commit()
@@ -151,7 +152,7 @@ def test_plugin_proxy_api_host_not_in_allowlist(client, session: Session):
         json={"site_id": site.id, "url": "https://evil.com/data"},
     )
     assert res.status_code == 403
-    assert "not in the allowed hosts" in res.json()["detail"]
+    assert "not in the allowed" in res.json()["detail"]
 
 
 def test_plugin_proxy_api_lan_access_control(client, session: Session):
@@ -160,7 +161,7 @@ def test_plugin_proxy_api_lan_access_control(client, session: Session):
         title="LAN Plugin",
         site_type="webcomponent",
         allow_lan=False,
-        plugin_meta=json.dumps({"allow_hosts": ["192.168.1.50:8123"]}),
+        plugin_meta=json.dumps({"api_urls": ["http://192.168.1.50:8123/api/"]}),
     )
     session.add(site)
     session.commit()
@@ -201,7 +202,7 @@ def test_plugin_proxy_api_success_and_headers_filtering(client, session: Session
         url="http://localhost:8016/weather.js",
         title="Weather Widget",
         site_type="webcomponent",
-        plugin_meta=json.dumps({"allow_hosts": ["api.weatherapi.com"]}),
+        plugin_meta=json.dumps({"api_urls": ["https://api.weatherapi.com/v1/"]}),
     )
     session.add(site)
     session.commit()

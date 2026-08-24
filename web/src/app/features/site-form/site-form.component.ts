@@ -139,16 +139,16 @@ import { parsePluginMeta } from '../../core/utils/plugin.utils';
                 <span>Plugin Parameters (Key=Value per line)</span>
               </label>
 
-              <!-- Declared Hosts (from JS Metadata) -->
-              @if (allowedHosts().length > 0) {
+              <!-- Declared API URLs (from JS Metadata) -->
+              @if (apiUrls().length > 0) {
                 <div class="bg-base-200/50 p-2.5 rounded-lg flex flex-col gap-1.5 text-xs border border-base-200">
                   <div class="flex items-center justify-between">
-                    <span class="font-medium text-base-content/70">Declared Hosts (Network Proxy)</span>
-                    <span class="badge badge-xs badge-primary text-[9px]">{{ allowedHosts().length }}</span>
+                    <span class="font-medium text-base-content/70">Declared API URLs (Network Proxy)</span>
+                    <span class="badge badge-xs badge-primary text-[9px]">{{ apiUrls().length }}</span>
                   </div>
                   <div class="flex flex-wrap gap-1">
-                    @for (h of allowedHosts(); track h) {
-                      <span class="badge badge-sm badge-neutral font-mono text-[10px]">{{ h }}</span>
+                    @for (u of apiUrls(); track u) {
+                      <span class="badge badge-sm badge-neutral font-mono text-[10px]">{{ u }}</span>
                     }
                   </div>
                 </div>
@@ -405,9 +405,9 @@ export class SiteFormComponent {
 
   readonly siteSizes = SITE_SIZES;
 
-  allowedHosts = computed(() => {
+  apiUrls = computed(() => {
     const meta = parsePluginMeta(this.site()?.plugin_meta);
-    return (meta?.['allow_hosts'] as string[]) || [];
+    return (meta?.['api_urls'] as string[]) || [];
   });
 
   iconFailed = signal(false);

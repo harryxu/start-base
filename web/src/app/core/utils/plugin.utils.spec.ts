@@ -103,12 +103,12 @@ describe('Plugin Utilities', () => {
     it('should parse valid JSON metadata string', () => {
       const jsonStr = JSON.stringify({
         name: 'Weather Widget',
-        allow_hosts: ['api.weatherapi.com', '192.168.1.100:8123'],
+        api_urls: ['https://api.weatherapi.com/v1/', 'http://192.168.1.100:8123/api/'],
       });
       const meta = parsePluginMeta(jsonStr);
       expect(meta).toEqual({
         name: 'Weather Widget',
-        allow_hosts: ['api.weatherapi.com', '192.168.1.100:8123'],
+        api_urls: ['https://api.weatherapi.com/v1/', 'http://192.168.1.100:8123/api/'],
       });
     });
 

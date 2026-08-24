@@ -71,37 +71,31 @@ import json
 def parse_plugin_metadata(script_text: str) -> dict | None:
     """
     Parse metadata comment block from a plugin JavaScript module.
-    Extracts @allow-host, @allow-hosts, @name, @version, @description, @author.
+    Extracts @api_urls, @name, @version, @description, @author.
     Returns a dict if metadata is found, otherwise None.
     """
     if not script_text or not script_text.strip():
         return None
 
-    allow_hosts: list[str] = []
+    api_urls: list[str] = []
     metadata: dict = {}
 
     # Extract directives line by line
     for line in script_text.splitlines():
         line = line.strip()
-        # Clean comment markers
-        cleaned = re.sub(r"^(\/\*\*?|\*|\/\/)\s*", "", line).rstrip("*/").strip()
+        # Clean leading comment markers
+        cleaned = re.sub(r"^(\/\*\*?|\*|\/\/)\s*", "", line)
+        # Clean trailing comment marker */
+        cleaned = re.sub(r"\s*\*\/$", "", cleaned).strip()
 
-        # Match @allow-host <host>
-        match_host = re.match(r"^@allow-host\s+(\S+)", cleaned, re.IGNORECASE)
-        if match_host:
-            host_val = match_host.group(1).rstrip("*/").strip()
-            if host_val and host_val not in allow_hosts:
-                allow_hosts.append(host_val)
-            continue
-
-        # Match @allow-hosts <host1>, <host2>...
-        match_hosts = re.match(r"^@allow-hosts\s+([^\r\n]+)", cleaned, re.IGNORECASE)
-        if match_hosts:
-            hosts_str = match_hosts.group(1).strip()
-            for h in hosts_str.split(","):
-                h_val = h.strip().rstrip("*/").strip()
-                if h_val and h_val not in allow_hosts:
-                    allow_hosts.append(h_val)
+        # Match @api_urls <url1>, <url2>...
+        match_urls = re.match(r"^@api_urls\s+([^\r\n]+)", cleaned, re.IGNORECASE)
+        if match_urls:
+            urls_str = match_urls.group(1).strip()
+            for u in urls_str.split(","):
+                u_val = u.strip()
+                if u_val and u_val not in api_urls:
+                    api_urls.append(u_val)
             continue
 
         # Match @name <name>
@@ -128,8 +122,8 @@ def parse_plugin_metadata(script_text: str) -> dict | None:
             metadata["author"] = match_author.group(1).strip()
             continue
 
-    if allow_hosts:
-        metadata["allow_hosts"] = allow_hosts
+    if api_urls:
+        metadata["api_urls"] = api_urls
 
     return metadata if metadata else None
 

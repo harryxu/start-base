@@ -173,24 +173,22 @@ You can declare metadata for your plugin using standard comment blocks (similar 
  * @version 1.0.0
  * @author Developer
  * @description Real-time forecast & LAN status
- * @allow-host api.weatherapi.com
- * @allow-host *.openstreetmap.org
- * @allow-host 192.168.1.100:8123
- * @allow-hosts api.github.com, cdn.jsdelivr.net
+ * @api_urls https://api.weatherapi.com/v1/, https://jsonplaceholder.typicode.com/users, http://192.168.1.100:8123/api/
  */
 ```
 
 | Directive | Description | Example |
 | :--- | :--- | :--- |
-| `@allow-host <host>` | Declares an authorized external host, IP, or wildcard pattern for the network proxy. | `@allow-host api.weatherapi.com`<br>`@allow-host 192.168.1.100:8123`<br>`@allow-host *.github.com` |
-| `@allow-hosts <h1, h2>` | Comma-separated list of authorized hosts. | `@allow-hosts api.github.com, cdn.weather.com` |
+| `@api_urls <url1, url2>` | Comma-separated list of authorized API URL prefixes for the network proxy. Requests must match the URL prefix. | `@api_urls https://jsonplaceholder.typicode.com/users`<br>`@api_urls https://api.weatherapi.com/v1/, http://192.168.1.100:8123/api/` |
 | `@name <name>` | Optional human-readable name for the plugin. | `@name Weather Widget` |
 | `@version <ver>` | Optional semver version. | `@version 1.0.0` |
 | `@description <desc>` | Optional description text. | `@description Real-time forecast` |
 | `@author <author>` | Optional author name or handle. | `@author Harry` |
 
 > [!NOTE]
-> Plugins without metadata annotations remain 100% valid and run normally. However, any outbound network requests made through the proxy will be blocked unless authorized hosts are declared via `@allow-host`.
+> Plugins without metadata annotations remain 100% valid and run normally. However, any outbound network requests made through the proxy will be blocked unless authorized API URLs are declared via `@api_urls`.
+> 
+> URL matching performs prefix matching (no wildcards `*`). For example, configuring `https://jsonplaceholder.typicode.com/users` allows `https://jsonplaceholder.typicode.com/users` and sub-paths like `https://jsonplaceholder.typicode.com/users/1`, but restricts other endpoints like `https://jsonplaceholder.typicode.com/posts` or `https://jsonplaceholder.typicode.com/`. To allow all endpoints under an entire domain, specify `https://jsonplaceholder.typicode.com/`.
 
 ---
 
@@ -286,8 +284,8 @@ Then in Start Base:
    - **Title & Description** *(optional)*.
    - **Group & Card Size** (`1×1`, `2×1`, `1×2`, `2×2`).
 4. **Set Custom Parameters (Optional)**: Input multiline `key=value` pairs in the parameters box.
-5. **Review Declared Hosts & LAN Toggle**:
-   - If the plugin script declared `@allow-host`, the declared hosts are displayed in the form.
+5. **Review Declared API URLs & LAN Toggle**:
+   - If the plugin script declared `@api_urls`, the declared URLs are displayed in the form.
    - Check **"Allow LAN / Private Network Access"** if connecting to Homelab/local devices.
 6. **Save**: Click **"Add site"** to render the plugin on the dashboard.
 
