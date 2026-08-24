@@ -7,7 +7,7 @@ from app.models import Site, SiteCreate, SiteRead, SiteReorderItem, SiteUpdate
 from app.services.metadata import download_icon, fetch_site_metadata
 from app.services.plugin_service import (
     cleanup_unused_plugins,
-    download_plugin,
+    sync_plugin_for_site,
     to_site_read,
 )
 
@@ -52,7 +52,7 @@ async def create_site(
     if site.site_type == "builtin" and (not site.title or not site.icon_url):
         background_tasks.add_task(_update_site_metadata, site.id, site.url)
     elif site.site_type == "webcomponent" and site.url:
-        background_tasks.add_task(download_plugin, site.url)
+        background_tasks.add_task(sync_plugin_for_site, site.id, site.url)
 
     return to_site_read(site)
 
@@ -81,7 +81,7 @@ async def update_site(
     session.refresh(site)
 
     if site.site_type == "webcomponent" and site.url:
-        background_tasks.add_task(download_plugin, site.url)
+        background_tasks.add_task(sync_plugin_for_site, site.id, site.url)
 
     if old_site_type == "webcomponent" and (
         site.site_type != "webcomponent" or site.url != old_url
@@ -105,14 +105,16 @@ async def sync_site_plugin(
             status_code=400, detail="Site is not a webcomponent plugin"
         )
 
-    cached_url = await download_plugin(site.url, force=True)
+    cached_url = await sync_plugin_for_site(site.id, site.url, force=True)
     if not cached_url:
         raise HTTPException(
             status_code=502,
             detail="Failed to fetch plugin script from remote URL",
         )
 
+    session.refresh(site)
     return to_site_read(site)
+
 
 
 @router.delete("/{site_id}", status_code=204)

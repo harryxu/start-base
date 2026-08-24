@@ -27,6 +27,8 @@ export interface Site {
   site_type?: SiteType;
   plugin_params?: string | null;
   plugin_cached_url?: string | null;
+  allow_lan?: boolean;
+  plugin_meta?: string | null;
 }
 
 /**

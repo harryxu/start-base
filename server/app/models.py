@@ -49,6 +49,8 @@ class Site(SQLModel, table=True):
     row_span: int = Field(default=1)
     site_type: str = Field(default="builtin")
     plugin_params: str | None = Field(default=None)
+    allow_lan: bool = Field(default=False)
+    plugin_meta: str | None = Field(default=None)
 
 
 class SystemConfig(SQLModel, table=True):
@@ -139,6 +141,8 @@ class SiteCreate(SQLModel):
     row_span: int = 1
     site_type: str = "builtin"
     plugin_params: str | None = None
+    allow_lan: bool = False
+    plugin_meta: str | None = None
 
 
 class SiteUpdate(SQLModel):
@@ -152,6 +156,8 @@ class SiteUpdate(SQLModel):
     row_span: int | None = None
     site_type: str | None = None
     plugin_params: str | None = None
+    allow_lan: bool | None = None
+    plugin_meta: str | None = None
 
 
 class SiteRead(SQLModel):
@@ -166,7 +172,21 @@ class SiteRead(SQLModel):
     row_span: int
     site_type: str
     plugin_params: str | None = None
+    allow_lan: bool = False
+    plugin_meta: str | None = None
     plugin_cached_url: str | None = None
+
+
+class PluginProxyRequest(SQLModel):
+    """Request payload for the plugin proxy endpoint."""
+
+    site_id: int
+    url: str
+    method: str = "GET"
+    headers: dict[str, str] = {}
+    params: dict[str, str] = {}
+    body: str | dict | list | None = None
+    timeout: float = 10.0
 
 
 class GroupWithSites(GroupRead):

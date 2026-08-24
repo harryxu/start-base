@@ -12,12 +12,22 @@ import {
 
 import type { Site } from '../../core/models/types';
 import { ConfigService } from '../../core/services/config.service';
-import { buildIframeUrl, buildPluginParams } from '../../core/utils/plugin.utils';
+import {
+  PluginProxyFetchOptions,
+  buildIframeUrl,
+  buildPluginParams,
+  pluginProxyFetch,
+} from '../../core/utils/plugin.utils';
+
+export interface PluginContext {
+  siteId: number;
+  fetch: (url: string, options?: PluginProxyFetchOptions) => Promise<Response>;
+}
 
 export interface PluginLifecycle {
-  mount(container: HTMLElement, props: Record<string, string>): void;
+  mount(container: HTMLElement, props: Record<string, string>, context?: PluginContext): void;
   unmount?(container: HTMLElement): void;
-  update?(container: HTMLElement, props: Record<string, string>): void;
+  update?(container: HTMLElement, props: Record<string, string>, context?: PluginContext): void;
 }
 
 @Component({
@@ -125,10 +135,15 @@ export class WebcomponentPluginComponent implements OnDestroy {
       this.currentModule = module;
 
       const container = this.mountPoint.nativeElement;
+      const context: PluginContext = {
+        siteId: this.site().id,
+        fetch: (targetUrl: string, options?: PluginProxyFetchOptions) =>
+          pluginProxyFetch(this.site().id, targetUrl, options),
+      };
 
       // Case 1: Universal Lifecycle Object (export default { mount, unmount })
       if (module.default && typeof module.default.mount === 'function') {
-        module.default.mount(container, params);
+        module.default.mount(container, params, context);
         this.isLoading.set(false);
         return;
       }
@@ -155,6 +170,7 @@ export class WebcomponentPluginComponent implements OnDestroy {
           el.setAttribute(key, value);
         }
         (el as any).params = params;
+        (el as any).context = context;
         this.currentElement = el;
         container.appendChild(el);
         this.isLoading.set(false);

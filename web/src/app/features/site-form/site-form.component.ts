@@ -8,6 +8,7 @@ import { ApiService, API_BASE } from '../../core/api/api.service';
 import type { Site, SiteType } from '../../core/models/types';
 import { SITE_SIZES } from '../../core/models/types';
 import { BoardService } from '../../core/services/board.service';
+import { parsePluginMeta } from '../../core/utils/plugin.utils';
 
 @Component({
   selector: 'app-site-form',
@@ -137,6 +138,40 @@ import { BoardService } from '../../core/services/board.service';
                 ></textarea>
                 <span>Plugin Parameters (Key=Value per line)</span>
               </label>
+
+              <!-- Declared API URLs (from JS Metadata) -->
+              @if (apiUrls().length > 0) {
+                <div class="bg-base-200/50 p-2.5 rounded-lg flex flex-col gap-1.5 text-xs border border-base-200">
+                  <div class="flex items-center justify-between">
+                    <span class="font-medium text-base-content/70">Declared API URLs (Network Proxy)</span>
+                    <span class="badge badge-xs badge-primary text-[9px]">{{ apiUrls().length }}</span>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    @for (u of apiUrls(); track u) {
+                      <span class="badge badge-sm badge-neutral font-mono text-[10px]">{{ u }}</span>
+                    }
+                  </div>
+                </div>
+              }
+
+              <!-- Allow LAN / Private Network Access -->
+              <div class="bg-base-200/40 p-3 rounded-lg border border-base-200">
+                <label class="label cursor-pointer flex items-center justify-between p-0">
+                  <div class="flex flex-col pr-2">
+                    <span class="label-text font-medium text-xs">Allow LAN / Private Network Access</span>
+                    <span class="text-[10px] text-base-content/60 leading-tight mt-0.5">
+                      Enable this plugin to proxy requests to private/local devices (Homelab).
+                    </span>
+                  </div>
+                  <input
+                    id="site-allow-lan"
+                    type="checkbox"
+                    class="checkbox checkbox-sm checkbox-primary"
+                    [(ngModel)]="formAllowLan"
+                    name="allowLan"
+                  />
+                </label>
+              </div>
 
               <!-- Group select -->
               <label class="floating-label w-full text-base-content/60">
@@ -364,10 +399,16 @@ export class SiteFormComponent {
   formRowSpan = 1;
   formPluginType: 'webcomponent' | 'iframe' = 'webcomponent';
   formPluginParams = '';
+  formAllowLan = false;
 
   isPluginMode = signal(false);
 
   readonly siteSizes = SITE_SIZES;
+
+  apiUrls = computed(() => {
+    const meta = parsePluginMeta(this.site()?.plugin_meta);
+    return (meta?.['api_urls'] as string[]) || [];
+  });
 
   iconFailed = signal(false);
   selectedIconFile: File | null = null;
@@ -413,6 +454,7 @@ export class SiteFormComponent {
         this.isPluginMode.set(isPlugin);
         this.formPluginType = s.site_type === 'iframe' ? 'iframe' : 'webcomponent';
         this.formPluginParams = s.plugin_params ?? '';
+        this.formAllowLan = s.allow_lan ?? false;
       } else if (def) {
         this.formUrl = def.url ?? '';
         this.formTitle = def.title ?? '';
@@ -425,6 +467,7 @@ export class SiteFormComponent {
         this.isPluginMode.set(isPlugin);
         this.formPluginType = def.site_type === 'iframe' ? 'iframe' : 'webcomponent';
         this.formPluginParams = def.plugin_params ?? '';
+        this.formAllowLan = def.allow_lan ?? false;
       } else {
         this.formUrl = '';
         this.formTitle = '';
@@ -436,6 +479,7 @@ export class SiteFormComponent {
         this.isPluginMode.set(false);
         this.formPluginType = 'webcomponent';
         this.formPluginParams = '';
+        this.formAllowLan = false;
       }
     });
   }
@@ -504,6 +548,7 @@ export class SiteFormComponent {
       row_span: this.formRowSpan,
       site_type: (isPlugin ? this.formPluginType : 'builtin') as SiteType,
       plugin_params: isPlugin ? (this.formPluginParams.trim() || null) : null,
+      allow_lan: isPlugin ? this.formAllowLan : false,
     };
 
     const editingSite = this.site();
@@ -516,3 +561,4 @@ export class SiteFormComponent {
     this.closed.emit();
   }
 }
+

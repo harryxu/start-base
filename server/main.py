@@ -12,7 +12,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.security import check_access_permission
 from app.database import engine
-from app.routers import auth, board, config, groups, sites, system
+from app.routers import auth, board, config, groups, plugin_proxy, sites, system
 from app.settings import settings
 
 mimetypes.add_type("application/manifest+json", ".webmanifest")
@@ -64,7 +64,9 @@ app.include_router(board.router)
 app.include_router(config.router)
 app.include_router(groups.router)
 app.include_router(sites.router)
+app.include_router(plugin_proxy.router)
 app.include_router(system.router)
+
 
 os.makedirs("data/db", exist_ok=True)
 os.makedirs("data/files/icons", exist_ok=True)
