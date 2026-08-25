@@ -1,12 +1,22 @@
 import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDragHandle } from '@angular/cdk/drag-drop';
 import { Component, computed, inject, input, output, signal, ViewChild } from '@angular/core';
-import { LucideEllipsis, LucideGripVertical, LucidePencil, LucideTrash2 } from '@lucide/angular';
+import {
+  LucideEllipsis,
+  LucideGripVertical,
+  LucideGrid2x2,
+  LucidePencil,
+  LucideRectangleHorizontal,
+  LucideRectangleVertical,
+  LucideSquare,
+  LucideTrash2,
+} from '@lucide/angular';
 import { LongPressDirective } from '../long-press.directive';
 
 import type { Site, SiteViewMode } from '../../core/models/types';
 import { GlobalMenuService } from '../../core/services/global-menu.service';
 import { ConfigService } from '../../core/services/config.service';
+import { BoardService } from '../../core/services/board.service';
 import { SiteBuiltinComponent } from './site-builtin.component';
 import { IframePluginComponent } from './iframe-plugin.component';
 import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
@@ -23,7 +33,11 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
     LongPressDirective,
     LucideEllipsis,
     LucideGripVertical,
+    LucideGrid2x2,
     LucidePencil,
+    LucideRectangleHorizontal,
+    LucideRectangleVertical,
+    LucideSquare,
     LucideTrash2,
     SiteBuiltinComponent,
     IframePluginComponent,
@@ -96,6 +110,61 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
           cdkMenu
           class="menu bg-base-100 border border-base-300 shadow-xl rounded-box p-2 min-w-30 z-50 flex flex-col gap-1"
         >
+          <!-- Quick Size Switch Menu Item -->
+          <div class="flex items-center justify-between p-1 bg-base-200/50 rounded-lg gap-1 min-h-8">
+            <button
+              type="button"
+              cdkMenuItem
+              (click)="onUpdateSize(1, 1)"
+              [class.text-accent]="isCurrentSize(1, 1)"
+              [class.text-base-content/40]="!isCurrentSize(1, 1)"
+              [class.hover:text-base-content]="!isCurrentSize(1, 1)"
+              class="flex-1 flex items-center justify-center p-1 rounded-lg cursor-pointer transition-colors outline-none focus:outline-none"
+              title="1×1"
+              aria-label="1x1"
+            >
+              <svg lucideSquare class="w-3.5 h-3.5"></svg>
+            </button>
+            <button
+              type="button"
+              cdkMenuItem
+              (click)="onUpdateSize(2, 1)"
+              [class.text-accent]="isCurrentSize(2, 1)"
+              [class.text-base-content/40]="!isCurrentSize(2, 1)"
+              [class.hover:text-base-content]="!isCurrentSize(2, 1)"
+              class="flex-1 flex items-center justify-center p-1 rounded-lg cursor-pointer transition-colors outline-none focus:outline-none"
+              title="2×1"
+              aria-label="2x1"
+            >
+              <svg lucideRectangleHorizontal class="w-5 h-5"></svg>
+            </button>
+            <button
+              type="button"
+              cdkMenuItem
+              (click)="onUpdateSize(1, 2)"
+              [class.text-accent]="isCurrentSize(1, 2)"
+              [class.text-base-content/40]="!isCurrentSize(1, 2)"
+              [class.hover:text-base-content]="!isCurrentSize(1, 2)"
+              class="flex-1 flex items-center justify-center p-1 rounded-lg cursor-pointer transition-colors outline-none focus:outline-none"
+              title="1×2"
+              aria-label="1x2"
+            >
+              <svg lucideRectangleVertical class="w-5 h-5"></svg>
+            </button>
+            <button
+              type="button"
+              cdkMenuItem
+              (click)="onUpdateSize(2, 2)"
+              [class.text-accent]="isCurrentSize(2, 2)"
+              [class.text-base-content/40]="!isCurrentSize(2, 2)"
+              [class.hover:text-base-content]="!isCurrentSize(2, 2)"
+              class="flex-1 flex items-center justify-center p-1 rounded-lg cursor-pointer transition-colors outline-none focus:outline-none"
+              title="2×2"
+              aria-label="2x2"
+            >
+              <svg lucideGrid2x2 class="w-6 h-6"></svg>
+            </button>
+          </div>
           <button
             cdkMenuItem
             (click)="onEditSite()"
@@ -168,6 +237,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
 })
 export class SiteCardComponent {
   configService = inject(ConfigService);
+  boardService = inject(BoardService);
   site = input.required<Site>();
   isFetching = input<boolean>(false);
   view_mode = input<SiteViewMode>('full');
@@ -228,6 +298,18 @@ export class SiteCardComponent {
     this.triggerContextMenu?.close();
     this.triggerBtnMenu?.close();
     this.isMenuOpen.set(false);
+  }
+
+  isCurrentSize(col: number, row: number): boolean {
+    return (this.site().col_span || 1) === col && (this.site().row_span || 1) === row;
+  }
+
+  onUpdateSize(col: number, row: number): void {
+    this.closeMenu();
+    if (this.isCurrentSize(col, row)) {
+      return;
+    }
+    this.boardService.updateSite(this.site().id, { col_span: col, row_span: row });
   }
 
   onEditSite(): void {

@@ -2,12 +2,17 @@ import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testin
 import { SiteCardComponent } from './site-card.component';
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 import type { Site } from '../../core/models/types';
+import { BoardService } from '../../core/services/board.service';
 
 import { COMMON_TEST_PROVIDERS } from '../../testing/test-mocks';
 
 describe('SiteCardComponent', () => {
   let component: SiteCardComponent;
   let fixture: ComponentFixture<SiteCardComponent>;
+
+  const mockBoardService = {
+    updateSite: vi.fn(),
+  };
 
   const mockSite: Site = {
     id: 1,
@@ -20,13 +25,19 @@ describe('SiteCardComponent', () => {
   };
 
   beforeEach(async () => {
+    mockBoardService.updateSite.mockClear();
+
     await TestBed.configureTestingModule({
       imports: [SiteCardComponent],
-      providers: [...COMMON_TEST_PROVIDERS],
+      providers: [
+        ...COMMON_TEST_PROVIDERS,
+        { provide: BoardService, useValue: mockBoardService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SiteCardComponent);
     component = fixture.componentInstance;
+    component.configService.editMode.set(false);
     fixture.componentRef.setInput('site', mockSite);
     fixture.detectChanges();
   });
@@ -290,5 +301,80 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
 
     expect(component.canUseContextMenu()).toBe(false);
+  });
+
+  it('should render 4 size switch buttons in context menu', () => {
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    cardEl.dispatchEvent(
+      new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 50,
+        clientY: 50,
+        button: 2,
+      }),
+    );
+    fixture.detectChanges();
+
+    const menuEl = document.querySelector('.menu');
+    expect(menuEl).toBeTruthy();
+
+    const squareIcon = menuEl?.querySelector('svg[lucideSquare]');
+    const rectHIcon = menuEl?.querySelector('svg[lucideRectangleHorizontal]');
+    const rectVIcon = menuEl?.querySelector('svg[lucideRectangleVertical]');
+    const grid2x2Icon = menuEl?.querySelector('svg[lucideGrid2x2]');
+
+    expect(squareIcon).toBeTruthy();
+    expect(rectHIcon).toBeTruthy();
+    expect(rectVIcon).toBeTruthy();
+    expect(grid2x2Icon).toBeTruthy();
+  });
+
+  it('should call boardService.updateSite and close menu when a new size button is clicked', () => {
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    cardEl.dispatchEvent(
+      new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 50,
+        clientY: 50,
+        button: 2,
+      }),
+    );
+    fixture.detectChanges();
+
+    const menuEl = document.querySelector('.menu');
+    const rectHBtn = menuEl?.querySelector('button[aria-label="2x1"]') as HTMLButtonElement;
+    expect(rectHBtn).toBeTruthy();
+
+    rectHBtn.click();
+    fixture.detectChanges();
+
+    expect(mockBoardService.updateSite).toHaveBeenCalledWith(1, { col_span: 2, row_span: 1 });
+    expect(document.querySelector('.menu')).toBeFalsy();
+  });
+
+  it('should not call boardService.updateSite when clicking the currently active size', () => {
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    cardEl.dispatchEvent(
+      new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 50,
+        clientY: 50,
+        button: 2,
+      }),
+    );
+    fixture.detectChanges();
+
+    const menuEl = document.querySelector('.menu');
+    const squareBtn = menuEl?.querySelector('button[aria-label="1x1"]') as HTMLButtonElement;
+    expect(squareBtn).toBeTruthy();
+
+    squareBtn.click();
+    fixture.detectChanges();
+
+    expect(mockBoardService.updateSite).not.toHaveBeenCalled();
+    expect(document.querySelector('.menu')).toBeFalsy();
   });
 });
