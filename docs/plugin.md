@@ -1,42 +1,42 @@
 # Start Base Plugin Development & Integration Guide
 
-Start Base provides a lightweight and flexible plugin extension mechanism. When creating or editing a site entry, you can switch to **Plugin Mode**. In Plugin Mode, the dimensions and layout of the card remain governed by the dashboard's responsive grid system, while the inner content, rendering, and interaction logic are entirely controlled by the plugin.
+Start Base supports custom plugins. When creating or editing a site, you can switch to **Plugin Mode**. In Plugin Mode, card dimensions and layout follow the dashboard grid, while the plugin controls the inner content and interaction logic.
 
 ---
 
-## 1. Overview & Concepts
+## Overview & Concepts
 
-Start Base supports two types of plugins:
+Start Base supports two plugin types:
 
-| Plugin Type | Features & Advantages | Best Suited For |
+| Plugin Type | Features | Best Suited For |
 | :--- | :--- | :--- |
-| **Iframe Plugin** | Complete sandbox isolation, zero technology stack constraints, supports any standalone HTML/Web page. | Third-party widgets, independent micro-apps, internal monitoring dashboards. |
-| **Web Component Plugin** | Native DOM integration, supports native `<dialog>` modals, Popovers, Drawers, and inherits DaisyUI classes and system theme tokens. | Highly interactive widgets (to-do lists, weather detail popups, interactive search panels). |
+| **Iframe Plugin** | Sandboxed environment, supports any standalone web page without tech stack limits. | Third-party widgets, independent tools, external dashboards. |
+| **Web Component Plugin** | Runs in host DOM, supports `<dialog>` modals, Popovers, and inherits DaisyUI theme styles. | Interactive widgets (to-do lists, weather cards, search panels). |
 
-Unified container features for all plugins:
-- **Grid Size Adaptability**: Supports `1×1`, `2×1`, `1×2`, `2×2`, and custom grid spans.
-- **Drag-and-Drop Reordering**: Smooth drag-and-drop between groups and ungrouped sections.
-- **Context Menu & Long-Press**: Native right-click or mobile long-press triggers the CDK context menu for editing or deleting.
+Common features:
+- **Grid Sizes**: Supports `1×1`, `2×1`, `1×2`, `2×2`, and custom spans.
+- **Drag-and-Drop**: Reorder between groups and ungrouped sections.
+- **Context Menu**: Right-click or mobile long-press to edit or delete.
 
 ---
 
-## 2. Parameter Passing Specification
+## Parameter Passing
 
-When rendering a plugin, Start Base automatically injects two sets of parameters: **Fixed System Parameters** and **Custom User Parameters**.
+Start Base passes two types of parameters to plugins: **System Parameters** and **Custom Parameters**.
 
-### 2.1 Fixed System Parameters
+### System Parameters
 
 | Parameter Key | Type | Description | Example |
 | :--- | :--- | :--- | :--- |
-| `card-size` | string | Dimension key of the card within the grid. | `'1x1'`, `'2x1'`, `'1x2'`, `'2x2'` |
-| `title` | string | Configured title of the plugin. | `'Weather Widget'` |
-| `description` | string | Optional description text. | `'Real-time forecast'` |
-| `theme` | string | Currently active system theme name. | `'emerald'`, `'dark'`, `'night'`, `'corporate'`, etc. |
-| `theme-mode` | string | Currently active theme mode. | `'light'` or `'dark'` |
+| `card-size` | string | Card grid size. | `'1x1'`, `'2x1'`, `'1x2'`, `'2x2'` |
+| `title` | string | Configured plugin title. | `'Weather Widget'` |
+| `description` | string | Configured description. | `'Real-time forecast'` |
+| `theme` | string | Active system theme name. | `'emerald'`, `'dark'`, `'night'`, etc. |
+| `theme-mode` | string | Active theme mode. | `'light'` or `'dark'` |
 
-### 2.2 Custom User Parameters
+### Custom Parameters
 
-Users can provide multiline key-value parameters formatted as `key=value` per line:
+Custom parameters use `key=value` format (one pair per line):
 
 ```text
 city=London
@@ -45,27 +45,27 @@ refreshInterval=30
 ```
 
 - Empty lines and lines starting with `#` are ignored.
-- For **Iframe Plugins**, all parameters are appended as **URL Query Strings** (`?card-size=2x1&theme=emerald&theme-mode=light&city=London...`).
-- For **Web Component Plugins**, all parameters are passed as **DOM Attributes** and as a property object on the element or lifecycle context.
+- **Iframe Plugins**: Parameters are appended as **URL query strings** (`?card-size=2x1&theme=emerald&city=London...`).
+- **Web Component Plugins**: Parameters are passed as **DOM attributes** and as an object to the mount function.
 
 ---
 
-## 3. Iframe Plugin Development Guide
+## Iframe Plugin Development
 
-An Iframe plugin is a standard web page (HTML/CSS/JS) hosted on any web server or static host.
+An Iframe plugin is a standard web page (HTML/CSS/JS) hosted on any server.
 
-### 3.1 Parameter Access via Query String
+### Parameter Access via Query String
 
 ```javascript
 const params = new URLSearchParams(window.location.search);
 const cardSize = params.get('card-size'); // e.g., '2x1'
 const title = params.get('title');
-const theme = params.get('theme'); // e.g., 'emerald', 'dark', 'dracula'
+const theme = params.get('theme'); // e.g., 'emerald', 'dark'
 const themeMode = params.get('theme-mode'); // 'light' | 'dark'
 const city = params.get('city') || 'London';
 ```
 
-### 3.2 Example: Live Clock (`clock.html`)
+### Example: Live Clock (`clock.html`)
 
 ```html
 <!DOCTYPE html>
@@ -93,11 +93,11 @@ const city = params.get('city') || 'London';
 
 ---
 
-## 4. Web Component Plugin Development Guide
+## Web Component Plugin Development
 
-Web Component plugins are delivered as **ES Modules (JavaScript files)**. They run directly inside the host DOM, offering maximal flexibility for rich interactivity (such as native `<dialog>` modals).
+Web Component plugins are delivered as **ES Modules (`.js` files)** that run in the host DOM.
 
-### 4.1 Standard Custom Element Pattern (with `<dialog>` Modal)
+### Custom Element Pattern (with `<dialog>` Modal)
 
 ```javascript
 class WeatherPlugin extends HTMLElement {
@@ -126,12 +126,11 @@ class WeatherPlugin extends HTMLElement {
 export default WeatherPlugin;
 ```
 
-### 4.2 Universal Mount Lifecycle Pattern
+### Lifecycle Object Pattern
 
 ```javascript
 export default {
   mount(container, props) {
-    const isDark = props['theme-mode'] === 'dark';
     container.innerHTML = `
       <div class="p-3 h-full flex flex-col justify-between" data-theme="${props.theme}">
         <span class="font-bold text-sm">${props.title || 'Widget'}</span>
@@ -145,28 +144,32 @@ export default {
 };
 ```
 
-### 4.3 Framework Integration (Vue 3 / React + Vite)
+### Framework Integration (Vue 3 / React + Vite)
 
-You can write plugins using modern frameworks and bundle them into a single `.js` file via Vite:
+Plugins can be built with UI frameworks and bundled into a single `.js` file via Vite:
 
-- **Vue 3 Custom Elements**: [Vue.js Official Guide - Building Custom Elements](https://vuejs.org/guide/extras/web-components.html) (using `defineCustomElement`)
-- **React Components in Web Components**: [React createRoot API](https://react.dev/reference/react-dom/client/createRoot) (render React trees inside `connectedCallback`)
-- **Vite Library Mode (Single JS Bundle)**: [Vite Guide - Library Mode](https://vite.dev/guide/build.html#library-mode)
+- **Vue 3 Custom Elements**: [Vue.js Guide - Custom Elements](https://vuejs.org/guide/extras/web-components.html) (`defineCustomElement`)
+- **React in Web Components**: [React createRoot API](https://react.dev/reference/react-dom/client/createRoot) (render inside `connectedCallback`)
+- **Vite Library Mode**: [Vite Guide - Library Mode](https://vite.dev/guide/build.html#library-mode)
 
-### 4.4 Server-Side Caching, Upload & Zero-CORS Architecture
+---
 
-To ensure 100% reliability, offline resilience, and eliminate browser CORS issues across domains or ports:
+### Caching, Upload & Same-Origin Delivery
 
-1. **Direct Script Upload**: In Web Component plugin mode, you can upload `.js` / `.mjs` plugin files directly via the upload button integrated next to the Plugin URL input box.
-2. **Automatic Server-Side Download**: When a remote `Web Component` URL is provided, the Start Base backend automatically fetches the remote JS file via `httpx` and caches it into `server/data/files/plugins/{hash}-{sanitized_name}.js`.
-3. **Deterministic Deduplication & Hashing**: All plugin files (whether uploaded or fetched from remote URLs) are stored in `server/data/files/plugins/` using a 16-character SHA-256 hash plus sanitized script name (e.g. `a1b2c3d4e5f67890-demo-plugin.js`). If multiple cards reference the exact same plugin or identical content, they share a single cached copy.
-4. **Same-Origin Static Delivery**: The frontend loads the plugin via `/static/plugins/{hash}-{sanitized_name}.js`, completely bypassing third-party CORS limitations.
-5. **On-Demand Synchronization**: Triggering `POST /api/sites/{id}/sync-plugin` forces the server to re-fetch/re-parse the script and update the cached snapshot and metadata.
-6. **Automatic Cleanup (GC)**: When a site is deleted or changes its URL, unreferenced plugin files are automatically purged from disk.
+To prevent CORS issues and support offline or local hosting:
 
-### 4.5 Plugin Metadata Annotations
+1. **Direct Script Upload**: Upload `.js` / `.mjs` files directly using the upload button next to the Plugin URL input.
+2. **Automatic Remote Download**: When a remote URL is entered, the backend downloads and caches the script into `server/data/files/plugins/{hash}-{sanitized_name}.js`.
+3. **Deduplication & Hashing**: All plugins are stored using a 16-character SHA-256 hash plus sanitized name (e.g., `a1b2c3d4e5f67890-demo-plugin.js`). Identical files share a single cached copy.
+4. **Static Delivery**: The frontend loads plugins from `/static/plugins/{hash}-{sanitized_name}.js`.
+5. **Sync**: `POST /api/sites/{id}/sync-plugin` re-fetches remote scripts or re-parses local plugin metadata.
+6. **Cleanup**: Unreferenced plugin files are automatically deleted when sites are removed or modified.
 
-You can declare metadata for your plugin using standard comment blocks (similar to JSDoc or Userscript headers). When the plugin script is downloaded or uploaded, Start Base automatically parses these annotations and persists them as JSON in the database:
+---
+
+### Plugin Metadata Annotations
+
+You can declare metadata using comment annotations. The backend parses them on download or upload:
 
 ```javascript
 /**
@@ -180,31 +183,30 @@ You can declare metadata for your plugin using standard comment blocks (similar 
 
 | Directive | Description | Example |
 | :--- | :--- | :--- |
-| `@api_urls <url1, url2>` | Comma-separated list of authorized API URL prefixes for the network proxy. Requests must match the URL prefix. | `@api_urls https://jsonplaceholder.typicode.com/users`<br>`@api_urls https://api.weatherapi.com/v1/, http://192.168.1.100:8123/api/` |
-| `@name <name>` | Optional human-readable name for the plugin. | `@name Weather Widget` |
-| `@version <ver>` | Optional semver version. | `@version 1.0.0` |
-| `@description <desc>` | Optional description text. | `@description Real-time forecast` |
-| `@author <author>` | Optional author name or handle. | `@author Harry` |
+| `@api_urls <url1, url2>` | Allowed API URL prefixes for the network proxy. | `@api_urls https://jsonplaceholder.typicode.com/users`<br>`@api_urls https://api.weatherapi.com/v1/, http://192.168.1.100:8123/api/` |
+| `@name <name>` | Display name for the plugin. | `@name Weather Widget` |
+| `@version <ver>` | Plugin version. | `@version 1.0.0` |
+| `@description <desc>` | Plugin description. | `@description Real-time forecast` |
+| `@author <author>` | Author name. | `@author Harry` |
 
 > [!NOTE]
-> Plugins without metadata annotations remain 100% valid and run normally. However, any outbound network requests made through the proxy will be blocked unless authorized API URLs are declared via `@api_urls`.
+> Metadata annotations are optional. Outbound requests through `context.fetch` are allowed only when the target URL matches declared `@api_urls` prefixes.
 > 
-> URL matching performs prefix matching (no wildcards `*`). For example, configuring `https://jsonplaceholder.typicode.com/users` allows `https://jsonplaceholder.typicode.com/users` and sub-paths like `https://jsonplaceholder.typicode.com/users/1`, but restricts other endpoints like `https://jsonplaceholder.typicode.com/posts` or `https://jsonplaceholder.typicode.com/`. To allow all endpoints under an entire domain, specify `https://jsonplaceholder.typicode.com/`.
+> Prefix matching applies (no wildcards). For example, `https://jsonplaceholder.typicode.com/users` allows `/users/1`. To allow all endpoints on a host, use `https://jsonplaceholder.typicode.com/`.
 
 ---
 
-### 4.6 Zero-CORS Plugin Proxy Network API (`context.fetch`)
+### Proxy Network API (`context.fetch`)
 
-To eliminate browser CORS restrictions and securely query external or internal APIs, Start Base provides a proxied `fetch` helper injected directly into the plugin context:
+To avoid CORS restrictions and access external or local APIs, use the proxied `fetch` helper from the plugin context:
 
-#### Usage in Custom Elements:
+#### In Custom Elements:
 ```javascript
 class WeatherPlugin extends HTMLElement {
   async connectedCallback() {
     this.innerHTML = '<span class="loading loading-spinner loading-xs"></span>';
 
     try {
-      // Use the injected context.fetch to query the declared host
       const response = await this.context.fetch('https://api.weatherapi.com/v1/current.json?q=London', {
         headers: { 'Accept': 'application/json' },
       });
@@ -224,7 +226,7 @@ class WeatherPlugin extends HTMLElement {
 export default WeatherPlugin;
 ```
 
-#### Usage in Universal Lifecycle Pattern:
+#### In Lifecycle Object:
 ```javascript
 export default {
   async mount(container, props, context) {
@@ -242,54 +244,48 @@ export default {
 
 ---
 
-### 4.7 LAN & Homelab Access Control
+### LAN & Homelab Access Control
 
-For security reasons, Start Base restricts outbound proxy requests:
-- **Cloud Metadata Interception**: Requests to AWS/GCP/Azure link-local metadata endpoints (`169.254.169.254`) and multicast ranges are strictly forbidden and always blocked.
-- **LAN / Private Network Access**: Private network ranges (`192.168.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12`) are blocked by default to prevent SSRF.
-- **Homelab User Toggle**: Users can enable **"Allow LAN / Private Network Access"** in the plugin settings form for individual self-hosted widgets (e.g. Home Assistant, Pi-hole, NAS monitoring). Note that LAN access can only be enabled by the user in the UI, never by the plugin script itself.
+Outbound proxy requests follow security restrictions:
+- **Cloud Metadata**: Requests to link-local metadata endpoints (`169.254.169.254`) and multicast addresses are blocked.
+- **LAN Access**: Private IP ranges (`192.168.0.0/16`, `10.0.0.0/8`, `172.16.0.0/12`) are blocked by default.
+- **LAN Toggle**: Enable **"Allow LAN / Private Network Access"** in the site form for local devices (e.g., Home Assistant, NAS).
 
 ---
 
-### 4.8 Ready-to-use Demo & Local Testing
+### Demo Plugin & Local Testing
 
-A complete ready-to-run demo Web Component plugin is located at [`docs/demo-plugin.js`](./demo-plugin.js).
+A ready-to-run demo plugin is available at [`docs/demo-plugin.js`](./demo-plugin.js).
 
-To test locally, launch any standard HTTP server:
+To serve it locally:
 
 ```bash
-# Start server in docs directory (or use python3 docs/serve.py 8016)
 cd docs
 python3 -m http.server 8016
 ```
 
-Then in Start Base:
-- **Plugin URL / Upload**: Either input `http://localhost:8016/demo-plugin.js` or click the upload button to upload `docs/demo-plugin.js` directly.
+In Start Base:
 - **Plugin Type**: `Web Component`
+- **Plugin URL / Upload**: Enter `http://localhost:8016/demo-plugin.js` or upload `demo-plugin.js` directly.
 - **Custom Parameters**:
   ```text
   author=YourName
   greeting=Hello World!
   ```
-- **Allow LAN Access**: Toggle if testing private IP endpoints.
+- **Allow LAN Access**: Enable if testing local endpoints.
 
 ---
 
-## 5. Adding and Configuring Plugins in Start Base
+## Adding Plugins in Start Base
 
-1. **Open the Add Dialog**: Click **"Add Site"** in the top bar or inside any group.
-2. **Toggle Plugin Mode**: Check the **`[✓] Plugin Mode`** checkbox in the modal footer.
-3. **Fill in Plugin Details**:
-   - **Plugin Type**: Select `Web Component` or `iframe`.
-   - **Plugin URL / File Upload**:
-     - For **Web Component**: Provide a remote URL or click the upload button to upload a local `.js` / `.mjs` file. If a file is selected for upload, manual URL entry is optional.
-     - For **iframe**: Provide the web URL.
-   - **Title & Description** *(optional, automatically extracted from uploaded plugin metadata if present)*.
-   - **Group & Card Size** (`1×1`, `2×1`, `1×2`, `2×2`).
-4. **Set Custom Parameters (Optional)**: Input multiline `key=value` pairs in the parameters box.
-5. **Review Declared API URLs & LAN Toggle**:
-   - If the plugin script declared `@api_urls`, the declared URLs are displayed in the form.
-   - Check **"Allow LAN / Private Network Access"** if connecting to Homelab/local devices.
-6. **Save**: Click **"Add site"** to render the plugin on the dashboard.
+1. Click **"Add Site"** in the top bar or inside any group.
+2. Check **`[✓] Plugin Mode`** in the dialog footer.
+3. Choose **Plugin Type** (`Web Component` or `iframe`).
+4. Set **Plugin URL / Upload**:
+   - **Web Component**: Provide a remote URL or click the upload button to choose a `.js` / `.mjs` file.
+   - **iframe**: Provide the web URL.
+5. Fill in optional fields (**Title**, **Description**, **Group**, **Card Size**, **Custom Parameters**).
+6. Enable **Allow LAN Access** if connecting to local network services.
+7. Click **"Add site"** to save.
 
 
