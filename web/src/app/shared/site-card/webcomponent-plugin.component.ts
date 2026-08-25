@@ -186,7 +186,6 @@ export class WebcomponentPluginComponent implements OnDestroy {
       // Case 3: Script has mounted itself or exported nothing specific
       this.isLoading.set(false);
     } catch (err: unknown) {
-      console.error('Failed to load Web Component plugin:', err);
       const msg = err instanceof Error ? err.message : 'Failed to load plugin module';
       this.errorMessage.set(msg);
       this.isLoading.set(false);
