@@ -9,7 +9,7 @@ import { buildIframeUrl, buildPluginParams } from '../../core/utils/plugin.utils
   selector: 'app-iframe-plugin',
   standalone: true,
   template: `
-    <div class="w-full h-full relative rounded-[10px] overflow-hidden bg-base-100">
+    <div class="plugin-container w-full h-full relative rounded-[10px] overflow-hidden bg-base-100">
       <iframe
         [src]="safeUrl()"
         class="w-full h-full border-0 block"
@@ -24,6 +24,10 @@ import { buildIframeUrl, buildPluginParams } from '../../core/utils/plugin.utils
       display: block;
       width: 100%;
       height: 100%;
+    }
+
+    :host-context(.has-border) .plugin-container {
+      border: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent);
     }
   `,
 })

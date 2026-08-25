@@ -34,7 +34,9 @@ export interface PluginLifecycle {
   selector: 'app-webcomponent-plugin',
   standalone: true,
   template: `
-    <div class="w-full h-full relative rounded-[10px] overflow-hidden bg-base-100 flex flex-col">
+    <div
+      class="plugin-container w-full h-full relative rounded-[10px] overflow-hidden bg-base-100 flex flex-col"
+    >
       @if (errorMessage()) {
         <div
           class="w-full h-full flex flex-col items-center justify-center p-3 text-center text-error gap-1"
@@ -60,6 +62,10 @@ export interface PluginLifecycle {
       display: block;
       width: 100%;
       height: 100%;
+    }
+
+    :host-context(.has-border) .plugin-container {
+      border: 1px solid color-mix(in oklab, var(--color-base-content) 15%, transparent);
     }
   `,
 })
