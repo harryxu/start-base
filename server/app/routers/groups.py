@@ -5,6 +5,7 @@ from sqlmodel import Session, select
 
 from app.database import get_session
 from app.models import Group, GroupCreate, GroupRead, GroupUpdate, ReorderItem, Site
+from app.services.file_service import delete_local_static_file
 
 router = APIRouter(prefix="/api/groups", tags=["groups"])
 
@@ -33,10 +34,12 @@ def update_group(
     group_in: GroupUpdate,
     session: Session = Depends(get_session),
 ) -> Group:
-    """Update a group's name or sort_order."""
+    """Update a group's name, icon, or sort_order."""
     group = session.get(Group, group_id)
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
+
+    old_icon_url = group.icon_url
 
     update_data = group_in.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -45,6 +48,10 @@ def update_group(
     session.add(group)
     session.commit()
     session.refresh(group)
+
+    if old_icon_url and old_icon_url != group.icon_url:
+        delete_local_static_file(old_icon_url)
+
     return group
 
 
@@ -55,6 +62,8 @@ def delete_group(group_id: int, session: Session = Depends(get_session)) -> None
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
+    old_icon_url = group.icon_url
+
     # Ungroup all sites belonging to this group
     orphaned = session.exec(select(Site).where(Site.group_id == group_id)).all()
     for site in orphaned:
@@ -63,6 +72,9 @@ def delete_group(group_id: int, session: Session = Depends(get_session)) -> None
 
     session.delete(group)
     session.commit()
+
+    if old_icon_url:
+        delete_local_static_file(old_icon_url)
 
 
 @router.post("/reorder", status_code=204)

@@ -262,6 +262,45 @@ def test_create_plugin_site(client: TestClient, session: Session) -> None:
         assert updated["plugin_params"] == "theme=dark\nrefresh=30"
 
 
+def test_site_icon_cleanup_on_update_and_delete(client: TestClient) -> None:
+    """Test that updating or deleting a site cleans up its local static icon file."""
+    import os
+
+    # 1. Upload two icons
+    f1 = {"file": ("icon1.png", b"icon1 bytes", "image/png")}
+    d1 = {"folder": "icons"}
+    r1 = client.post("/api/system/upload-image", files=f1, data=d1)
+    assert r1.status_code == 200
+    url1 = r1.json()["url"]
+    file1 = os.path.join("data/files", url1.removeprefix("/static/"))
+    assert os.path.isfile(file1)
+
+    f2 = {"file": ("icon2.png", b"icon2 bytes", "image/png")}
+    d2 = {"folder": "icons"}
+    r2 = client.post("/api/system/upload-image", files=f2, data=d2)
+    assert r2.status_code == 200
+    url2 = r2.json()["url"]
+    file2 = os.path.join("data/files", url2.removeprefix("/static/"))
+    assert os.path.isfile(file2)
+
+    # 2. Create site with icon1
+    res = client.post("/api/sites/", json={"url": "https://example.com", "title": "Example", "icon_url": url1})
+    assert res.status_code == 201
+    site_id = res.json()["id"]
+
+    # 3. Update icon to icon2 -> icon1 file deleted
+    patch_res = client.patch(f"/api/sites/{site_id}", json={"icon_url": url2})
+    assert patch_res.status_code == 200
+    assert not os.path.isfile(file1)
+    assert os.path.isfile(file2)
+
+    # 4. Delete site -> icon2 file deleted
+    del_res = client.delete(f"/api/sites/{site_id}")
+    assert del_res.status_code == 204
+    assert not os.path.isfile(file2)
+
+
+
 
 
 

@@ -4,6 +4,7 @@ from sqlmodel import Session, select
 from app import database
 from app.database import get_session
 from app.models import Site, SiteCreate, SiteRead, SiteReorderItem, SiteUpdate
+from app.services.file_service import delete_local_static_file
 from app.services.metadata import download_icon, fetch_site_metadata
 from app.services.plugin_service import (
     cleanup_unused_plugins,
@@ -71,6 +72,7 @@ async def update_site(
 
     old_site_type = site.site_type
     old_url = site.url
+    old_icon_url = site.icon_url
 
     update_data = site_in.model_dump(exclude_unset=True)
     for key, value in update_data.items():
@@ -79,6 +81,9 @@ async def update_site(
     session.add(site)
     session.commit()
     session.refresh(site)
+
+    if old_icon_url and old_icon_url != site.icon_url:
+        delete_local_static_file(old_icon_url)
 
     if site.site_type == "webcomponent" and site.url:
         background_tasks.add_task(sync_plugin_for_site, site.id, site.url)
@@ -119,13 +124,18 @@ async def sync_site_plugin(
 
 @router.delete("/{site_id}", status_code=204)
 def delete_site(site_id: int, session: Session = Depends(get_session)) -> None:
-    """Delete a site and cleanup unused cached plugin files."""
+    """Delete a site and cleanup unused cached plugin and icon files."""
     site = session.get(Site, site_id)
     if not site:
         raise HTTPException(status_code=404, detail="Site not found")
     is_webcomponent = site.site_type == "webcomponent"
+    old_icon_url = site.icon_url
+
     session.delete(site)
     session.commit()
+
+    if old_icon_url:
+        delete_local_static_file(old_icon_url)
 
     if is_webcomponent:
         cleanup_unused_plugins(session)

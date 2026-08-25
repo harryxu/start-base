@@ -123,3 +123,42 @@ def test_reorder_groups(client: TestClient, session: Session) -> None:
     session.refresh(g2)
     assert g1.sort_order == 3.0
     assert g2.sort_order == 0.5
+
+
+def test_group_icon_cleanup_on_update_and_delete(client: TestClient) -> None:
+    """Test that updating or deleting a group cleans up its local static icon file."""
+    import os
+
+    # 1. Upload two icons
+    f1 = {"file": ("gicon1.png", b"gicon1 bytes", "image/png")}
+    d1 = {"folder": "icons"}
+    r1 = client.post("/api/system/upload-image", files=f1, data=d1)
+    assert r1.status_code == 200
+    url1 = r1.json()["url"]
+    file1 = os.path.join("data/files", url1.removeprefix("/static/"))
+    assert os.path.isfile(file1)
+
+    f2 = {"file": ("gicon2.png", b"gicon2 bytes", "image/png")}
+    d2 = {"folder": "icons"}
+    r2 = client.post("/api/system/upload-image", files=f2, data=d2)
+    assert r2.status_code == 200
+    url2 = r2.json()["url"]
+    file2 = os.path.join("data/files", url2.removeprefix("/static/"))
+    assert os.path.isfile(file2)
+
+    # 2. Create group with url1
+    res = client.post("/api/groups/", json={"name": "Tools", "icon_url": url1})
+    assert res.status_code == 201
+    group_id = res.json()["id"]
+
+    # 3. Update group with url2 -> file1 deleted
+    patch_res = client.patch(f"/api/groups/{group_id}", json={"icon_url": url2})
+    assert patch_res.status_code == 200
+    assert not os.path.isfile(file1)
+    assert os.path.isfile(file2)
+
+    # 4. Delete group -> file2 deleted
+    del_res = client.delete(f"/api/groups/{group_id}")
+    assert del_res.status_code == 204
+    assert not os.path.isfile(file2)
+
