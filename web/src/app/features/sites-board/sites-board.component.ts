@@ -103,6 +103,10 @@ export class SitesBoardComponent {
 
   isSearching = computed(() => !!this.searchQuery().trim());
 
+  dragStartDelay = computed(() =>
+    this.configService.editMode() ? 0 : { touch: 300, mouse: 150 },
+  );
+
   /** Mutable copy of the ungrouped sites for drag-and-drop animations. */
   localUngroupedSites = signal<Site[]>([]);
 

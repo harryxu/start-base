@@ -155,4 +155,15 @@ describe('SitesBoardComponent', () => {
     expect(compiled.textContent).toContain('No matching sites found');
     expect(compiled.textContent).toContain('non_existing_keyword_xyz');
   });
+
+  it('should adjust dragStartDelay based on editMode', () => {
+    const fixture = TestBed.createComponent(SitesBoardComponent);
+    const component = fixture.componentInstance;
+
+    component.configService.editMode.set(false);
+    expect(component.dragStartDelay()).toEqual({ touch: 300, mouse: 150 });
+
+    component.configService.editMode.set(true);
+    expect(component.dragStartDelay()).toBe(0);
+  });
 });

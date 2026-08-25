@@ -156,6 +156,10 @@ export class GroupContainerComponent {
     return this.configService.siteBorder();
   });
 
+  dragStartDelay = computed(() =>
+    this.configService.editMode() ? 0 : { touch: 300, mouse: 150 },
+  );
+
   addSite = output<Partial<Site>>();
   editGroup = output<Group>();
   deleteGroup = output<Group>();

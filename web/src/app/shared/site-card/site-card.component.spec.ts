@@ -284,14 +284,11 @@ describe('SiteCardComponent', () => {
     expect(component.canUseContextMenu()).toBe(false);
   });
 
-  it('should enable context menu for iframe plugins when editMode is true', () => {
+  it('should disable card context menu/long-press in editMode (uses dedicated action menu button)', () => {
     component.configService.editMode.set(true);
-    fixture.componentRef.setInput('site', {
-      ...mockSite,
-      site_type: 'iframe',
-    });
+    fixture.componentRef.setInput('site', mockSite);
     fixture.detectChanges();
 
-    expect(component.canUseContextMenu()).toBe(true);
+    expect(component.canUseContextMenu()).toBe(false);
   });
 });

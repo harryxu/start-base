@@ -123,4 +123,12 @@ describe('GroupContainerComponent', () => {
     fixture.detectChanges();
     expect(component.effectiveSiteBorder()).toBe(false);
   });
+
+  it('should adjust dragStartDelay based on editMode', () => {
+    component.configService.editMode.set(false);
+    expect(component.dragStartDelay()).toEqual({ touch: 300, mouse: 150 });
+
+    component.configService.editMode.set(true);
+    expect(component.dragStartDelay()).toBe(0);
+  });
 });

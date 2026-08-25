@@ -185,7 +185,7 @@ export class SiteCardComponent {
 
   canUseContextMenu = computed(() => {
     if (this.configService.isReadOnly()) return false;
-    if (this.configService.editMode()) return true;
+    if (this.configService.editMode()) return false;
     return !this.site().site_type || this.site().site_type === 'builtin';
   });
 

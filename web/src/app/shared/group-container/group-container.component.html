@@ -44,7 +44,7 @@
       [class.view-mode-full]="effectiveViewMode() === 'full'"
       [class.has-border]="effectiveSiteBorder()">
       @for (site of sites(); track site.id) {
-      <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="{ touch: 300, mouse: 150 }"
+      <div cdkDrag [cdkDragData]="site" [cdkDragStartDelay]="dragStartDelay()"
         [cdkDragDisabled]="configService.isReadOnly() || (!configService.editMode() && (site.site_type && site.site_type !== 'builtin'))" (cdkDragStarted)="siteCard.closeMenu(); siteDragStarted.emit()"
         class="h-full"
         [style.grid-column]="'span ' + (site.col_span || 1)"
