@@ -3,3 +3,9 @@ allowBuilds:
   esbuild: true
   lmdb: true
   msgpackr-extract: true
+minimumReleaseAgeExclude:
+  - '@lucide/angular@1.34.0'
+  - '@tanstack/angular-query-experimental@5.102.3'
+  - '@tanstack/query-core@5.102.3'
+  - '@tanstack/query-devtools@5.102.3'
+  - daisyui@5.7.22
