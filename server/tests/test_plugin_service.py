@@ -43,6 +43,36 @@ def test_get_plugin_filename():
     hash_root = hashlib.sha256(url_root.encode("utf-8")).hexdigest()[:16]
     assert get_plugin_filename(url_root) == f"{hash_root}-plugin.js"
 
+    # Local static plugin URL
+    url_local = "/static/plugins/1234567890abcdef-custom-widget.js"
+    assert get_plugin_filename(url_local) == "1234567890abcdef-custom-widget.js"
+
+
+def test_save_uploaded_plugin(mock_plugins_dir):
+    from app.services.plugin_service import save_uploaded_plugin
+
+    js_content = b"""/**
+ * @name Weather Card
+ * @version 1.2.0
+ * @api_urls https://api.weather.com/v1/
+ */
+export default {};
+"""
+    url, filename, meta = save_uploaded_plugin("my_weather_plugin.v1.js", js_content)
+    expected_hash = hashlib.sha256(js_content).hexdigest()[:16]
+    expected_filename = f"{expected_hash}-my_weather_plugin-v1.js"
+
+    assert filename == expected_filename
+    assert url == f"/static/plugins/{expected_filename}"
+    assert meta is not None
+    assert meta["name"] == "Weather Card"
+    assert meta["version"] == "1.2.0"
+    assert meta["api_urls"] == ["https://api.weather.com/v1/"]
+
+    saved_file = mock_plugins_dir / expected_filename
+    assert saved_file.exists()
+    assert saved_file.read_bytes() == js_content
+
 
 def test_to_site_read():
     site_builtin = Site(id=1, url="https://example.com", site_type="builtin")
@@ -53,6 +83,12 @@ def test_to_site_read():
     site_plugin = Site(id=2, url=url, site_type="webcomponent")
     read_plugin = to_site_read(site_plugin)
     assert read_plugin.plugin_cached_url == get_plugin_cached_url(url)
+
+    # Local uploaded plugin URL
+    local_url = "/static/plugins/a1b2c3d4e5f67890-demo.js"
+    site_local = Site(id=3, url=local_url, site_type="webcomponent")
+    read_local = to_site_read(site_local)
+    assert read_local.plugin_cached_url == local_url
 
 
 import asyncio

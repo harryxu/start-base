@@ -153,19 +153,20 @@ You can write plugins using modern frameworks and bundle them into a single `.js
 - **React Components in Web Components**: [React createRoot API](https://react.dev/reference/react-dom/client/createRoot) (render React trees inside `connectedCallback`)
 - **Vite Library Mode (Single JS Bundle)**: [Vite Guide - Library Mode](https://vite.dev/guide/build.html#library-mode)
 
-### 4.4 Server-Side Caching & Zero-CORS Architecture
+### 4.4 Server-Side Caching, Upload & Zero-CORS Architecture
 
 To ensure 100% reliability, offline resilience, and eliminate browser CORS issues across domains or ports:
 
-1. **Automatic Server-Side Download**: When a `Web Component` site is saved or updated, the Start Base backend automatically fetches the remote JS file via `httpx` and caches it into `server/data/files/plugins/{hash}-{sanitized_name}.js`.
-2. **Deterministic Deduplication**: The filename is derived from a 16-character SHA-256 hash of the normalized URL plus the original script name (e.g. `a1b2c3d4e5f67890-demo-plugin.js`). If multiple cards reference the exact same plugin URL, they share a single copy on disk and in browser module cache.
-3. **Same-Origin Static Delivery**: The frontend loads the plugin via `/static/plugins/{hash}-{sanitized_name}.js`, completely bypassing third-party CORS limitations.
-4. **On-Demand Synchronization**: Triggering `POST /api/sites/{id}/sync-plugin` forces the server to re-fetch the latest script from the remote URL and update the local cached snapshot.
-5. **Automatic Cleanup (GC)**: When a site is deleted or changes its URL, unreferenced plugin cache files are automatically purged from disk.
+1. **Direct Script Upload**: In Web Component plugin mode, you can upload `.js` / `.mjs` plugin files directly via the upload button integrated next to the Plugin URL input box.
+2. **Automatic Server-Side Download**: When a remote `Web Component` URL is provided, the Start Base backend automatically fetches the remote JS file via `httpx` and caches it into `server/data/files/plugins/{hash}-{sanitized_name}.js`.
+3. **Deterministic Deduplication & Hashing**: All plugin files (whether uploaded or fetched from remote URLs) are stored in `server/data/files/plugins/` using a 16-character SHA-256 hash plus sanitized script name (e.g. `a1b2c3d4e5f67890-demo-plugin.js`). If multiple cards reference the exact same plugin or identical content, they share a single cached copy.
+4. **Same-Origin Static Delivery**: The frontend loads the plugin via `/static/plugins/{hash}-{sanitized_name}.js`, completely bypassing third-party CORS limitations.
+5. **On-Demand Synchronization**: Triggering `POST /api/sites/{id}/sync-plugin` forces the server to re-fetch/re-parse the script and update the cached snapshot and metadata.
+6. **Automatic Cleanup (GC)**: When a site is deleted or changes its URL, unreferenced plugin files are automatically purged from disk.
 
 ### 4.5 Plugin Metadata Annotations
 
-You can declare metadata for your plugin using standard comment blocks (similar to JSDoc or Userscript headers). When the plugin script is downloaded or synced, Start Base automatically parses these annotations and persists them as JSON in the database:
+You can declare metadata for your plugin using standard comment blocks (similar to JSDoc or Userscript headers). When the plugin script is downloaded or uploaded, Start Base automatically parses these annotations and persists them as JSON in the database:
 
 ```javascript
 /**
@@ -263,7 +264,7 @@ python3 -m http.server 8016
 ```
 
 Then in Start Base:
-- **Plugin URL**: `http://localhost:8016/demo-plugin.js`
+- **Plugin URL / Upload**: Either input `http://localhost:8016/demo-plugin.js` or click the upload button to upload `docs/demo-plugin.js` directly.
 - **Plugin Type**: `Web Component`
 - **Custom Parameters**:
   ```text
@@ -279,13 +280,16 @@ Then in Start Base:
 1. **Open the Add Dialog**: Click **"Add Site"** in the top bar or inside any group.
 2. **Toggle Plugin Mode**: Check the **`[✓] Plugin Mode`** checkbox in the modal footer.
 3. **Fill in Plugin Details**:
-   - **Plugin URL** *(required)*: The URL of the plugin HTML or JS module.
    - **Plugin Type**: Select `Web Component` or `iframe`.
-   - **Title & Description** *(optional)*.
+   - **Plugin URL / File Upload**:
+     - For **Web Component**: Provide a remote URL or click the upload button to upload a local `.js` / `.mjs` file. If a file is selected for upload, manual URL entry is optional.
+     - For **iframe**: Provide the web URL.
+   - **Title & Description** *(optional, automatically extracted from uploaded plugin metadata if present)*.
    - **Group & Card Size** (`1×1`, `2×1`, `1×2`, `2×2`).
 4. **Set Custom Parameters (Optional)**: Input multiline `key=value` pairs in the parameters box.
 5. **Review Declared API URLs & LAN Toggle**:
    - If the plugin script declared `@api_urls`, the declared URLs are displayed in the form.
    - Check **"Allow LAN / Private Network Access"** if connecting to Homelab/local devices.
 6. **Save**: Click **"Add site"** to render the plugin on the dashboard.
+
 

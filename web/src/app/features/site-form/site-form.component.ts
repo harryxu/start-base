@@ -61,21 +61,6 @@ import { parsePluginMeta } from '../../core/utils/plugin.utils';
             @if (isPluginMode()) {
               <!-- Plugin Mode Form -->
 
-              <!-- URL (required) -->
-              <label class="floating-label w-full text-base-content/60">
-                <input
-                  id="site-url"
-                  type="url"
-                  [(ngModel)]="formUrl"
-                  name="url"
-                  required
-                  placeholder="Plugin URL"
-                  class="input input-bordered input-lg w-full text-base-content"
-                  autocomplete="off"
-                />
-                <span>Plugin URL <span class="text-error">*</span></span>
-              </label>
-
               <!-- Plugin Type Selector -->
               <div class="flex flex-col gap-1.5">
                 <span class="text-xs text-base-content/60 pl-1">Plugin Type</span>
@@ -86,7 +71,7 @@ import { parsePluginMeta } from '../../core/utils/plugin.utils';
                     class="join-item btn btn-sm"
                     aria-label="Web Component"
                     [checked]="formPluginType === 'webcomponent'"
-                    (change)="formPluginType = 'webcomponent'"
+                    (change)="onPluginTypeChange('webcomponent')"
                   />
                   <input
                     type="radio"
@@ -94,10 +79,65 @@ import { parsePluginMeta } from '../../core/utils/plugin.utils';
                     class="join-item btn btn-sm"
                     aria-label="iframe"
                     [checked]="formPluginType === 'iframe'"
-                    (change)="formPluginType = 'iframe'"
+                    (change)="onPluginTypeChange('iframe')"
                   />
                 </div>
               </div>
+
+              <!-- URL / Upload -->
+              @if (formPluginType === 'webcomponent') {
+                <div class="join w-full flex items-stretch">
+                  <label
+                    class="floating-label input input-bordered input-lg join-item flex-1 flex items-center gap-2 text-base-content/60"
+                  >
+                    <input
+                      id="site-url"
+                      type="text"
+                      [(ngModel)]="formUrl"
+                      name="url"
+                      placeholder="Plugin URL or upload file"
+                      class="grow text-base-content"
+                      autocomplete="off"
+                    />
+                    <span>Plugin URL @if (!selectedPluginFile) { <span class="text-error">*</span> }</span>
+                  </label>
+
+                  <input
+                    #pluginFileInput
+                    type="file"
+                    accept=".js,.mjs,text/javascript,application/javascript"
+                    class="hidden"
+                    (change)="onPluginFileSelected($event)"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-lg join-item shrink-0 self-stretch flex items-center justify-center px-4 min-h-0 h-auto"
+                    (click)="pluginFileInput.click()"
+                    [title]="selectedPluginFileName() ? selectedPluginFileName() : 'Upload plugin script'"
+                    aria-label="Upload plugin script"
+                  >
+                    @if (isUploadingPlugin()) {
+                      <span class="loading loading-spinner loading-xs"></span>
+                    } @else {
+                      <svg lucideUpload class="w-5 h-5"></svg>
+                    }
+                  </button>
+                </div>
+              } @else {
+                <label class="floating-label w-full text-base-content/60">
+                  <input
+                    id="site-url"
+                    type="url"
+                    [(ngModel)]="formUrl"
+                    name="url"
+                    required
+                    placeholder="Plugin URL"
+                    class="input input-bordered input-lg w-full text-base-content"
+                    autocomplete="off"
+                  />
+                  <span>Plugin URL <span class="text-error">*</span></span>
+                </label>
+              }
 
               <!-- Title (optional) -->
               <label class="floating-label w-full text-base-content/60">
@@ -366,7 +406,7 @@ import { parsePluginMeta } from '../../core/utils/plugin.utils';
                 id="site-form-submit"
                 type="submit"
                 class="btn btn-primary btn-sm"
-                [disabled]="!formUrl || isUploading()"
+                [disabled]="isSubmitDisabled()"
               >
                 {{ site() ? 'Save changes' : 'Add site' }}
               </button>
@@ -415,6 +455,11 @@ export class SiteFormComponent {
   selectedFileName = signal<string>('');
   previewUrl = signal<string>('');
   isUploading = signal<boolean>(false);
+
+  selectedPluginFile: File | null = null;
+  selectedPluginFileName = signal<string>('');
+  isUploadingPlugin = signal<boolean>(false);
+
   uploadError = signal<string>('');
 
   dbIconUrl = computed(() => {
@@ -440,6 +485,11 @@ export class SiteFormComponent {
       this.selectedFileName.set('');
       this.previewUrl.set('');
       this.isUploading.set(false);
+
+      this.selectedPluginFile = null;
+      this.selectedPluginFileName.set('');
+      this.isUploadingPlugin.set(false);
+
       this.uploadError.set('');
 
       if (s) {
@@ -486,6 +536,18 @@ export class SiteFormComponent {
 
   togglePluginMode(enabled: boolean): void {
     this.isPluginMode.set(enabled);
+    if (!enabled) {
+      this.selectedPluginFile = null;
+      this.selectedPluginFileName.set('');
+    }
+  }
+
+  onPluginTypeChange(type: 'webcomponent' | 'iframe'): void {
+    this.formPluginType = type;
+    if (type === 'iframe') {
+      this.selectedPluginFile = null;
+      this.selectedPluginFileName.set('');
+    }
   }
 
   onFileSelected(event: Event): void {
@@ -510,16 +572,80 @@ export class SiteFormComponent {
     }
   }
 
+  async onPluginFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      const validExts = ['.js', '.mjs'];
+      const ext = file.name.slice(file.name.lastIndexOf('.')).toLowerCase();
+      const isValidJs = validExts.includes(ext) || file.type.includes('javascript');
+
+      if (!isValidJs) {
+        this.uploadError.set('Please select a valid JavaScript plugin file (.js, .mjs).');
+        input.value = '';
+        return;
+      }
+
+      this.uploadError.set('');
+      this.selectedPluginFile = file;
+      this.selectedPluginFileName.set(file.name);
+      this.formUrl = file.name;
+
+      try {
+        const text = await file.text();
+        const nameMatch = text.match(/@name\s+([^\r\n]+)/i);
+        if (nameMatch && !this.formTitle) {
+          this.formTitle = nameMatch[1].trim();
+        }
+        const descMatch = text.match(/@description\s+([^\r\n]+)/i);
+        if (descMatch && !this.formDescription) {
+          this.formDescription = descMatch[1].trim();
+        }
+      } catch {
+        // Ignore read error
+      }
+    }
+  }
+
   onIconError(): void {
     this.iconFailed.set(true);
   }
 
+  isSubmitDisabled(): boolean {
+    if (this.isUploading() || this.isUploadingPlugin()) return true;
+    if (this.isPluginMode()) {
+      if (this.formPluginType === 'webcomponent') {
+        return !this.selectedPluginFile && !this.formUrl?.trim();
+      }
+      return !this.formUrl?.trim();
+    }
+    return !this.formUrl?.trim();
+  }
+
   async onSubmit(): Promise<void> {
-    if (!this.formUrl) return;
+    if (this.isSubmitDisabled()) return;
 
     const isPlugin = this.isPluginMode();
 
-    if (!isPlugin && this.selectedIconFile) {
+    if (isPlugin && this.formPluginType === 'webcomponent' && this.selectedPluginFile) {
+      this.isUploadingPlugin.set(true);
+      this.uploadError.set('');
+      try {
+        const res = await firstValueFrom(this.api.uploadPlugin(this.selectedPluginFile));
+        if (res && res.url) {
+          this.formUrl = res.url;
+        }
+      } catch (err: unknown) {
+        console.error('Failed to upload plugin:', err);
+        const errorMessage =
+          (err as { error?: { detail?: string } })?.error?.detail || 'Failed to upload plugin file.';
+        this.uploadError.set(errorMessage);
+        this.isUploadingPlugin.set(false);
+        return;
+      } finally {
+        this.isUploadingPlugin.set(false);
+      }
+    } else if (!isPlugin && this.selectedIconFile) {
       this.isUploading.set(true);
       this.uploadError.set('');
       try {

@@ -93,4 +93,44 @@ describe('SiteFormComponent', () => {
     component.togglePluginMode(false);
     expect(component.isPluginMode()).toBe(false);
   });
+
+  it('should enable submit when Web Component plugin file is selected even without manual URL', () => {
+    const fixture = TestBed.createComponent(SiteFormComponent);
+    const component = fixture.componentInstance;
+
+    component.togglePluginMode(true);
+    component.formPluginType = 'webcomponent';
+    component.formUrl = '';
+
+    expect(component.isSubmitDisabled()).toBe(true);
+
+    const dummyFile = new File(['export default {};'], 'my-widget.js', {
+      type: 'application/javascript',
+    });
+    component.selectedPluginFile = dummyFile;
+    component.formUrl = dummyFile.name;
+
+    expect(component.isSubmitDisabled()).toBe(false);
+  });
+
+  it('should reject invalid plugin file extension', async () => {
+    const fixture = TestBed.createComponent(SiteFormComponent);
+    const component = fixture.componentInstance;
+
+    component.togglePluginMode(true);
+    component.formPluginType = 'webcomponent';
+
+    const invalidFile = new File(['fake content'], 'test.png', { type: 'image/png' });
+    const event = {
+      target: {
+        files: [invalidFile],
+        value: 'test.png',
+      },
+    } as unknown as Event;
+
+    await component.onPluginFileSelected(event);
+
+    expect(component.uploadError()).toContain('valid JavaScript plugin file');
+    expect(component.selectedPluginFile).toBeNull();
+  });
 });

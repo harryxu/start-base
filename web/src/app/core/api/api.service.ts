@@ -90,6 +90,21 @@ export class ApiService {
     });
   }
 
+  uploadPlugin(
+    file: File,
+  ): Observable<{ url: string; filename: string; meta?: Record<string, any> }> {
+    const formData = new FormData();
+    const filename = file.name || 'plugin.js';
+    formData.append('file', file, filename);
+    return this.http.post<{ url: string; filename: string; meta?: Record<string, any> }>(
+      `${API_BASE}/api/system/upload-plugin`,
+      formData,
+      {
+        headers: { 'ngsw-bypass': 'true' },
+      },
+    );
+  }
+
   // ---- Auth ----
 
   login(data: UserLogin): Observable<UserPublic> {

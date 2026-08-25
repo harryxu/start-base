@@ -7,6 +7,8 @@ import uuid
 import anyio
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
+from app.services.plugin_service import save_uploaded_plugin
+
 router = APIRouter(prefix="/api/system", tags=["system"])
 
 ALLOWED_IMAGE_EXTENSIONS: set[str] = {
@@ -21,6 +23,11 @@ ALLOWED_IMAGE_EXTENSIONS: set[str] = {
     ".avif",
     ".heic",
     ".heif",
+}
+
+ALLOWED_PLUGIN_EXTENSIONS: set[str] = {
+    ".js",
+    ".mjs",
 }
 
 
@@ -83,3 +90,33 @@ async def upload_image(
     url = f"/static/{rel_path}"
 
     return {"url": url}
+
+
+@router.post("/upload-plugin")
+async def upload_plugin(
+    file: UploadFile = File(...),
+) -> dict:
+    """Upload a JavaScript plugin module (.js, .mjs), compute hash name, and store in data/files/plugins."""
+    filename = file.filename or "plugin.js"
+    ext = os.path.splitext(filename)[1].lower()
+
+    if ext not in ALLOWED_PLUGIN_EXTENSIONS:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid file type. Only JavaScript plugin files (.js, .mjs) are allowed.",
+        )
+
+    contents = await file.read()
+    if not contents:
+        raise HTTPException(
+            status_code=400,
+            detail="Plugin file is empty.",
+        )
+
+    url, saved_filename, meta = save_uploaded_plugin(filename, contents)
+    return {
+        "url": url,
+        "filename": saved_filename,
+        "meta": meta,
+    }
+

@@ -19,11 +19,14 @@ PLUGINS_DIR = Path("data/files/plugins")
 
 def to_site_read(site: Site) -> SiteRead:
     """Convert a Site model to SiteRead schema, computing plugin_cached_url if applicable."""
-    cached_url = (
-        get_plugin_cached_url(site.url)
-        if site.site_type == "webcomponent" and site.url
-        else None
-    )
+    if site.site_type == "webcomponent" and site.url:
+        cached_url = (
+            site.url
+            if site.url.startswith("/static/plugins/")
+            else get_plugin_cached_url(site.url)
+        )
+    else:
+        cached_url = None
     return SiteRead(**site.model_dump(), plugin_cached_url=cached_url)
 
 
@@ -37,6 +40,11 @@ def get_plugin_filename(url: str) -> str:
         return "unknown.js"
 
     normalized = url.strip()
+
+    # If it's already a local static plugin URL, extract the filename directly
+    if normalized.startswith("/static/plugins/"):
+        return Path(normalized).name
+
     url_hash = hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:16]
 
     # Extract base name from URL path
@@ -58,6 +66,44 @@ def get_plugin_filename(url: str) -> str:
     return f"{url_hash}-{sanitized}.js"
 
 
+def save_uploaded_plugin(
+    filename: str, content: bytes
+) -> tuple[str, str, dict | None]:
+    """
+    Save an uploaded plugin JS script into PLUGINS_DIR using deterministic content hash renaming.
+    Format: {content_hash}-{sanitized_name}.js
+    Returns (static_url, filename, parsed_metadata).
+    """
+    PLUGINS_DIR.mkdir(parents=True, exist_ok=True)
+
+    content_hash = hashlib.sha256(content).hexdigest()[:16]
+
+    clean_name = Path(filename or "plugin.js").name
+    if clean_name.endswith((".js", ".mjs")):
+        base_name = clean_name.rsplit(".", 1)[0]
+    else:
+        base_name = clean_name or "plugin"
+
+    sanitized = re.sub(r"[^a-zA-Z0-9_-]", "-", base_name).strip("-")
+    if not sanitized:
+        sanitized = "plugin"
+    sanitized = sanitized[:32]
+
+    saved_filename = f"{content_hash}-{sanitized}.js"
+    target_path = PLUGINS_DIR / saved_filename
+    target_path.write_bytes(content)
+
+    meta: dict | None = None
+    try:
+        script_text = content.decode("utf-8", errors="replace")
+        meta = parse_plugin_metadata(script_text)
+    except Exception as e:  # noqa: BLE001
+        logger.warning("Failed to parse metadata from uploaded plugin: %s", e)
+
+    static_url = f"/static/plugins/{saved_filename}"
+    return static_url, saved_filename, meta
+
+
 def get_plugin_cache_path(url: str) -> Path:
     """Get the filesystem path for a cached plugin file."""
     filename = get_plugin_filename(url)
@@ -66,6 +112,8 @@ def get_plugin_cache_path(url: str) -> Path:
 
 def get_plugin_cached_url(url: str) -> str:
     """Get the static URL path for a cached plugin."""
+    if url.startswith("/static/plugins/"):
+        return url
     filename = get_plugin_filename(url)
     return f"/static/plugins/{filename}"
 
@@ -170,13 +218,13 @@ async def sync_plugin_for_site(site_id: int, url: str, force: bool = False) -> s
 
     content_bytes: bytes | None = None
 
-    if target_path.exists() and not force:
+    if target_path.exists() and (not force or url.startswith("/static/plugins/")):
         try:
             content_bytes = target_path.read_bytes()
         except OSError as e:
             logger.debug("Failed to read cached plugin file %s: %s", target_path, e)
 
-    if content_bytes is None:
+    if content_bytes is None and not url.startswith("/static/plugins/"):
         try:
             async with httpx.AsyncClient(timeout=10.0, follow_redirects=True) as client:
                 resp = await client.get(url.strip())
