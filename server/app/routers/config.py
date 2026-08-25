@@ -12,6 +12,7 @@ from app.core.security import (
 )
 from app.database import get_session
 from app.models import AccessModeUpdate, SystemConfig, User
+from app.services.file_service import delete_local_static_file
 from app.settings import settings
 
 router = APIRouter(prefix="/api/config", tags=["config"])
@@ -151,25 +152,50 @@ def update_access_mode(
     return get_all_configs(session)
 
 
+def _set_config_value(
+    session: Session, key: str, val: Any
+) -> tuple[SystemConfig, str | None]:
+    """Set or update a config item in session, returning the item and any obsolete static file to delete."""
+    if key == "access_mode":
+        _check_demo_access_mode_restriction(val)
+
+    str_val = _serialize_value(val)
+    item = session.get(SystemConfig, key)
+    old_file: str | None = None
+
+    if key == "bg_url":
+        old_bg = _parse_value(item.value) if item else None
+        new_bg = val if val is not None else ""
+        if old_bg and old_bg != new_bg and isinstance(old_bg, str):
+            old_file = old_bg
+
+    if item:
+        item.value = str_val
+        session.add(item)
+    else:
+        item = SystemConfig(key=key, value=str_val)
+        session.add(item)
+
+    return item, old_file
+
+
 @router.patch("/", response_model=dict[str, Any])
 def batch_update_configs(
     payload: dict[str, Any], session: Session = Depends(get_session)
 ) -> dict[str, Any]:
     """Batch update or insert system configurations."""
-    if "access_mode" in payload:
-        _check_demo_access_mode_restriction(payload["access_mode"])
+    old_files: list[str] = []
 
     for key, val in payload.items():
-        str_val = _serialize_value(val)
-        item = session.get(SystemConfig, key)
-        if item:
-            item.value = str_val
-            session.add(item)
-        else:
-            new_item = SystemConfig(key=key, value=str_val)
-            session.add(new_item)
+        _, old_file = _set_config_value(session, key, val)
+        if old_file:
+            old_files.append(old_file)
 
     session.commit()
+
+    for old_file in old_files:
+        delete_local_static_file(old_file)
+
     return get_all_configs(session)
 
 
@@ -178,19 +204,12 @@ def update_config_by_key(
     key: str, payload: dict[str, Any], session: Session = Depends(get_session)
 ) -> dict[str, Any]:
     """Update or insert a single config item."""
-    if key == "access_mode":
-        _check_demo_access_mode_restriction(payload.get("value"))
-
     val = payload.get("value")
-    str_val = _serialize_value(val)
-
-    item = session.get(SystemConfig, key)
-    if item:
-        item.value = str_val
-        session.add(item)
-    else:
-        new_item = SystemConfig(key=key, value=str_val)
-        session.add(new_item)
+    item, old_file = _set_config_value(session, key, val)
 
     session.commit()
-    return {"key": key, "value": _parse_value(str_val)}
+
+    if old_file:
+        delete_local_static_file(old_file)
+
+    return {"key": key, "value": _parse_value(item.value)}

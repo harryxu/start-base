@@ -61,6 +61,9 @@ uv run pytest
 ```
 
 ### Frontend
+
+Use `mise exec --` when running node related commands such as `node`, `npm`, `pnpm`, and `npx` to ensure the versions defined in `mise.toml` are used.
+
 ```bash
 cd web
 

@@ -98,3 +98,69 @@ def test_update_access_mode_in_demo_mode(client: TestClient) -> None:
         assert put_res.status_code == 400
         assert put_res.json()["detail"] == "Authentication mode cannot be modified in demo mode"
 
+
+def test_bg_url_cleanup_on_batch_update(client: TestClient) -> None:
+    """Updating or removing bg_url deletes the old static background file from disk."""
+    import os
+
+    # 1. Upload two test background images
+    f1 = {"file": ("bg1.png", b"bg1 content", "image/png")}
+    d1 = {"folder": "backgrounds"}
+    res1 = client.post("/api/system/upload-image", files=f1, data=d1)
+    assert res1.status_code == 200
+    url1 = res1.json()["url"]
+    file1_path = os.path.join("data/files", url1.removeprefix("/static/"))
+    assert os.path.isfile(file1_path)
+
+    f2 = {"file": ("bg2.png", b"bg2 content", "image/png")}
+    d2 = {"folder": "backgrounds"}
+    res2 = client.post("/api/system/upload-image", files=f2, data=d2)
+    assert res2.status_code == 200
+    url2 = res2.json()["url"]
+    file2_path = os.path.join("data/files", url2.removeprefix("/static/"))
+    assert os.path.isfile(file2_path)
+
+    # 2. Set bg_url to url1
+    client.patch("/api/config/", json={"bg_url": url1})
+    assert os.path.isfile(file1_path)
+
+    # 3. Replace bg_url with url2 -> file1 should be deleted, file2 remains
+    client.patch("/api/config/", json={"bg_url": url2})
+    assert not os.path.isfile(file1_path)
+    assert os.path.isfile(file2_path)
+
+    # 4. Clear bg_url ("") -> file2 should be deleted
+    client.patch("/api/config/", json={"bg_url": ""})
+    assert not os.path.isfile(file2_path)
+
+
+def test_bg_url_cleanup_on_put_single_key(client: TestClient) -> None:
+    """Updating bg_url via PUT /api/config/bg_url deletes the previous static file."""
+    import os
+
+    f1 = {"file": ("bg1.jpg", b"bg1 content", "image/jpeg")}
+    d1 = {"folder": "backgrounds"}
+    res1 = client.post("/api/system/upload-image", files=f1, data=d1)
+    url1 = res1.json()["url"]
+    file1_path = os.path.join("data/files", url1.removeprefix("/static/"))
+
+    # Set via PUT
+    client.put("/api/config/bg_url", json={"value": url1})
+    assert os.path.isfile(file1_path)
+
+    # Remove via PUT
+    client.put("/api/config/bg_url", json={"value": ""})
+    assert not os.path.isfile(file1_path)
+
+
+def test_delete_local_static_file_edge_cases() -> None:
+    """Test safety and edge cases for delete_local_static_file."""
+    from app.services.file_service import delete_local_static_file
+
+    assert delete_local_static_file(None) is False
+    assert delete_local_static_file("") is False
+    assert delete_local_static_file("https://example.com/image.png") is False
+    assert delete_local_static_file("/static/../../etc/passwd") is False
+    assert delete_local_static_file("/static/non_existent_file.png") is False
+
+
