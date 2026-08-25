@@ -123,7 +123,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
               title="1×1"
               aria-label="1x1"
             >
-              <svg lucideSquare class="w-3.5 h-3.5"></svg>
+              <svg lucideSquare [strokeWidth]="isCurrentSize(1, 1) ? 2 : 1" class="w-3.5 h-3.5"></svg>
             </button>
             <button
               type="button"
@@ -136,7 +136,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
               title="2×1"
               aria-label="2x1"
             >
-              <svg lucideRectangleHorizontal class="w-5 h-5"></svg>
+              <svg lucideRectangleHorizontal [strokeWidth]="isCurrentSize(2, 1) ? 2 : 1" class="w-5 h-5"></svg>
             </button>
             <button
               type="button"
@@ -149,7 +149,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
               title="1×2"
               aria-label="1x2"
             >
-              <svg lucideRectangleVertical class="w-5 h-5"></svg>
+              <svg lucideRectangleVertical [strokeWidth]="isCurrentSize(1, 2) ? 2 : 1" class="w-5 h-5"></svg>
             </button>
             <button
               type="button"
@@ -162,7 +162,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
               title="2×2"
               aria-label="2x2"
             >
-              <svg lucideGrid2x2 class="w-6 h-6"></svg>
+              <svg lucideGrid2x2 [strokeWidth]="isCurrentSize(2, 2) ? 2 : 1" class="w-6 h-6"></svg>
             </button>
           </div>
           <button
