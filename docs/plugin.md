@@ -257,22 +257,18 @@ Outbound proxy requests follow security restrictions:
 
 A ready-to-run demo plugin is available at [`docs/demo-plugin.js`](./demo-plugin.js).
 
-To serve it locally:
+You can test it directly in Start Base without starting a local web server:
 
-```bash
-cd docs
-python3 -m http.server 8016
-```
-
-In Start Base:
-- **Plugin Type**: `Web Component`
-- **Plugin URL / Upload**: Enter `http://localhost:8016/demo-plugin.js` or upload `demo-plugin.js` directly.
-- **Custom Parameters**:
-  ```text
-  author=YourName
-  greeting=Hello World!
-  ```
-- **Allow LAN Access**: Enable if testing local endpoints.
+1. Click **"Add Site"** in the top bar or inside any group.
+2. Toggle **`[✓] Plugin Mode`** at the bottom of the dialog.
+3. Select **Plugin Type**: `Web Component`.
+4. Click the upload button next to the **Plugin Script / Upload** field and select [`docs/demo-plugin.js`](./demo-plugin.js) directly from your computer.
+5. (Optional) Add custom parameters in **Custom Parameters**:
+   ```text
+   author=YourName
+   greeting=Hello World!
+   ```
+6. Click **"Add site"** to save and see the demo widget on your board.
 
 ---
 
