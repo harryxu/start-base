@@ -16,8 +16,9 @@ start-base/
 └── web/               ← Angular v22 frontend
     └── src/app/
         ├── core/      ← Core services, models/types, interceptors
-        ├── features/  ← Feature components and views
-        └── shared/    ← Reusable UI components, directives, dialogs
+        ├── layout/    ← App shell & header layout components
+        ├── features/  ← Feature domain modules (auth, board, settings)
+        └── shared/    ← Generic UI components, directives, dialogs
 ```
 
 ## Tech Stack
@@ -77,7 +78,7 @@ pnpm start
 pnpm build
 
 # Run targeted unit tests for modified spec file(s)
-pnpm ng test --no-watch --include src/app/features/site-form/site-form.component.spec.ts
+pnpm ng test --no-watch --include src/app/features/board/site-form/site-form.component.spec.ts
 
 # Run full test suite
 pnpm ng test --no-watch
