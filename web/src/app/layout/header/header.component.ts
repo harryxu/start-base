@@ -47,7 +47,10 @@ import { SearchBoxComponent } from '../../shared/search-box/search-box.component
       [class.backdrop-blur-md]="configService.bgUrl()"
       [class.-translate-y-full]="isHeaderHidden()"
     >
-      <div class="max-w-5xl mx-auto w-full px-2 flex justify-between items-center gap-2">
+      <div
+        class="mx-auto px-2 flex justify-between items-center gap-2"
+        [class]="configService.pageWidthClass()"
+      >
         <!-- Logo Section -->
         <div class="flex items-center gap-2 min-w-0 shrink-0">
           <img src="start-base-logo.svg" alt="Start Base Logo" class="w-6 h-6 shrink-0" />

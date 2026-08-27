@@ -85,6 +85,36 @@ describe('ConfigService', () => {
     expect(service.siteBorder()).toBe(false);
   });
 
+  it('should parse page_width configuration and compute pageWidthClass correctly', async () => {
+    // Default is medium
+    expect(service.pageWidth()).toBe('medium');
+    expect(service.pageWidthClass()).toBe('w-full max-w-5xl');
+
+    // Load wide
+    const loadWidePromise = service.loadConfig(true);
+    const reqWide = httpMock.expectOne(`${API_BASE}/api/config/`);
+    reqWide.flush({ page_width: 'wide' });
+    await loadWidePromise;
+    expect(service.pageWidth()).toBe('wide');
+    expect(service.pageWidthClass()).toBe('w-full max-w-[1600px]');
+
+    // Update ultra_wide
+    const updateUltraPromise = service.updateConfig({ page_width: 'ultra_wide' });
+    const patchUltraReq = httpMock.expectOne(`${API_BASE}/api/config/`);
+    patchUltraReq.flush({ page_width: 'ultra_wide' });
+    await updateUltraPromise;
+    expect(service.pageWidth()).toBe('ultra_wide');
+    expect(service.pageWidthClass()).toBe('w-full max-w-[2200px]');
+
+    // Update full
+    const updateFullPromise = service.updateConfig({ page_width: 'full' });
+    const patchFullReq = httpMock.expectOne(`${API_BASE}/api/config/`);
+    patchFullReq.flush({ page_width: 'full' });
+    await updateFullPromise;
+    expect(service.pageWidth()).toBe('full');
+    expect(service.pageWidthClass()).toBe('w-full max-w-none');
+  });
+
   it('should toggle editMode and respect isReadOnly', () => {
     expect(service.editMode()).toBe(false);
 

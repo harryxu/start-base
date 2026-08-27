@@ -70,4 +70,22 @@ describe('SettingsModalComponent', () => {
 
     await submitPromise;
   });
+
+  it('should submit page_width update', async () => {
+    const fixture = TestBed.createComponent(SettingsModalComponent);
+    const req = httpMock.expectOne(`${API_BASE}/api/config/`);
+    req.flush({ page_title: 'Start Base', theme: 'emerald', page_width: 'medium' });
+
+    const component = fixture.componentInstance;
+    component.formPageWidth.set('ultra_wide');
+
+    const submitPromise = component.onSubmit();
+
+    const patchReq = httpMock.expectOne(`${API_BASE}/api/config/`);
+    expect(patchReq.request.method).toBe('PATCH');
+    expect(patchReq.request.body['page_width']).toBe('ultra_wide');
+    patchReq.flush({ page_title: 'Start Base', theme: 'emerald', page_width: 'ultra_wide' });
+
+    await submitPromise;
+  });
 });

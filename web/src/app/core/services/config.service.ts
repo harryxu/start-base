@@ -6,11 +6,12 @@ import { API_BASE, ApiService } from '../api/api.service';
 import { AuthService } from './auth.service';
 import {
   SUPPORTED_THEMES,
+  type PageWidth,
   type SiteViewMode,
   type ThemeName,
 } from '../models/types';
 export { SUPPORTED_THEMES };
-export type { ThemeName };
+export type { PageWidth, ThemeName };
 
 export const DARK_THEMES = new Set<string>([
   'coffee',
@@ -38,6 +39,20 @@ export class ConfigService {
   accessMode = signal<string>('none_guard');
   siteViewMode = signal<SiteViewMode>('full');
   siteBorder = signal<boolean>(false);
+  pageWidth = signal<PageWidth>('medium');
+  pageWidthClass = computed<string>(() => {
+    switch (this.pageWidth()) {
+      case 'wide':
+        return 'w-full max-w-[1600px]';
+      case 'ultra_wide':
+        return 'w-full max-w-[2200px]';
+      case 'full':
+        return 'w-full max-w-none';
+      case 'medium':
+      default:
+        return 'w-full max-w-5xl';
+    }
+  });
   editMode = signal<boolean>(false);
   isDemo = signal<boolean>(false);
   demoMsg = signal<string>('');
@@ -120,6 +135,12 @@ export class ConfigService {
         this.siteBorder.set(false);
       }
 
+      if (config['page_width']) {
+        this.pageWidth.set(config['page_width'] as PageWidth);
+      } else {
+        this.pageWidth.set('medium');
+      }
+
       if (config['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((config['bg_url'] || '').trim() || null);
       }
@@ -161,6 +182,9 @@ export class ConfigService {
       const borderVal = res['site_border'];
       if (borderVal !== undefined) {
         this.siteBorder.set(borderVal === '1' || borderVal === 1 || borderVal === true);
+      }
+      if (res['page_width']) {
+        this.pageWidth.set(res['page_width'] as PageWidth);
       }
       if (res['bg_url'] !== undefined && !this.route?.snapshot?.queryParams?.['nbm']) {
         this.bgUrl.set((res['bg_url'] || '').trim() || null);

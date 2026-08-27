@@ -87,6 +87,49 @@
           </div>
         </div>
 
+        <!-- Page Width Selection -->
+        <div class="flex flex-col gap-2">
+          <label class="text-xs font-medium text-base-content/70">Page Width</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <label
+              class="flex flex-col items-center justify-center p-2 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+              [class.border-primary]="formPageWidth() === 'medium'"
+              [class.bg-primary/10]="formPageWidth() === 'medium'">
+              <input type="radio" name="pageWidth" value="medium" [checked]="formPageWidth() === 'medium'"
+                (change)="formPageWidth.set('medium')" class="sr-only" />
+              <span class="text-xs font-medium text-base-content">Medium</span>
+              <span class="text-[10px] text-base-content/50 mt-0.5">1024px</span>
+            </label>
+            <label
+              class="flex flex-col items-center justify-center p-2 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+              [class.border-primary]="formPageWidth() === 'wide'"
+              [class.bg-primary/10]="formPageWidth() === 'wide'">
+              <input type="radio" name="pageWidth" value="wide" [checked]="formPageWidth() === 'wide'"
+                (change)="formPageWidth.set('wide')" class="sr-only" />
+              <span class="text-xs font-medium text-base-content">Wide</span>
+              <span class="text-[10px] text-base-content/50 mt-0.5">1600px</span>
+            </label>
+            <label
+              class="flex flex-col items-center justify-center p-2 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+              [class.border-primary]="formPageWidth() === 'ultra_wide'"
+              [class.bg-primary/10]="formPageWidth() === 'ultra_wide'">
+              <input type="radio" name="pageWidth" value="ultra_wide" [checked]="formPageWidth() === 'ultra_wide'"
+                (change)="formPageWidth.set('ultra_wide')" class="sr-only" />
+              <span class="text-xs font-medium text-base-content">Ultra Wide</span>
+              <span class="text-[10px] text-base-content/50 mt-0.5">2200px</span>
+            </label>
+            <label
+              class="flex flex-col items-center justify-center p-2 rounded-lg border border-base-200 cursor-pointer hover:bg-base-200/50 transition-colors text-center"
+              [class.border-primary]="formPageWidth() === 'full'"
+              [class.bg-primary/10]="formPageWidth() === 'full'">
+              <input type="radio" name="pageWidth" value="full" [checked]="formPageWidth() === 'full'"
+                (change)="formPageWidth.set('full')" class="sr-only" />
+              <span class="text-xs font-medium text-base-content">Full Width</span>
+              <span class="text-[10px] text-base-content/50 mt-0.5">Viewport</span>
+            </label>
+          </div>
+        </div>
+
         <!-- Site Card Border Toggle -->
         <div class="flex items-center justify-between">
           <div class="flex flex-col">

@@ -83,6 +83,11 @@ export type SystemConfigMap = Record<string, any>;
  */
 export type SiteViewMode = 'full' | 'icon' | 'text' | '';
 
+/**
+ * Page content width options.
+ */
+export type PageWidth = 'medium' | 'wide' | 'ultra_wide' | 'full';
+
 /** Auth: login request payload. */
 export interface UserLogin {
   username: string;

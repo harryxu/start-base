@@ -16,7 +16,7 @@ import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '../../../core/services/config.service';
 import { ApiService, API_BASE } from '../../../core/api/api.service';
 import { AuthService } from '../../../core/services/auth.service';
-import type { SiteViewMode } from '../../../core/models/types';
+import type { PageWidth, SiteViewMode } from '../../../core/models/types';
 import { ThemeSwitcherComponent } from '../../../shared/theme-switcher/theme-switcher.component';
 
 @Component({
@@ -50,6 +50,7 @@ export class SettingsModalComponent {
   formAccessMode = signal<string>(this.configService.accessMode());
   formSiteViewMode = signal<SiteViewMode>(this.configService.siteViewMode());
   formSiteBorder = signal<boolean>(this.configService.siteBorder());
+  formPageWidth = signal<PageWidth>(this.configService.pageWidth());
   formUsername = this.authService.currentUser()?.username || '';
   formPassword = '';
 
@@ -95,6 +96,10 @@ export class SettingsModalComponent {
 
       if (this.formSiteBorder() !== this.configService.siteBorder()) {
         updates['site_border'] = this.formSiteBorder() ? '1' : '0';
+      }
+
+      if (this.formPageWidth() !== this.configService.pageWidth()) {
+        updates['page_width'] = this.formPageWidth();
       }
 
       if (this.selectedFile) {

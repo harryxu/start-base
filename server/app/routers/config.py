@@ -25,6 +25,7 @@ DEFAULT_CONFIGS: dict[str, Any] = {
     "access_mode": "none_guard",
     "site_view_mode": "full",
     "site_border": "0",
+    "page_width": "medium",
 }
 
 
