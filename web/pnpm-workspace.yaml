@@ -5,7 +5,15 @@ allowBuilds:
   msgpackr-extract: true
 minimumReleaseAgeExclude:
   - '@lucide/angular@1.34.0'
-  - '@tanstack/angular-query-experimental@5.102.3'
-  - '@tanstack/query-core@5.102.3'
-  - '@tanstack/query-devtools@5.102.3'
+  - '@tanstack/angular-query-experimental@5.102.3 || 5.102.8'
+  - '@tanstack/query-core@5.102.3 || 5.102.8'
+  - '@tanstack/query-devtools@5.102.3 || 5.102.8'
   - daisyui@5.7.22
+  - '@angular/common@22.1.4'
+  - '@angular/compiler-cli@22.1.4'
+  - '@angular/compiler@22.1.4'
+  - '@angular/core@22.1.4'
+  - '@angular/forms@22.1.4'
+  - '@angular/platform-browser@22.1.4'
+  - '@angular/router@22.1.4'
+  - '@angular/service-worker@22.1.4'
