@@ -1,0 +1,15 @@
+.git
+.github
+.agents
+.antigravity
+.gemini
+.vscode
+web/node_modules
+web/dist
+web/.angular
+server/.venv
+server/data
+server/__pycache__
+server/.pytest_cache
+server/.ruff_cache
+**/.DS_Store

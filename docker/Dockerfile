@@ -2,12 +2,12 @@
 FROM node:24-alpine AS frontend-builder
 
 # Install pnpm (matching packageManager in package.json)
-RUN npm install -g pnpm@11.17.0
+RUN npm install -g pnpm@11.24.0
 
 WORKDIR /web
 
 # Copy frontend dependency files
-COPY web/package.json web/pnpm-lock.yaml ./
+COPY web/package.json web/pnpm-lock.yaml web/pnpm-workspace.yaml* ./
 
 # Install dependencies
 RUN pnpm install --frozen-lockfile --ignore-scripts
