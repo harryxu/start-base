@@ -4,6 +4,17 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Docker image tag (e.g. 1.0.0, test, latest)"
+        required: true
+        default: "latest"
+        type: string
+      tag_latest:
+        description: "Also tag as latest"
+        required: false
+        default: false
+        type: boolean
 
 env:
   IMAGE_NAME: harryxu/startbase
@@ -44,7 +55,8 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' || !github.event.release.prerelease }}
+            type=raw,value=latest,enable=${{ (github.event_name == 'release' && !github.event.release.prerelease) || (github.event_name == 'workflow_dispatch' && (inputs.version == 'latest' || inputs.tag_latest)) }}
+            type=raw,value=${{ inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' && inputs.version != '' && inputs.version != 'latest' }}
             type=ref,event=tag
 
       - name: Build and push main image
@@ -71,7 +83,8 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=raw,value=latest,enable=${{ github.event_name == 'workflow_dispatch' || !github.event.release.prerelease }}
+            type=raw,value=latest,enable=${{ (github.event_name == 'release' && !github.event.release.prerelease) || (github.event_name == 'workflow_dispatch' && (inputs.version == 'latest' || inputs.tag_latest)) }}
+            type=raw,value=${{ inputs.version }},enable=${{ github.event_name == 'workflow_dispatch' && inputs.version != '' && inputs.version != 'latest' }}
             type=ref,event=tag
 
       - name: Build and push demo image
