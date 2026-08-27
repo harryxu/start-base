@@ -43,14 +43,14 @@ export class ConfigService {
   pageWidthClass = computed<string>(() => {
     switch (this.pageWidth()) {
       case 'wide':
-        return 'w-full max-w-[1600px]';
+        return 'w-full max-w-[1600px] page-width-wide';
       case 'ultra_wide':
-        return 'w-full max-w-[2200px]';
+        return 'w-full max-w-[2200px] page-width-ultra_wide';
       case 'full':
-        return 'w-full max-w-none';
+        return 'w-full max-w-none page-width-full';
       case 'medium':
       default:
-        return 'w-full max-w-5xl';
+        return 'w-full max-w-5xl page-width-medium';
     }
   });
   editMode = signal<boolean>(false);

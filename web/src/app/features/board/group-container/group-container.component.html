@@ -38,7 +38,7 @@
     [class.bg-base-100/50]="configService.bgUrl()" [class.backdrop-blur-sm]="configService.bgUrl()">
     <div cdkDropList cdkDropListOrientation="mixed" [id]="'group-' + group().id" [cdkDropListData]="sites()"
       [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="siteDropped.emit($event)"
-      class="site-grid grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 min-[1920px]:grid-cols-14 min-[2200px]:grid-cols-16 gap-1 px-2 py-3 min-h-20"
+      class="site-grid grid gap-1 px-2 py-3 min-h-20"
       [class.view-mode-icon]="effectiveViewMode() === 'icon'"
       [class.view-mode-text]="effectiveViewMode() === 'text'"
       [class.view-mode-full]="effectiveViewMode() === 'full'"

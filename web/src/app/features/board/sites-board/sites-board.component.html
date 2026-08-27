@@ -62,7 +62,7 @@
     @if (localUngroupedSites().length > 0) {
       <div cdkDropList cdkDropListOrientation="mixed" id="ungrouped-0" [cdkDropListData]="localUngroupedSites()"
         [cdkDropListConnectedTo]="allSiteDropListIds()" (cdkDropListDropped)="onSiteDrop($event)"
-        class="site-grid grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 2xl:grid-cols-12 min-[1920px]:grid-cols-14 min-[2200px]:grid-cols-16 gap-1 min-h-20 p-2 rounded-xl border border-transparent"
+        class="site-grid grid gap-1 min-h-20 p-2 rounded-xl border border-transparent"
         [class.view-mode-icon]="configService.siteViewMode() === 'icon'"
         [class.view-mode-text]="configService.siteViewMode() === 'text'"
         [class.view-mode-full]="configService.siteViewMode() === 'full'"
