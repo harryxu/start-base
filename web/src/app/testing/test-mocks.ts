@@ -3,7 +3,7 @@ import { provideTanStackQuery, QueryClient } from '@tanstack/angular-query-exper
 import { ConfigService } from '../core/services/config.service';
 import { AuthService } from '../core/services/auth.service';
 
-import type { SiteViewMode } from '../core/models/types';
+import type { PageWidth, SiteViewMode } from '../core/models/types';
 
 const mockAccessMode = signal('none_guard');
 const mockCurrentUser = signal<{ id: number; username: string } | null>(null);
@@ -17,6 +17,10 @@ export const mockConfigService = {
   accessMode: mockAccessMode,
   siteViewMode: signal<SiteViewMode>('full'),
   siteBorder: signal<boolean>(false),
+  pageWidth: signal<PageWidth>('medium'),
+  pageWidthClass: computed(() => 'w-full max-w-5xl page-width-medium'),
+  isDemo: signal<boolean>(false),
+  demoMsg: signal<string>(''),
   editMode: signal<boolean>(false),
   toggleEditMode: function () {
     this.editMode.update((v: boolean) => !v);
