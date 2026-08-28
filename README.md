@@ -4,11 +4,18 @@ Lightweight dashboard to quickly access your websites.
 
 ![Screen 1](./docs/assets/screen1.png)
 
-## Demo Site
 
-https://startbase-demo.onrender.com
-
-Screencast: https://www.youtube.com/watch?v=5lDdiElmCYU
+<p align="center">
+  <a href="https://startbase-demo.onrender.com">
+    <strong>Live Demo</strong>
+  </a> •
+  <a href="https://www.youtube.com/watch?v=5lDdiElmCYU">
+    <strong> Screencast</strong>
+  </a> •
+  <a href="https://github.com/harryxu/start-base/blob/master/docs/plugin.md">
+    <strong>Plugin System </strong>
+  </a> 
+</p>
 
 ## Features
 
