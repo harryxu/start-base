@@ -1,7 +1,14 @@
 import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
-import { LucideGlobe, LucideLink, LucidePuzzle, LucideUpload, LucideX } from '@lucide/angular';
+import {
+  LucideExternalLink,
+  LucideGlobe,
+  LucideLink,
+  LucidePuzzle,
+  LucideUpload,
+  LucideX,
+} from '@lucide/angular';
 import { firstValueFrom } from 'rxjs';
 
 import { ApiService, API_BASE } from '../../../core/api/api.service';
@@ -13,7 +20,16 @@ import { parsePluginMeta } from '../../../core/utils/plugin.utils';
 @Component({
   selector: 'app-site-form',
   standalone: true,
-  imports: [FormsModule, CdkTrapFocus, LucideX, LucideGlobe, LucideUpload, LucideLink, LucidePuzzle],
+  imports: [
+    FormsModule,
+    CdkTrapFocus,
+    LucideX,
+    LucideGlobe,
+    LucideUpload,
+    LucideLink,
+    LucidePuzzle,
+    LucideExternalLink,
+  ],
   template: `
     <!-- DaisyUI modal (modal-open keeps it visible while rendered) -->
     <div
@@ -63,7 +79,19 @@ import { parsePluginMeta } from '../../../core/utils/plugin.utils';
 
               <!-- Plugin Type Selector -->
               <div class="flex flex-col gap-1.5">
-                <span class="text-xs text-base-content/60 pl-1">Plugin Type</span>
+                <div class="flex items-center justify-between px-1">
+                  <span class="text-xs text-base-content/60">Plugin Type</span>
+                  <a
+                    href="https://github.com/harryxu/start-base/blob/master/docs/plugin.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-xs text-primary hover:underline inline-flex items-center gap-1 font-medium"
+                    title="View Plugin Documentation"
+                  >
+                    <span>Plugin Documentation</span>
+                    <svg lucideExternalLink class="w-3.5 h-3.5"></svg>
+                  </a>
+                </div>
                 <div class="join w-full grid grid-cols-2">
                   <input
                     type="radio"
