@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-# Script to run both backend and frontend development servers concurrently
+# Script to run both backend and frontend development servers concurrently.
+# If you want to use different ports, you can set env vars in a .env file:
+# DEV_API_PORT=5800
+# DEV_WEB_PORT=5700
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
