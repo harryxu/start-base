@@ -19,12 +19,13 @@ Lightweight dashboard to quickly access your websites.
 
 ## Features
 
-- ✨ **Intuitive UI** — Manage all settings and sites directly in the UI without editing configuration files
-- 📌 **Grouped Sites** — Organize sites into custom groups
-- ⚡ **Drag & Drop** — Reorder sites and groups, long-press to drag sites
-- 🖼️ **Auto Metadata** — Automatically fetch page titles and favicons
-- 📱 **Responsive Design** — Works seamlessly on desktop and mobile
-- 🧩 **Extensible** — Use the [plugin system](./docs/plugin.md) to add more functionality
+- **Intuitive UI** — Manage all settings and sites directly in the UI without editing configuration files
+- **Grouped Sites** — Organize sites into custom groups
+- **Drag & Drop** — Reorder sites and groups, long-press to drag sites
+- **Auto Metadata** — Automatically fetch page titles and favicons
+- **Responsive Design** — Works seamlessly on desktop and mobile
+- **Extensible** — Use the [plugin system](./docs/plugin.md) to add more functionality
+- **PWA Support** — Install as a [Progressive Web App](https://web.dev/learn/pwa/progressive-web-apps).
 
 ## Quick Start
 
