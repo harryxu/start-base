@@ -4,7 +4,11 @@ Lightweight dashboard to quickly access your websites.
 
 ![Screen 1](./docs/assets/screen1.png)
 
-Screencast demo: https://www.youtube.com/watch?v=5lDdiElmCYU
+## Demo Site
+
+https://startbase-demo.onrender.com
+
+Screencast: https://www.youtube.com/watch?v=5lDdiElmCYU
 
 ## Features
 
