@@ -98,3 +98,18 @@ jobs:
           labels: ${{ steps.meta-demo.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # -------------------------------------------------------------
+      # 3. Trigger Render Demo Site Deployment Hook
+      # -------------------------------------------------------------
+      - name: Trigger Render Demo Site Deployment
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEMO_DEPLOY_HOOK_URL || secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            echo "Triggering Render Deploy Hook for demo site..."
+            curl -f -sS -X POST "$RENDER_DEPLOY_HOOK"
+            echo "Deploy hook triggered successfully."
+          else
+            echo "RENDER_DEMO_DEPLOY_HOOK_URL secret is not configured, skipping demo deployment."
+          fi
