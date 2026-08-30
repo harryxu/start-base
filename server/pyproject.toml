@@ -5,29 +5,30 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "alembic>=1.18.5",
-    "beautifulsoup4>=4.15.0",
-    "fastapi[standard]>=0.141.1",
-    "httpx>=0.28.1",
-    "itsdangerous>=2.2.0",
-    "pwdlib[argon2]>=0.3.0",
-    "pydantic-settings>=2.8.0",
-    "sqlmodel>=0.0.39",
-    "uvicorn[standard]>=0.51.0",
+  "alembic>=1.18.5",
+  "beautifulsoup4>=4.15.0",
+  "fastapi[standard]>=0.141.1",
+  "httpx>=0.28.1",
+  "itsdangerous>=2.2.0",
+  "pwdlib[argon2]>=0.3.0",
+  "pydantic-settings>=2.8.0",
+  "sqlmodel>=0.0.39",
+  "uvicorn[standard]>=0.51.0",
 ]
 
 [dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-    "ruff>=0.16.0",
-]
+dev = ["pytest>=9.1.1", "ruff>=0.16.0"]
 
 [tool.pytest.ini_options]
 filterwarnings = [
-    "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
+  "ignore:Using `httpx` with `starlette.testclient` is deprecated:starlette.exceptions.StarletteDeprecationWarning",
 ]
 
 [tool.ruff.lint]
 ignore = [
-    "B008",  # Function call in default argument (standard FastAPI Depends/File pattern)
+  "B008", # Function call in default argument (standard FastAPI Depends/File pattern)
 ]
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
