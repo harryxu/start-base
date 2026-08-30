@@ -110,6 +110,9 @@ export class SitesBoardComponent {
   /** Mutable copy of the ungrouped sites for drag-and-drop animations. */
   localUngroupedSites = signal<Site[]>([]);
 
+  /** Whether there are currently ungrouped sites present */
+  hasUngroupedSites = computed(() => this.localUngroupedSites().length > 0);
+
   /** Mutable copy of the group rows for drag-and-drop animations. */
   localGroupRows = signal<LayoutRow[]>([]);
 

@@ -1,6 +1,6 @@
 <main class="mx-auto px-2 pt-6 pb-safe-bottom relative" [class]="configService.pageWidthClass()">
   @if (!configService.isReadOnly()) {
-  <app-external-drop-zone (droppedUrl)="externalSiteDropped.emit($event)" />
+  <app-external-drop-zone [floating]="hasUngroupedSites()" (droppedUrl)="externalSiteDropped.emit($event)" />
   }
 
   <!-- Loading state -->

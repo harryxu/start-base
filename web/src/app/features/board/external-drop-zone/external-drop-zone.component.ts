@@ -1,4 +1,4 @@
-import { Component, signal, output, OnInit, OnDestroy } from '@angular/core';
+import { Component, signal, input, output, OnInit, OnDestroy } from '@angular/core';
 import { LucidePlus } from '@lucide/angular';
 
 @Component({
@@ -8,7 +8,15 @@ import { LucidePlus } from '@lucide/angular';
   template: `
     @if (showDropZone()) {
       <div
-        class="absolute top-6 left-6 right-6 h-36 z-50 card  flex flex-col items-center justify-center backdrop-blur-sm shadow-2xl"
+        class="card flex flex-col items-center justify-center backdrop-blur-sm shadow-2xl h-36"
+        [class.absolute]="floating()"
+        [class.top-6]="floating()"
+        [class.left-6]="floating()"
+        [class.right-6]="floating()"
+        [class.z-50]="floating()"
+        [class.relative]="!floating()"
+        [class.w-full]="!floating()"
+        [class.mb-4]="!floating()"
         [class.bg-primary/80]="!isOverDropZone()"
         [class.border-primary]="isOverDropZone()"
         [class.bg-primary/70]="isOverDropZone()"
@@ -26,6 +34,7 @@ import { LucidePlus } from '@lucide/angular';
     }
   `,
   host: {
+    class: 'block',
     '(window:dragstart)': 'onLocalDragStart($event)',
     '(window:dragend)': 'onLocalDragEnd($event)',
     '(window:dragenter)': 'onDragEnter($event)',
@@ -34,6 +43,9 @@ import { LucidePlus } from '@lucide/angular';
   },
 })
 export class ExternalDropZoneComponent implements OnInit, OnDestroy {
+  // Input: whether to float absolutely over content or flow naturally in layout
+  floating = input<boolean>(true);
+
   // Output event when a URL is dropped
   droppedUrl = output<string>();
 

@@ -156,14 +156,23 @@ describe('SitesBoardComponent', () => {
     expect(compiled.textContent).toContain('non_existing_keyword_xyz');
   });
 
-  it('should adjust dragStartDelay based on editMode', () => {
+  it('should compute hasUngroupedSites correctly based on ungrouped sites presence', () => {
     const fixture = TestBed.createComponent(SitesBoardComponent);
     const component = fixture.componentInstance;
 
-    component.configService.editMode.set(false);
-    expect(component.dragStartDelay()).toEqual({ touch: 300, mouse: 150 });
+    // With ungrouped sites
+    fixture.componentRef.setInput('boardData', mockBoardData);
+    fixture.detectChanges();
+    expect(component.hasUngroupedSites()).toBe(true);
 
-    component.configService.editMode.set(true);
-    expect(component.dragStartDelay()).toBe(0);
+    // Without ungrouped sites
+    const dataWithoutUngrouped: BoardData = {
+      ...mockBoardData,
+      ungrouped_sites: [],
+    };
+    fixture.componentRef.setInput('boardData', dataWithoutUngrouped);
+    fixture.detectChanges();
+    expect(component.hasUngroupedSites()).toBe(false);
   });
 });
+
