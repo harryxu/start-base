@@ -83,6 +83,10 @@ import { API_BASE } from '../../../core/api/api.service';
         &.has-border {
           gap: 0.75rem;
         }
+
+        &:has(.cdk-drag-placeholder) .empty-group-hint {
+          display: none;
+        }
       }
 
       /* Invert item order when opening above so menu items maintain a consistent distance to the cursor/finger whether opening upwards or downwards */
