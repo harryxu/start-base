@@ -162,15 +162,18 @@
   }
 
   /* Page width dynamic responsive site grid columns */
+  .site-grid,
   .page-width-medium .site-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   @media (min-width: 640px) {
+    .site-grid,
     .page-width-medium .site-grid {
       grid-template-columns: repeat(6, minmax(0, 1fr));
     }
   }
   @media (min-width: 1024px) {
+    .site-grid,
     .page-width-medium .site-grid {
       grid-template-columns: repeat(8, minmax(0, 1fr));
     }

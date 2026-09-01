@@ -86,6 +86,7 @@
       (cdkDropListDropped)="onRowDrop($event)" class="space-y-4 min-h-24">
       @for (row of localGroupRows(); track row.id) {
       <div cdkDrag [cdkDragData]="row" [cdkDragDisabled]="configService.isReadOnly() || isSearching()"
+        [cdkDragPreviewClass]="'page-width-' + configService.pageWidth()"
         (cdkDragStarted)="closeAllMenus()" class="relative group">
         <!-- Drag placeholder shown while the row is being dragged -->
         <div *cdkDragPlaceholder class="h-16 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5"></div>
