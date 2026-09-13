@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { SiteCardComponent } from './site-card.component';
 import { describe, beforeEach, it, expect, vi } from 'vitest';
 import type { Site } from '../../../core/models/types';
@@ -77,6 +78,7 @@ describe('SiteCardComponent', () => {
 
     const menuEl = document.querySelector('.menu');
     expect(menuEl).toBeTruthy();
+    expect(menuEl?.textContent).toContain('Copy URL');
     expect(menuEl?.textContent).toContain('Edit');
     expect(menuEl?.textContent).toContain('Delete');
   });
@@ -375,6 +377,35 @@ describe('SiteCardComponent', () => {
     fixture.detectChanges();
 
     expect(mockBoardService.updateSite).not.toHaveBeenCalled();
+    expect(document.querySelector('.menu')).toBeFalsy();
+  });
+
+  it('should copy site url to clipboard and close menu when Copy URL button is clicked', () => {
+    const clipboard = TestBed.inject(Clipboard);
+    const copySpy = vi.spyOn(clipboard, 'copy').mockReturnValue(true);
+
+    const cardEl = fixture.nativeElement.querySelector('.site-card');
+    cardEl.dispatchEvent(
+      new MouseEvent('contextmenu', {
+        bubbles: true,
+        cancelable: true,
+        clientX: 50,
+        clientY: 50,
+        button: 2,
+      }),
+    );
+    fixture.detectChanges();
+
+    const menuEl = document.querySelector('.menu');
+    const copyBtn = Array.from(menuEl?.querySelectorAll('button') || []).find((btn) =>
+      btn.textContent?.includes('Copy URL'),
+    );
+    expect(copyBtn).toBeTruthy();
+
+    copyBtn?.click();
+    fixture.detectChanges();
+
+    expect(copySpy).toHaveBeenCalledWith('https://example.com');
     expect(document.querySelector('.menu')).toBeFalsy();
   });
 });

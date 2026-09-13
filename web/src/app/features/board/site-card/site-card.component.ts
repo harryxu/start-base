@@ -1,7 +1,9 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import { CdkContextMenuTrigger, CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import { CdkDragHandle } from '@angular/cdk/drag-drop';
 import { Component, computed, inject, input, output, signal, ViewChild } from '@angular/core';
 import {
+  LucideCopy,
   LucideEllipsis,
   LucideGripVertical,
   LucideGrid2x2,
@@ -31,6 +33,7 @@ import { WebcomponentPluginComponent } from './webcomponent-plugin.component';
     CdkContextMenuTrigger,
     CdkDragHandle,
     LongPressDirective,
+    LucideCopy,
     LucideEllipsis,
     LucideGripVertical,
     LucideGrid2x2,
@@ -169,6 +172,15 @@ export class SiteCardComponent {
       return;
     }
     this.boardService.updateSite(this.site().id, { col_span: col, row_span: row });
+  }
+
+  private clipboard = inject(Clipboard);
+
+  onCopyUrl(): void {
+    this.closeMenu();
+    if (this.site().url) {
+      this.clipboard.copy(this.site().url);
+    }
   }
 
   onEditSite(): void {

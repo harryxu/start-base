@@ -121,6 +121,14 @@
       </div>
       <button
         cdkMenuItem
+        (click)="onCopyUrl()"
+        class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
+      >
+        <svg lucideCopy class="w-4 h-4"></svg>
+        <span>Copy URL</span>
+      </button>
+      <button
+        cdkMenuItem
         (click)="onEditSite()"
         class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-base-200 outline-none focus:outline-none rounded-lg w-full text-base-content font-medium transition-colors"
       >
